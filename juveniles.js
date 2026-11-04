@@ -2,8 +2,10 @@
 (() => {
   const {fmt, filas, enc, lindo, ordenar, llenar, listaBarras, verJugador} = window.bv;
   const MIN_TORNEOS = 10;
+  const MIN_PAREJA = 3;
 
   dash.draw('juv-minimo', (el) => { el.textContent = String(MIN_TORNEOS); });
+  dash.draw('juv-minimo-pareja', (el) => { el.textContent = String(MIN_PAREJA); });
 
   dash.draw('kpi-juv', (el) => {
     const r = (filas('juveniles_anio') || []).find((x) => x.anio === 'todos');
@@ -25,11 +27,11 @@
   dash.draw('juv-parejas', (ol) => {
     const rows = filas('juveniles_parejas');
     if (!rows) { ol.replaceChildren(); return; }
-    const sel = rows.slice(0, 8);
+    const sel = rows.filter((r) => r.torneos >= MIN_PAREJA).sort((a, b) => b.pct - a.pct).slice(0, 8);
     listaBarras(ol, sel.map((r) => ({
-      nombre: lindo(r.pareja), valor: r.torneos, texto: `${fmt.int(r.torneos)} torneos`,
-      sub: `${fmt.pct(r.pct)} promedio · mejor ${fmt.pct(r.mejor_pct)} · ${fmt.int(r.victorias)} primeros lugares`,
-    })), {color: dash.colors[1], medallas: false});
+      nombre: lindo(r.pareja), valor: r.pct, texto: fmt.pct(r.pct),
+      sub: `${fmt.int(r.torneos)} torneos juntos · mejor ${fmt.pct(r.mejor_pct)} · ${fmt.int(r.victorias)} primeros lugares`,
+    })), {dominio: [40, Math.max(65, d3.max(sel, (r) => r.pct) || 65)], color: dash.colors[1]});
   });
 
   dash.draw('juv-records', (el) => {
