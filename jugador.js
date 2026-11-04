@@ -20,6 +20,52 @@
     el.textContent = (fmt[el.dataset.fmt] || fmt.texto)(r[el.dataset.field]);
   });
 
+  // datos curiosos: [etiqueta, campo, formato, campo del detalle o función]
+  const FREAK = [
+    ['Mejor puntaje en una mano', 'mejor_puntaje', fmt.int, 'mejor_puntaje_detalle'],
+    ['Peor puntaje en una mano', 'peor_puntaje', fmt.int, 'peor_puntaje_detalle'],
+    ['Más puntos entre los dos', 'max_hcp', fmt.int, 'max_hcp_detalle'],
+    ['Menos puntos entre los dos', 'min_hcp', fmt.int, 'min_hcp_detalle'],
+    ['Mejor torneo', 'mejor_torneo', fmt.pct, 'mejor_torneo_detalle'],
+    ['Peor torneo', 'peor_torneo', fmt.pct, 'peor_torneo_detalle'],
+    ['Racha más larga sobre 50%', 'racha50', fmt.int, 'racha50_detalle'],
+    ['Contrato que más juega', 'contrato_favorito', fmt.texto, (r) => `${fmt.int(r.contrato_veces)} veces, ${fmt.pct(r.contrato_cumplido)} cumplido`],
+    ['Manos con top (100%)', 'manos_100', fmt.int, (r) => `y ${fmt.int(r.manos_0)} manos con 0%`],
+    ['Rival favorito', 'rival_favorito_pct', fmt.pct, (r) => `contra ${r.rival_favorito}, en ${fmt.int(r.rival_favorito_manos)} manos`],
+    ['Bestia negra', 'bestia_negra_pct', fmt.pct, (r) => `contra ${r.bestia_negra}, en ${fmt.int(r.bestia_negra_manos)} manos`],
+  ];
+  dash.draw('freak', (el) => {
+    const rows = filas('jugador_freak');
+    const nombre = jugadorActual();
+    const r = rows && rows.find((x) => x.jugador === nombre);
+    if (!r) { el.replaceChildren(); return; }
+    el.replaceChildren(...FREAK.filter(([, campo]) => r[campo] != null).map(([etiqueta, campo, f, det]) => {
+      const c = document.createElement('div');
+      c.className = 'bv-freak-item';
+      const s = document.createElement('span');
+      s.textContent = etiqueta;
+      const b = document.createElement('b');
+      b.textContent = f(r[campo]);
+      const m = document.createElement('small');
+      m.textContent = (typeof det === 'function' ? det(r) : r[det]) || '';
+      c.append(s, b, m);
+      return c;
+    }));
+  });
+
+  dash.draw('ficha-dias', (ol) => {
+    const rows = filas('jugador_dia');
+    const nombre = jugadorActual();
+    if (!rows || !nombre) { ol.replaceChildren(); return; }
+    const orden = ['Lunes', 'Martes', 'Jueves', 'Viernes', 'Sábado', 'Domingo'];
+    const sel = rows.filter((r) => r.jugador === nombre).sort((a, b) => orden.indexOf(a.dia) - orden.indexOf(b.dia));
+    const mejor = d3.max(sel, (r) => r.pct);
+    listaBarras(ol, sel.map((r) => ({
+      etiquetaRank: r.dia.slice(0, 2), nombre: r.dia, valor: r.pct, texto: fmt.pct(r.pct),
+      sub: `${fmt.pct(r.pct_ajustado)} ajustado · ${fmt.int(r.torneos)} torneos · ${fmt.int(r.victorias)} primeros lugares`,
+    })), {dominio: [30, 70], medallas: false, colores: sel.map((r) => (r.pct === mejor ? 'var(--color-ok)' : 'var(--cds-chart-muted)'))});
+  });
+
   dash.draw('ficha-anios', (ol) => {
     const rows = filas('jugador_anio');
     const nombre = jugadorActual();

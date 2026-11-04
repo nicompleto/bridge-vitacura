@@ -66,8 +66,8 @@
       }
       card.appendChild(h);
       card.append(...[
-        premio('Mejor jugador', r.campeon, fmt.pct(r.campeon_pct), true),
-        premio('Mejor pareja', r.pareja, fmt.pct(r.pareja_pct), true),
+        premio('Mejor jugador', r.campeon, fmt.pct(r.campeon_pct) + ' ajustado', true),
+        premio('Mejor pareja', r.pareja, fmt.pct(r.pareja_pct) + ' ajustado', true),
         premio('Más victorias', r.ganador, `${r.victorias} torneos`),
         premio('Más torneos', r.activo, `${r.activo_torneos} jugados`),
         premio('Mayor mejora', r.mejora, r.mejora_pts == null ? '' : d3.format('+.1f')(r.mejora_pts) + ' puntos'),

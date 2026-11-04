@@ -8,10 +8,10 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Source+Sans+3:wght@400;500;600&family=Source+Serif+4:opsz,wght@8..60,400;8..60,600&display=swap">
-<link rel="stylesheet" href="tema.css?v=202611040033">
+<link rel="stylesheet" href="tema.css?v=202611040051">
 <script src="https://cdn.jsdelivr.net/npm/d3@7.9.0/dist/d3.min.js"></script>
-<script>window.__bvVersion = "202611040033";</script>
-<script src="dash.js?v=202611040033"></script>
+<script>window.__bvVersion = "202611040051";</script>
+<script src="dash.js?v=202611040051"></script>
 </head>
 <body>
 <div id="dash-root">
@@ -110,6 +110,23 @@
   .bv-hallazgos .bv-feature .bv-f-cifra { font-size: var(--cds-font-size-title); }
   .bv-feature .bv-linkbtn { margin-top: var(--cds-gap-xs); }
   .bv-juv-titulo { margin: 0; font-family: var(--font-anthropic-serif); font-weight: 400; font-size: calc(var(--cds-font-size-title) * 1.4); }
+  .bv-dias { display: grid; gap: var(--cds-gap-md); grid-template-columns: repeat(auto-fit, minmax(min(100%, 17rem), 1fr)); min-height: 16rem; }
+  .bv-dia { background: var(--color-panel); border: 1px solid var(--color-border-line); border-radius: var(--cds-radius); padding: var(--cds-pad-lg); display: grid; gap: var(--cds-gap-sm); align-content: start; min-width: 0; }
+  .bv-dia-top { display: flex; justify-content: space-between; align-items: baseline; gap: var(--cds-gap-sm); }
+  .bv-dia-nombre { font-family: var(--font-anthropic-serif); font-size: var(--cds-font-size-title); line-height: 1.1; }
+  .bv-dia-dif { font-variant-numeric: tabular-nums; font-size: var(--cds-font-size-caption); border-radius: 999px; padding: 2px var(--cds-pad-sm); white-space: nowrap; }
+  .bv-dia-dif.bv-duro { background: color-mix(in srgb, var(--color-bad) 18%, transparent); color: var(--color-bad); }
+  .bv-dia-dif.bv-facil { background: color-mix(in srgb, var(--color-ok) 18%, transparent); color: var(--color-ok); }
+  .bv-dia-sello { font-size: var(--cds-font-size-body); color: var(--color-fg-muted); margin: 0; }
+  .bv-dia dl { margin: 0; display: grid; gap: 2px; }
+  .bv-dia dl div { display: flex; justify-content: space-between; gap: var(--cds-gap-sm); font-size: var(--cds-font-size-caption); }
+  .bv-dia dt { color: var(--color-fg-muted); }
+  .bv-dia dd { margin: 0; font-weight: 500; font-variant-numeric: tabular-nums; text-align: right; overflow-wrap: anywhere; }
+  .bv-freak { display: grid; gap: var(--cds-gap-sm); grid-template-columns: repeat(auto-fill, minmax(min(100%, 15rem), 1fr)); min-height: 8rem; }
+  .bv-freak-item { border: 1px solid var(--color-border-line); border-radius: var(--cds-radius); padding: var(--cds-pad-md); display: grid; gap: 2px; background: var(--color-bg); align-content: start; min-width: 0; }
+  .bv-freak-item span { font-size: var(--cds-font-size-caption); color: var(--color-fg-muted); }
+  .bv-freak-item b { font-family: var(--font-anthropic-serif); font-weight: 400; font-size: var(--cds-font-size-title); font-variant-numeric: tabular-nums; line-height: 1.15; overflow-wrap: anywhere; }
+  .bv-freak-item small { font-size: var(--cds-font-size-caption); color: var(--color-fg-muted); overflow-wrap: anywhere; }
   .bv-explica { background: var(--bv-felt); border-color: var(--bv-felt-line); }
   .bv-legend { display: flex; flex-wrap: wrap; gap: var(--cds-gap-md); font-size: var(--cds-font-size-caption); color: var(--color-fg-muted); }
   .bv-legend i { display: inline-block; width: 10px; height: 10px; border-radius: 50%; margin-right: 4px; vertical-align: -1px; }
@@ -171,7 +188,7 @@
   <header class="bv-hero" id="portada">
     <div class="bv-suits" aria-hidden="true">♠ <span class="bv-red">♥</span> <span class="bv-red">♦</span> ♣</div>
     <h1 class="bv-title">Bridge Vitacura</h1>
-    <p class="bv-lede">Resultados de todos los torneos publicados en bridgevitacura.cl desde <b data-draw="hist-desde" data-source="resumen_anio">—</b>: <b data-draw="hist" data-source="resumen_anio" data-field="torneos">—</b> torneos, <b data-draw="hist" data-source="resumen_anio" data-field="jugadores">—</b> jugadores y <b data-draw="hist" data-source="resumen_anio" data-field="manos_jugadas">—</b> manos jugadas. Se actualiza cada noche.</p>
+    <p class="bv-lede">Resultados de los torneos abiertos publicados en bridgevitacura.cl desde <b data-draw="hist-desde" data-source="resumen_anio">—</b>: <b data-draw="hist" data-source="resumen_anio" data-field="torneos">—</b> torneos, <b data-draw="hist" data-source="resumen_anio" data-field="jugadores">—</b> jugadores y <b data-draw="hist" data-source="resumen_anio" data-field="manos_jugadas">—</b> manos jugadas. No incluye los miércoles ni otros torneos de alumnos. Se actualiza cada noche.</p>
     <div class="bv-chips" data-draw="anios" data-source="resumen_anio" role="group" aria-label="Año" hidden></div>
   </header>
 
@@ -182,6 +199,7 @@
     <button class="bv-tab" role="tab" data-tab="parejas" aria-selected="false">Parejas</button>
     <button class="bv-tab" role="tab" data-tab="juveniles" aria-selected="false">Juveniles</button>
     <button class="bv-tab" role="tab" data-tab="jugador" aria-selected="false">Ficha de jugador</button>
+    <button class="bv-tab" role="tab" data-tab="dias-semana" aria-selected="false">Días</button>
     <button class="bv-tab" role="tab" data-tab="estilo" aria-selected="false">Estilo de juego</button>
     <button class="bv-tab" role="tab" data-tab="cartas" aria-selected="false">Juego de cartas</button>
   </nav>
@@ -218,7 +236,7 @@
     </div>
     <div class="bv-card" id="dias">
       <h3>¿Qué día se llena más?</h3>
-      <p class="bv-note">Parejas promedio por torneo según el día. Los jueves hay pocos torneos, casi siempre copas y eventos grandes.</p>
+      <p class="bv-note">Parejas promedio por torneo según el día. Los jueves hay pocos torneos, casi siempre copas y eventos grandes. Más detalles en la pestaña Días.</p>
       <ol class="bv-bars" data-draw="inicio-dias" data-source="dias_semana"></ol>
     </div>
 
@@ -270,12 +288,12 @@
 
     <div class="bv-grid">
       <div class="bv-card" id="top-jugadores">
-        <h3>Mejores jugadores <span class="bv-muted">por % promedio</span></h3>
+        <h3>Mejores jugadores <span class="bv-muted">por % ajustado</span></h3>
         <p class="bv-note">Mínimo <span data-draw="umbral" data-tipo="jugador">—</span> torneos en el período. Haz clic en un nombre para ver su ficha.</p>
         <ol class="bv-bars" data-draw="top-jugadores" data-source="jugador_anio"></ol>
       </div>
       <div class="bv-card" id="top-parejas">
-        <h3>Mejores parejas <span class="bv-muted">por % promedio</span></h3>
+        <h3>Mejores parejas <span class="bv-muted">por % ajustado</span></h3>
         <p class="bv-note">Mínimo <span data-draw="umbral" data-tipo="pareja">—</span> torneos juntos en el período.</p>
         <ol class="bv-bars" data-draw="top-parejas" data-source="pareja_anio"></ol>
       </div>
@@ -336,7 +354,7 @@
       </div>
     </div>
     <div class="bv-card bv-wrapq" id="tabla-ranking">
-      <p class="bv-note">% promedio es el porcentaje final de cada torneo (50% es el promedio). "Cumple" y "vs DD" miden el juego como declarante: contratos cumplidos y bazas sobre el máximo de doble muerto. Haz clic en un jugador para ver su ficha.</p>
+      <p class="bv-note">% promedio es el porcentaje final de cada torneo (50% es el promedio). El % ajustado corrige la dificultad de cada torneo (se explica en la pestaña Días). "Cumple" y "vs DD" miden el juego como declarante: contratos cumplidos y bazas sobre el máximo de doble muerto. Haz clic en un jugador para ver su ficha.</p>
       <div class="bv-controls">
         <input class="bv-input bv-search" id="buscar-jugador" type="search" placeholder="Buscar jugador" aria-label="Buscar jugador">
         <label>Mínimo de torneos
@@ -354,6 +372,7 @@
           <thead><tr>
             <th data-field="jugador" data-sort="jugador"><button>Jugador</button></th>
             <th data-field="torneos" data-sort="torneos"><button>Torneos</button></th>
+            <th data-field="pct_ajustado" data-sort="pct_ajustado"><button>% ajustado</button></th>
             <th data-field="pct" data-sort="pct"><button>% promedio</button></th>
             <th data-field="mejor_pct" data-sort="mejor_pct" class="bv-hide-narrow"><button>Mejor %</button></th>
             <th data-field="victorias" data-sort="victorias"><button>1° lugar</button></th>
@@ -406,6 +425,7 @@
           <thead><tr>
             <th data-field="pareja" data-sort="pareja"><button>Pareja</button></th>
             <th data-field="torneos" data-sort="torneos"><button>Torneos</button></th>
+            <th data-field="pct_ajustado" data-sort="pct_ajustado"><button>% ajustado</button></th>
             <th data-field="pct" data-sort="pct"><button>% promedio</button></th>
             <th data-field="mejor_pct" data-sort="mejor_pct" class="bv-hide-narrow"><button>Mejor %</button></th>
             <th data-field="victorias" data-sort="victorias"><button>1° lugar</button></th>
@@ -479,6 +499,55 @@
     </div>
   </section>
 
+  <!-- ===================== DIAS ===================== -->
+  <section class="bv-page" id="dias-semana" hidden>
+    <div class="bv-section-head">
+      <div>
+        <p class="bv-eyebrow">Análisis por día</p>
+        <h2>Cada día es un torneo distinto</h2>
+      </div>
+    </div>
+    <div class="bv-card bv-explica" id="dias-explicacion">
+      <p class="bv-sentence"><b>Cómo se mide la dificultad:</b> el % de un torneo depende de contra quién juegas. Por eso se estima la fuerza de cada jugador con todos sus resultados, y con eso el nivel de cada torneo. +2 significa que ese torneo es 2 puntos más difícil que el promedio. El <b>% ajustado</b> de los rankings suma esa dificultad: un 55% en un torneo de +2 cuenta como 57%.</p>
+      <p class="bv-note">La medida es una estimación. Las diferencias entre días son moderadas, de 1 a 1,5 puntos, pero entre un torneo y otro pueden llegar a 5 o más. No se cuentan los miércoles ni los torneos de alumnos.</p>
+    </div>
+
+    <div class="bv-dias" data-draw="dias-tarjetas" data-source="dias_semana"></div>
+
+    <div class="bv-grid">
+      <div class="bv-card" id="dias-dificultad">
+        <h3>¿Qué día es más difícil?</h3>
+        <p class="bv-note">Nivel promedio de los rivales, en puntos sobre el torneo promedio. Debajo, cuánto sacan ese día los 30 jugadores más fuertes del club.</p>
+        <ol class="bv-bars" data-draw="dias-dificultad" data-source="dias_semana"></ol>
+      </div>
+      <div class="bv-card" id="dias-cartas">
+        <h3>Las cartas también cambian</h3>
+        <p class="bv-note">% de manos en que alguna línea puede hacer manga, según el doble muerto. Viernes y sábado se reparten manos con mucho más juego.</p>
+        <ol class="bv-bars" data-draw="dias-cartas" data-source="dias_semana"></ol>
+      </div>
+    </div>
+
+    <div class="bv-grid">
+      <div class="bv-card" id="dias-evolucion">
+        <h3>Dificultad de cada día, año a año</h3>
+        <p class="bv-note">Sobre la línea punteada, más difícil que el promedio.</p>
+        <div class="bv-chart" data-draw="dias-linea" data-source="dias_anio" data-campo="dificultad" data-fmt="dif"></div>
+      </div>
+      <div class="bv-card" id="dias-slam">
+        <h3>Manos con slam posible, año a año</h3>
+        <p class="bv-note">% de manos con 12 bazas o más por doble muerto. Viernes y sábado se separan del resto.</p>
+        <div class="bv-chart" data-draw="dias-linea" data-source="dias_anio" data-campo="pct_slam_dd" data-fmt="pct"></div>
+      </div>
+    </div>
+
+    <div class="bv-card" id="dias-mandan">
+      <h3>Quién manda cada día</h3>
+      <p class="bv-note">Mejor % promedio ese día, entre quienes jugaron al menos 1 de cada 10 torneos de ese día.</p>
+      <div class="bv-chips" data-draw="dias-chips" data-source="dias_semana" role="group" aria-label="Día"></div>
+      <ol class="bv-bars" data-draw="dias-top" data-source="jugador_dia"></ol>
+    </div>
+  </section>
+
   <!-- ===================== FICHA DE JUGADOR ===================== -->
   <section class="bv-page" id="jugador" hidden>
     <div class="bv-hero" id="ficha-cabecera">
@@ -491,16 +560,31 @@
         <div class="bv-kpi"><span>% último año</span><b data-draw="ficha" data-source="jugadores" data-field="pct_365d" data-fmt="pct">—</b></div>
         <div class="bv-kpi"><span>% últimos 90 días</span><b data-draw="ficha" data-source="jugadores" data-field="pct_90d" data-fmt="pct">—</b></div>
         <div class="bv-kpi"><span>1° lugar</span><b data-draw="ficha" data-source="jugadores" data-field="victorias" data-fmt="int">—</b></div>
-        <div class="bv-kpi"><span>Lugar histórico</span><b data-draw="ficha" data-source="jugadores" data-field="lugar_historico" data-fmt="lugar">—</b><small>entre quienes tienen 100+ torneos</small></div>
+        <div class="bv-kpi"><span>% ajustado</span><b data-draw="ficha" data-source="jugadores" data-field="pct_ajustado" data-fmt="pct">—</b></div>
+        <div class="bv-kpi"><span>Lugar histórico</span><b data-draw="ficha" data-source="jugadores" data-field="lugar_historico" data-fmt="lugar">—</b><small>por % ajustado, entre quienes tienen 100+ torneos</small></div>
       </div>
     </div>
 
+    <div class="bv-card" id="freak">
+      <h3>Datos freak</h3>
+      <p class="bv-note">Lo más extremo de su historia. "Puntos entre los dos" son los puntos de honor sumando su mano y la de su compañero.</p>
+      <div class="bv-freak" data-draw="freak" data-source="jugador_freak"></div>
+    </div>
+
     <div class="bv-grid">
+      <div class="bv-card" id="ficha-dias">
+        <h3>¿Qué día le va mejor?</h3>
+        <p class="bv-note">% promedio según el día, con al menos 3 torneos. El % ajustado corrige la dificultad de esos torneos.</p>
+        <ol class="bv-bars" data-draw="ficha-dias" data-source="jugador_dia"></ol>
+      </div>
       <div class="bv-card" id="ficha-anios">
         <h3>Año por año</h3>
         <p class="bv-note">% promedio de cada año. Debajo, torneos y primeros lugares.</p>
         <ol class="bv-bars" data-draw="ficha-anios" data-source="jugador_anio"></ol>
       </div>
+    </div>
+
+    <div class="bv-grid">
       <div class="bv-card" id="tendencia">
         <h3>% promedio por mes</h3>
         <p class="bv-note">La línea punteada es el 50%. El tamaño del punto indica cuántos torneos jugó ese mes.</p>
@@ -698,15 +782,16 @@
   </section>
 </div>
 
-<script src="comun.js?v=202611040033"></script>
-<script src="inicio.js?v=202611040033"></script>
-<script src="resumen.js?v=202611040033"></script>
-<script src="ranking.js?v=202611040033"></script>
-<script src="jugador.js?v=202611040033"></script>
-<script src="juveniles.js?v=202611040033"></script>
-<script src="estilo.js?v=202611040033"></script>
-<script src="cartas.js?v=202611040033"></script>
+<script src="comun.js?v=202611040051"></script>
+<script src="inicio.js?v=202611040051"></script>
+<script src="resumen.js?v=202611040051"></script>
+<script src="ranking.js?v=202611040051"></script>
+<script src="jugador.js?v=202611040051"></script>
+<script src="juveniles.js?v=202611040051"></script>
+<script src="dias.js?v=202611040051"></script>
+<script src="estilo.js?v=202611040051"></script>
+<script src="cartas.js?v=202611040051"></script>
 </div>
-<p class="pie">Datos de <a href="https://bridgevitacura.cl/resultado/">bridgevitacura.cl</a> · actualizado el 04-11-2026 00:33</p>
+<p class="pie">Datos de <a href="https://bridgevitacura.cl/resultado/">bridgevitacura.cl</a> · actualizado el 04-11-2026 00:51</p>
 </body>
 </html>

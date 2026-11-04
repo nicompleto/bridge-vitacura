@@ -6,20 +6,20 @@
 
   dash.draw('top-jugadores', (ol) => {
     if (!anio() || !filas('jugador_anio')) { ol.replaceChildren(); return; }
-    const rows = deAnio('jugador_anio').filter((r) => r.torneos >= minimo('jugador')).sort((a, b) => b.pct - a.pct).slice(0, TOP);
+    const rows = deAnio('jugador_anio').filter((r) => r.torneos >= minimo('jugador')).sort((a, b) => b.pct_ajustado - a.pct_ajustado).slice(0, TOP);
     listaBarras(ol, rows.map((r) => ({
-      nombre: r.jugador, valor: r.pct, texto: fmt.pct(r.pct),
-      sub: `${fmt.int(r.torneos)} torneos · ${fmt.int(r.victorias)} primeros lugares`, clic: () => verJugador(r.jugador),
-    })), {dominio: [40, Math.max(60, d3.max(rows, (r) => r.pct) || 60)], color: dash.colors[0]});
+      nombre: r.jugador, valor: r.pct_ajustado, texto: fmt.pct(r.pct_ajustado),
+      sub: `${fmt.pct(r.pct)} sin ajustar · ${fmt.int(r.torneos)} torneos · ${fmt.int(r.victorias)} primeros lugares`, clic: () => verJugador(r.jugador),
+    })), {dominio: [40, Math.max(60, d3.max(rows, (r) => r.pct_ajustado) || 60)], color: dash.colors[0]});
   });
 
   dash.draw('top-parejas', (ol) => {
     if (!anio() || !filas('pareja_anio')) { ol.replaceChildren(); return; }
-    const rows = deAnio('pareja_anio').filter((r) => r.torneos >= minimo('pareja')).sort((a, b) => b.pct - a.pct).slice(0, TOP);
+    const rows = deAnio('pareja_anio').filter((r) => r.torneos >= minimo('pareja')).sort((a, b) => b.pct_ajustado - a.pct_ajustado).slice(0, TOP);
     listaBarras(ol, rows.map((r) => ({
-      nombre: r.pareja, valor: r.pct, texto: fmt.pct(r.pct),
-      sub: `${fmt.int(r.torneos)} torneos juntos · ${fmt.int(r.victorias)} primeros lugares`,
-    })), {dominio: [40, Math.max(60, d3.max(rows, (r) => r.pct) || 60)], color: dash.colors[1]});
+      nombre: r.pareja, valor: r.pct_ajustado, texto: fmt.pct(r.pct_ajustado),
+      sub: `${fmt.pct(r.pct)} sin ajustar · ${fmt.int(r.torneos)} torneos juntos · ${fmt.int(r.victorias)} primeros lugares`,
+    })), {dominio: [40, Math.max(60, d3.max(rows, (r) => r.pct_ajustado) || 60)], color: dash.colors[1]});
   });
 
   dash.draw('top-victorias', (ol) => {

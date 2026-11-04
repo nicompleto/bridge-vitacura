@@ -12,8 +12,8 @@
     if (!anio() || !filas('jugador_anio')) { tbody.replaceChildren(); return; }
     const min = minDe(q.min, 'jugador');
     const vis = deAnio('jugador_anio').filter((r) => r.torneos >= min && (!q.texto || r.jugador.includes(q.texto)));
-    llenar(tbody, ordenar('jugadores', vis, {col: 'pct', dir: 'desc'}), [
-      {f: 'jugador'}, {f: 'torneos', fmt: fmt.int}, {f: 'pct', fmt: fmt.pct}, {f: 'mejor_pct', fmt: fmt.pct, cls: 'bv-hide-narrow'},
+    llenar(tbody, ordenar('jugadores', vis, {col: 'pct_ajustado', dir: 'desc'}), [
+      {f: 'jugador'}, {f: 'torneos', fmt: fmt.int}, {f: 'pct_ajustado', fmt: fmt.pct}, {f: 'pct', fmt: fmt.pct}, {f: 'mejor_pct', fmt: fmt.pct, cls: 'bv-hide-narrow'},
       {f: 'victorias', fmt: fmt.int}, {f: 'podios', fmt: fmt.int, cls: 'bv-hide-narrow'},
       {f: 'cumple_declarando', fmt: fmt.pct, cls: 'bv-hide-narrow'}, {f: 'dd_declarando', fmt: fmt.dd, cls: 'bv-hide-narrow'},
     ], (tr, r) => {
@@ -33,8 +33,8 @@
     if (!anio() || !filas('pareja_anio')) { tbody.replaceChildren(); return; }
     const min = minDe(qp.min, 'pareja');
     const vis = deAnio('pareja_anio').filter((r) => r.torneos >= min && (!qp.texto || r.pareja.includes(qp.texto)));
-    llenar(tbody, ordenar('parejas', vis, {col: 'pct', dir: 'desc'}), [
-      {f: 'pareja'}, {f: 'torneos', fmt: fmt.int}, {f: 'pct', fmt: fmt.pct}, {f: 'mejor_pct', fmt: fmt.pct, cls: 'bv-hide-narrow'},
+    llenar(tbody, ordenar('parejas', vis, {col: 'pct_ajustado', dir: 'desc'}), [
+      {f: 'pareja'}, {f: 'torneos', fmt: fmt.int}, {f: 'pct_ajustado', fmt: fmt.pct}, {f: 'pct', fmt: fmt.pct}, {f: 'mejor_pct', fmt: fmt.pct, cls: 'bv-hide-narrow'},
       {f: 'victorias', fmt: fmt.int}, {f: 'podios', fmt: fmt.int, cls: 'bv-hide-narrow'}, {f: 'ultimo_torneo', cls: 'bv-hide-narrow'},
     ], (tr, r) => { tr.dataset.key = enc(r.pareja) + ',' + enc(r.anio); });
   });
