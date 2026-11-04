@@ -1,0 +1,648 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Bridge Vitacura</title>
+<meta name="description" content="Estadísticas de jugadores y parejas de los torneos de Bridge Vitacura, actualizadas cada día.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Source+Sans+3:wght@400;500;600&family=Source+Serif+4:opsz,wght@8..60,400;8..60,600&display=swap">
+<link rel="stylesheet" href="tema.css?v=202611032335">
+<script src="https://cdn.jsdelivr.net/npm/d3@7.9.0/dist/d3.min.js"></script>
+<script>window.__bvVersion = "202611032335";</script>
+<script src="dash.js?v=202611032335"></script>
+</head>
+<body>
+<div id="dash-root">
+<style>
+  /* Mesa de bridge: paño verde como tinte del encabezado, palos como detalle, medallas para el podio */
+  .bv { --bv-felt: color-mix(in srgb, var(--color-ok) 14%, var(--color-panel)); --bv-felt-line: color-mix(in srgb, var(--color-ok) 30%, var(--color-border-line));
+        --bv-gold: #c9a227; --bv-silver: #9aa3ad; --bv-bronze: #b87333;
+        display: grid; gap: var(--cds-gap-lg); font-family: var(--font-anthropic-sans); color: var(--color-fg); }
+  .bv-hero { background: var(--bv-felt); border: 1px solid var(--bv-felt-line); border-radius: calc(var(--cds-radius) * 2); padding: var(--cds-pad-xl) var(--cds-pad-lg); display: grid; gap: var(--cds-gap-md); }
+  .bv-suits { font-size: var(--cds-font-size-heading); letter-spacing: .35em; color: var(--color-fg); }
+  .bv-suits .bv-red, .bv-red { color: var(--color-bad); }
+  .bv-title { font-family: var(--font-anthropic-serif); font-weight: 400; font-size: calc(var(--cds-font-size-title) * 1.6); line-height: 1.05; margin: 0; text-wrap: balance; }
+  .bv-lede { margin: 0; color: var(--color-fg-muted); font-size: var(--cds-font-size-body); max-width: 65ch; }
+  .bv .bv-lede b, .bv-sentence b { font-weight: 600; color: var(--color-fg); }
+  .bv-tabs { display: flex; flex-wrap: wrap; gap: var(--cds-gap-xs); border-bottom: 1px solid var(--color-border-line); }
+  .bv-tab { appearance: none; background: none; border: 0; border-bottom: 2px solid transparent; padding: var(--cds-pad-sm) var(--cds-pad-md); font: inherit; font-size: var(--cds-font-size-body); color: var(--color-fg-muted); cursor: pointer; margin-bottom: -1px; }
+  .bv-tab[aria-selected="true"] { color: var(--color-fg); border-bottom-color: var(--color-ok); font-weight: 500; }
+  .bv-tab:focus-visible, .bv-chip:focus-visible { outline: 2px solid var(--color-fg); outline-offset: 2px; }
+  .bv-page { display: grid; gap: var(--cds-gap-lg); }
+  .bv-section-head { display: flex; flex-wrap: wrap; justify-content: space-between; align-items: end; gap: var(--cds-gap-sm); }
+  .bv-section-head h2 { margin: 0; font-family: var(--font-anthropic-serif); font-weight: 400; font-size: var(--cds-font-size-title); }
+  .bv-eyebrow { font-size: var(--cds-font-size-caption); letter-spacing: .08em; text-transform: uppercase; color: var(--color-fg-muted); margin: 0; }
+  .bv-chips { display: flex; flex-wrap: wrap; gap: var(--cds-gap-xs); min-height: 2rem; }
+  .bv-chip { appearance: none; font: inherit; font-size: var(--cds-font-size-caption); border: 1px solid var(--color-border-line); background: var(--color-bg); color: var(--color-fg); border-radius: 999px; padding: var(--cds-pad-xs) var(--cds-pad-md); cursor: pointer; font-variant-numeric: tabular-nums; }
+  .bv-chip[aria-pressed="true"] { background: var(--color-fg); color: var(--color-bg); border-color: var(--color-fg); }
+  .bv-card { background: var(--color-panel); border: 1px solid var(--color-border-line); border-radius: var(--cds-radius); padding: var(--cds-pad-lg); display: grid; gap: var(--cds-gap-sm); align-content: start; min-width: 0; }
+  .bv-card h3 { margin: 0; font-size: var(--cds-font-size-heading); font-weight: var(--cds-font-weight-medium); }
+  .bv-card h3 .bv-muted { color: var(--color-fg-muted); font-weight: 400; }
+  .bv-note { margin: 0; color: var(--color-fg-muted); font-size: var(--cds-font-size-caption); }
+  .bv-grid { display: grid; gap: var(--cds-gap-md); grid-template-columns: repeat(auto-fit, minmax(min(100%, 22rem), 1fr)); }
+  .bv-kpis { display: grid; gap: var(--cds-gap-md); grid-template-columns: repeat(auto-fit, minmax(min(100%, 9.5rem), 1fr)); }
+  .bv-kpi { display: grid; gap: 2px; align-content: start; }
+  .bv-kpi span { font-size: var(--cds-font-size-caption); color: var(--color-fg-muted); }
+  .bv-kpi b { font-family: var(--font-anthropic-serif); font-weight: 400; font-size: var(--cds-font-size-title); font-variant-numeric: tabular-nums; line-height: 1.1; }
+  .bv-kpi small { font-size: var(--cds-font-size-caption); color: var(--color-fg-muted); }
+  .bv-hero .bv-kpi b { font-size: calc(var(--cds-font-size-title) * 1.25); }
+
+  /* listas de barras */
+  .bv-bars { list-style: none; margin: 0; padding: 0; display: grid; gap: var(--cds-gap-sm); min-height: 6rem; }
+  .bv-bars li { display: grid; grid-template-columns: 1.75rem minmax(0, 1fr); gap: var(--cds-gap-sm); align-items: center; }
+  .bv-rank { width: 1.6rem; height: 1.6rem; border-radius: 50%; display: grid; place-items: center; font-size: var(--cds-font-size-caption); font-variant-numeric: tabular-nums; color: var(--color-fg-muted); border: 1px solid var(--color-border-line); }
+  .bv-rank.bv-m1 { background: var(--bv-gold); border-color: var(--bv-gold); color: #fff; font-weight: 600; }
+  .bv-rank.bv-m2 { background: var(--bv-silver); border-color: var(--bv-silver); color: #fff; font-weight: 600; }
+  .bv-rank.bv-m3 { background: var(--bv-bronze); border-color: var(--bv-bronze); color: #fff; font-weight: 600; }
+  .bv-bar-body { display: grid; gap: 3px; min-width: 0; }
+  .bv-bar-top { display: flex; justify-content: space-between; gap: var(--cds-gap-sm); font-size: var(--cds-font-size-caption); }
+  .bv-bar-name { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .bv-bar-name.bv-link { cursor: pointer; text-decoration: underline; text-decoration-color: var(--color-border-line); text-underline-offset: 3px; }
+  .bv-bar-name.bv-link:hover { text-decoration-color: var(--color-fg); }
+  .bv-bar-val { font-variant-numeric: tabular-nums; font-weight: 600; white-space: nowrap; }
+  .bv-track { height: 8px; border-radius: 4px; background: color-mix(in srgb, var(--color-fg) 7%, transparent); overflow: hidden; }
+  .bv-fill { height: 100%; border-radius: 4px; }
+  .bv-bar-sub { font-size: var(--cds-font-size-caption); color: var(--color-fg-muted); }
+  /* mancuernas (antes -> ahora) */
+  .bv-db { position: relative; height: 14px; }
+  .bv-db-line { position: absolute; top: 6px; height: 2px; background: var(--cds-chart-muted); }
+  .bv-db-dot { position: absolute; top: 2px; width: 10px; height: 10px; border-radius: 50%; margin-left: -5px; }
+  /* portada */
+  .bv-bento-wrap { container-type: inline-size; }
+  .bv-bento { display: grid; gap: var(--cds-gap-md); grid-template-columns: repeat(auto-fit, minmax(min(100%, 15rem), 1fr)); min-height: 16rem; }
+  .bv-feature { --g: var(--color-ok); border-radius: calc(var(--cds-radius) * 1.5); padding: var(--cds-pad-lg); display: grid; gap: var(--cds-gap-xs); align-content: start; min-width: 0;
+                background: color-mix(in srgb, var(--g) 13%, var(--color-panel)); border: 1px solid color-mix(in srgb, var(--g) 32%, var(--color-border-line)); }
+  .bv-feature .bv-f-palo { font-size: var(--cds-font-size-heading); color: color-mix(in srgb, var(--g) 70%, var(--color-fg)); }
+  .bv-feature .bv-f-cifra { font-family: var(--font-anthropic-serif); font-size: calc(var(--cds-font-size-title) * 1.7); line-height: 1.05; color: color-mix(in srgb, var(--g) 70%, var(--color-fg)); font-variant-numeric: tabular-nums; }
+  .bv-feature .bv-f-unidad { font-size: var(--cds-font-size-caption); color: var(--color-fg-muted); }
+  .bv-feature .bv-f-titulo { font-size: var(--cds-font-size-heading); font-weight: var(--cds-font-weight-medium); margin-top: var(--cds-gap-xs); }
+  .bv-feature .bv-f-detalle { font-size: var(--cds-font-size-body); color: var(--color-fg-muted); }
+  .bv-bento .bv-feature:first-child { grid-column: 1 / -1; padding: var(--cds-pad-xl); }
+  .bv-bento .bv-feature:first-child .bv-f-cifra { font-size: calc(var(--cds-font-size-title) * 3.2); }
+  .bv-bento .bv-feature:first-child .bv-f-titulo { font-size: var(--cds-font-size-title); font-family: var(--font-anthropic-serif); font-weight: 400; }
+  @container (min-width: 40rem) {
+    .bv-bento .bv-feature:first-child { grid-template-columns: auto minmax(0, 1fr); column-gap: var(--cds-gap-xl); align-items: center; }
+    .bv-bento .bv-feature:first-child .bv-f-palo { grid-column: 1; grid-row: 1; }
+    .bv-bento .bv-feature:first-child .bv-f-cifra { grid-column: 1; grid-row: 2 / span 2; font-size: calc(var(--cds-font-size-title) * 4.5); }
+    .bv-bento .bv-feature:first-child .bv-f-unidad { grid-column: 1; grid-row: 4; }
+    .bv-bento .bv-feature:first-child .bv-f-titulo { grid-column: 2; grid-row: 1 / span 2; align-self: end; margin: 0; }
+    .bv-bento .bv-feature:first-child .bv-f-detalle { grid-column: 2; grid-row: 3; font-size: var(--cds-font-size-heading); }
+    .bv-bento .bv-feature:first-child .bv-linkbtn { grid-column: 2; grid-row: 4; margin: 0; }
+  }
+  .bv-temporadas { display: grid; grid-auto-flow: column; grid-auto-columns: minmax(min(85%, 15rem), 1fr); gap: var(--cds-gap-md); overflow-x: auto; padding-bottom: var(--cds-pad-sm); min-height: 16rem; }
+  .bv-temporada { background: var(--color-panel); border: 1px solid var(--color-border-line); border-radius: var(--cds-radius); padding: var(--cds-pad-lg); display: grid; gap: var(--cds-gap-sm); align-content: start; min-width: 0; }
+  .bv-temporada-anio { font-family: var(--font-anthropic-serif); font-size: var(--cds-font-size-title); line-height: 1; display: flex; align-items: baseline; gap: var(--cds-gap-sm); }
+  .bv-temporada-anio small { font-family: var(--font-anthropic-sans); font-size: var(--cds-font-size-caption); color: var(--color-fg-muted); }
+  .bv-premio { display: grid; gap: 1px; }
+  .bv-premio span { font-size: var(--cds-font-size-caption); color: var(--color-fg-muted); }
+  .bv-premio b { font-size: var(--cds-font-size-body); font-weight: 500; overflow-wrap: anywhere; }
+  .bv-premio.bv-oro b { font-weight: 600; }
+  .bv-premio.bv-oro span::before { content: "●"; color: var(--bv-gold); margin-right: 4px; }
+  .bv-mini-grid { display: grid; gap: var(--cds-gap-md); grid-template-columns: repeat(auto-fit, minmax(min(100%, 15rem), 1fr)); }
+  .bv-mini { min-height: 130px; }
+  .bv-grupo { display: grid; gap: var(--cds-gap-md); }
+  .bv-grupo-head { display: flex; align-items: center; gap: var(--cds-gap-md); }
+  .bv-grupo-head h2 { margin: 0; font-family: var(--font-anthropic-serif); font-weight: 400; font-size: var(--cds-font-size-title); }
+  .bv-palo { font-size: calc(var(--cds-font-size-title) * 1.4); line-height: 1; min-width: 2.2rem; text-align: center; }
+  .bv-hallazgos { display: grid; gap: var(--cds-gap-md); grid-template-columns: repeat(auto-fill, minmax(min(100%, 16rem), 1fr)); min-height: 10rem; }
+  .bv-hallazgos .bv-feature .bv-f-cifra { font-size: var(--cds-font-size-title); }
+  .bv-feature .bv-linkbtn { margin-top: var(--cds-gap-xs); }
+  .bv-explica { background: var(--bv-felt); border-color: var(--bv-felt-line); }
+  .bv-legend { display: flex; flex-wrap: wrap; gap: var(--cds-gap-md); font-size: var(--cds-font-size-caption); color: var(--color-fg-muted); }
+  .bv-legend i { display: inline-block; width: 10px; height: 10px; border-radius: 50%; margin-right: 4px; vertical-align: -1px; }
+  .bv-legend .bv-l-prev { background: var(--cds-chart-muted); }
+  .bv-legend .bv-l-now { background: var(--color-ok); }
+
+  /* records */
+  .bv-records { display: grid; gap: var(--cds-gap-sm); grid-template-columns: repeat(auto-fill, minmax(min(100%, 15rem), 1fr)); min-height: 6rem; }
+  .bv-record { border: 1px solid var(--color-border-line); border-radius: var(--cds-radius); padding: var(--cds-pad-md); display: grid; gap: 2px; background: var(--color-bg); }
+  .bv-record b { font-family: var(--font-anthropic-serif); font-weight: 400; font-size: var(--cds-font-size-title); font-variant-numeric: tabular-nums; }
+  .bv-record span { font-size: var(--cds-font-size-caption); }
+  .bv-record small { font-size: var(--cds-font-size-caption); color: var(--color-fg-muted); }
+
+  /* graficos */
+  .bv-chart { position: relative; min-height: 240px; }
+  .bv-tip { position: absolute; pointer-events: none; background: var(--cds-surface-popover); border: 1px solid var(--cds-border); border-radius: var(--cds-radius); box-shadow: var(--cds-shadow-popover); padding: var(--cds-pad-xs) var(--cds-pad-sm); font-size: var(--cds-font-size-caption); white-space: nowrap; z-index: 2; }
+  .bv-tip .bv-tip-date { color: var(--cds-text-secondary); }
+  .bv-heat { display: grid; grid-template-columns: 2.2rem repeat(5, minmax(0, 1fr)); gap: 3px; font-variant-numeric: tabular-nums; min-height: 14rem; }
+  .bv-heat div { border-radius: 4px; padding: 6px 4px; text-align: center; font-size: var(--cds-font-size-caption); display: grid; gap: 1px; }
+  .bv-heat .bv-heat-h { font-size: var(--cds-font-size-heading); padding: 2px; }
+  .bv-heat .bv-heat-l { color: var(--color-fg-muted); align-content: center; }
+  .bv-heat small { opacity: .75; font-size: 10px; }
+
+  /* tablas */
+  .bv-controls { display: flex; flex-wrap: wrap; gap: var(--cds-gap-sm); align-items: center; }
+  .bv-controls label { display: flex; gap: var(--cds-gap-xs); align-items: center; font-size: var(--cds-font-size-caption); color: var(--color-fg-muted); }
+  .bv-input, .bv-select { font: inherit; font-size: var(--cds-font-size-body); color: var(--color-fg); background: var(--color-bg); border: 1px solid var(--color-border-line); border-radius: var(--cds-radius); padding: var(--cds-pad-xs) var(--cds-pad-sm); min-width: 0; }
+  .bv-input { flex: 1 1 14rem; }
+  .bv-select-player { max-width: 100%; font-family: var(--font-anthropic-serif); font-size: var(--cds-font-size-title); background: transparent; border-color: var(--bv-felt-line); }
+  .bv-scroll { overflow: auto; max-height: 36rem; border-top: 1px solid var(--color-border-line); }
+  .bv-scroll.bv-short { max-height: 24rem; }
+  .bv-table { width: 100%; border-collapse: collapse; font-size: var(--cds-font-size-caption); font-variant-numeric: tabular-nums; }
+  .bv-table th { position: sticky; top: 0; background: var(--color-panel); text-align: right; font-weight: 500; color: var(--color-fg-muted); padding: var(--cds-pad-xs) var(--cds-pad-sm); border-bottom: 1px solid var(--color-border-line); white-space: nowrap; z-index: 1; }
+  .bv-table th:first-child, .bv-table td:first-child, .bv-table .bv-left { text-align: left; }
+  .bv-table th button { all: unset; cursor: pointer; }
+  .bv-table th button:focus-visible { outline: 2px solid var(--color-fg); }
+  .bv-table th[aria-sort="ascending"] button::after { content: " ↑"; }
+  .bv-table th[aria-sort="descending"] button::after { content: " ↓"; }
+  .bv-table td { padding: var(--cds-pad-xs) var(--cds-pad-sm); border-bottom: 1px solid var(--color-border-line); text-align: right; white-space: nowrap; }
+  .bv-table tbody tr.bv-click { cursor: pointer; }
+  .bv-table tbody tr.bv-click:hover { background: var(--bv-felt); }
+  .bv-wrapq { container-type: inline-size; }
+  @container (max-width: 40rem) { .bv-hide-narrow { display: none; } }
+  .bv-stats { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 15rem), 1fr)); gap: var(--cds-gap-xs) var(--cds-gap-lg); margin: 0; }
+  .bv-stats div { display: flex; justify-content: space-between; gap: var(--cds-gap-sm); border-bottom: 1px solid var(--color-border-line); padding-block: var(--cds-pad-xs); font-size: var(--cds-font-size-caption); }
+  .bv-stats dt { color: var(--color-fg-muted); }
+  .bv-stats dd { margin: 0; font-variant-numeric: tabular-nums; font-weight: 500; }
+  .bv-sentence { margin: 0; font-size: var(--cds-font-size-body); color: var(--color-fg-muted); }
+  .bv-linkbtn { appearance: none; background: none; border: 0; padding: 0; font: inherit; font-size: var(--cds-font-size-caption); color: var(--color-fg); text-decoration: underline; text-underline-offset: 3px; cursor: pointer; justify-self: start; }
+  [data-dash-source-state=empty] { color: transparent; }
+  [data-dash-source-state=refreshing] { opacity: .5; transition: opacity var(--cds-dur-slow); }
+  @media (prefers-reduced-motion: no-preference) {
+    .bv-fill { animation: bv-grow var(--cds-dur-slow) var(--cds-ease-out); transform-origin: left; }
+    @keyframes bv-grow { from { transform: scaleX(0); } to { transform: scaleX(1); } }
+  }
+</style>
+
+<div class="bv">
+  <header class="bv-hero" id="portada">
+    <div class="bv-suits" aria-hidden="true">♠ <span class="bv-red">♥</span> <span class="bv-red">♦</span> ♣</div>
+    <h1 class="bv-title">Bridge Vitacura</h1>
+    <p class="bv-lede">Resultados de todos los torneos publicados en bridgevitacura.cl desde <b data-draw="hist-desde" data-source="resumen_anio">—</b>: <b data-draw="hist" data-source="resumen_anio" data-field="torneos">—</b> torneos, <b data-draw="hist" data-source="resumen_anio" data-field="jugadores">—</b> jugadores y <b data-draw="hist" data-source="resumen_anio" data-field="manos_jugadas">—</b> manos jugadas. Se actualiza cada noche.</p>
+    <div class="bv-chips" data-draw="anios" data-source="resumen_anio" role="group" aria-label="Año" hidden></div>
+  </header>
+
+  <nav class="bv-tabs" role="tablist" aria-label="Secciones">
+    <button class="bv-tab" role="tab" data-tab="inicio" aria-selected="true">Inicio</button>
+    <button class="bv-tab" role="tab" data-tab="resumen" aria-selected="false">Resumen</button>
+    <button class="bv-tab" role="tab" data-tab="ranking" aria-selected="false">Ranking</button>
+    <button class="bv-tab" role="tab" data-tab="parejas" aria-selected="false">Parejas</button>
+    <button class="bv-tab" role="tab" data-tab="jugador" aria-selected="false">Ficha de jugador</button>
+    <button class="bv-tab" role="tab" data-tab="estilo" aria-selected="false">Estilo de juego</button>
+    <button class="bv-tab" role="tab" data-tab="cartas" aria-selected="false">Juego de cartas</button>
+  </nav>
+
+  <!-- ===================== INICIO ===================== -->
+  <section class="bv-page" id="inicio">
+    <div class="bv-section-head" id="historias">
+      <div>
+        <p class="bv-eyebrow">Lo más increíble de estos años</p>
+        <h2>Historias del club</h2>
+      </div>
+    </div>
+    <div class="bv-bento-wrap"><div class="bv-bento" data-draw="inicio-destacados" data-source="hallazgos"></div></div>
+
+    <div class="bv-section-head" id="temporadas">
+      <div>
+        <p class="bv-eyebrow">Palmarés</p>
+        <h2>Temporada a temporada</h2>
+      </div>
+    </div>
+    <div class="bv-temporadas" data-draw="inicio-temporadas" data-source="campeones_anio"></div>
+
+    <div class="bv-section-head" id="evolucion">
+      <div>
+        <p class="bv-eyebrow">Avances por año</p>
+        <h2>Cómo ha cambiado el club</h2>
+      </div>
+    </div>
+    <div class="bv-mini-grid">
+      <div class="bv-card"><h3>Jugadores activos</h3><p class="bv-note">Personas distintas que jugaron en el año.</p><div class="bv-mini" data-draw="mini" data-source="resumen_anio" data-campo="jugadores" data-tipo="barras" data-fmt="int" data-color="0"></div></div>
+      <div class="bv-card"><h3>Parejas por torneo</h3><p class="bv-note">Torneos cada vez más grandes.</p><div class="bv-mini" data-draw="mini" data-source="resumen_anio" data-campo="parejas_por_torneo" data-tipo="barras" data-fmt="dec" data-color="1"></div></div>
+      <div class="bv-card"><h3>Contratos cumplidos</h3><p class="bv-note">% de los contratos que se cumplen cada año.</p><div class="bv-mini" data-draw="mini" data-source="resumen_anio" data-campo="pct_cumplido" data-tipo="linea" data-fmt="pct" data-color="2"></div></div>
+      <div class="bv-card"><h3>Nivel promedio del contrato</h3><p class="bv-note">A qué altura se remata en promedio.</p><div class="bv-mini" data-draw="mini" data-source="resumen_anio" data-campo="nivel_prom" data-tipo="linea" data-fmt="dec2" data-color="3"></div></div>
+    </div>
+    <div class="bv-card" id="dias">
+      <h3>¿Qué día se llena más?</h3>
+      <p class="bv-note">Parejas promedio por torneo según el día. Los jueves hay pocos torneos, casi siempre copas y eventos grandes.</p>
+      <ol class="bv-bars" data-draw="inicio-dias" data-source="dias_semana"></ol>
+    </div>
+
+    <div class="bv-grupo" id="grupo-dominio">
+      <div class="bv-grupo-head"><span class="bv-palo" aria-hidden="true">♠</span><div><h2>Los que mandan</h2><p class="bv-note">Rachas, récords y las mejores temporadas.</p></div></div>
+      <div class="bv-hallazgos" data-draw="inicio-grupo" data-grupo="dominio" data-source="hallazgos"></div>
+    </div>
+    <div class="bv-grupo" id="grupo-parejas">
+      <div class="bv-grupo-head"><span class="bv-palo bv-red" aria-hidden="true">♥</span><div><h2>Parejas y rivalidades</h2><p class="bv-note">Fidelidad, química y quién le gana a quién.</p></div></div>
+      <div class="bv-hallazgos" data-draw="inicio-grupo" data-grupo="parejas" data-source="hallazgos"></div>
+    </div>
+    <div class="bv-grupo" id="grupo-estilos">
+      <div class="bv-grupo-head"><span class="bv-palo bv-red" aria-hidden="true">♦</span><div><h2>Estilos de juego</h2><p class="bv-note">Comparando cada pareja con las otras mesas de la misma mano.</p></div></div>
+      <div class="bv-hallazgos" data-draw="inicio-grupo" data-grupo="estilos" data-source="hallazgos"></div>
+    </div>
+    <div class="bv-grupo" id="grupo-manos">
+      <div class="bv-grupo-head"><span class="bv-palo" aria-hidden="true">♣</span><div><h2>Manos de locos</h2><p class="bv-note">Lo más raro que han repartido las cartas.</p></div></div>
+      <div class="bv-hallazgos" data-draw="inicio-grupo" data-grupo="manos" data-source="hallazgos"></div>
+    </div>
+    <div class="bv-grupo" id="grupo-club">
+      <div class="bv-grupo-head"><span class="bv-palo" aria-hidden="true">ST</span><div><h2>El club en números</h2><p class="bv-note">Cómo se juega en Vitacura.</p></div></div>
+      <div class="bv-hallazgos" data-draw="inicio-grupo" data-grupo="club" data-source="hallazgos"></div>
+    </div>
+  </section>
+
+  <!-- ===================== RESUMEN ===================== -->
+  <section class="bv-page" id="resumen" hidden>
+    <div class="bv-section-head">
+      <div>
+        <p class="bv-eyebrow">Resumen</p>
+        <h2 data-draw="anio-titulo" data-source="resumen_anio">—</h2>
+      </div>
+    </div>
+
+    <div class="bv-kpis" id="kpis-resumen">
+      <div class="bv-kpi"><span>Torneos</span><b data-draw="kpi-anio" data-source="resumen_anio" data-field="torneos" data-fmt="int">—</b></div>
+      <div class="bv-kpi"><span>Jugadores</span><b data-draw="kpi-anio" data-source="resumen_anio" data-field="jugadores" data-fmt="int">—</b></div>
+      <div class="bv-kpi"><span>Jugadores nuevos</span><b data-draw="kpi-anio" data-source="resumen_anio" data-field="jugadores_nuevos" data-fmt="int">—</b></div>
+      <div class="bv-kpi"><span>Parejas distintas</span><b data-draw="kpi-anio" data-source="resumen_anio" data-field="parejas" data-fmt="int">—</b></div>
+      <div class="bv-kpi"><span>Manos jugadas</span><b data-draw="kpi-anio" data-source="resumen_anio" data-field="manos_jugadas" data-fmt="compact">—</b></div>
+      <div class="bv-kpi"><span>Contratos cumplidos</span><b data-draw="kpi-anio" data-source="resumen_anio" data-field="pct_cumplido" data-fmt="pct">—</b></div>
+    </div>
+
+    <div class="bv-card" id="actividad">
+      <h3>Jugadores activos por mes</h3>
+      <p class="bv-note">Cuántas personas distintas jugaron cada mes. La parte oscura de cada barra son quienes jugaron por primera vez.</p>
+      <div class="bv-chart" data-draw="grafico-actividad" data-source="actividad_mes"></div>
+    </div>
+
+    <div class="bv-grid">
+      <div class="bv-card" id="top-jugadores">
+        <h3>Mejores jugadores <span class="bv-muted">por % promedio</span></h3>
+        <p class="bv-note">Mínimo <span data-draw="umbral" data-tipo="jugador">—</span> torneos en el período. Haz clic en un nombre para ver su ficha.</p>
+        <ol class="bv-bars" data-draw="top-jugadores" data-source="jugador_anio"></ol>
+      </div>
+      <div class="bv-card" id="top-parejas">
+        <h3>Mejores parejas <span class="bv-muted">por % promedio</span></h3>
+        <p class="bv-note">Mínimo <span data-draw="umbral" data-tipo="pareja">—</span> torneos juntos en el período.</p>
+        <ol class="bv-bars" data-draw="top-parejas" data-source="pareja_anio"></ol>
+      </div>
+    </div>
+
+    <div class="bv-section-head">
+      <div>
+        <p class="bv-eyebrow">Los que más subieron</p>
+        <h2>Mayor mejora <span data-draw="mejora-titulo" data-source="mejoras">—</span></h2>
+      </div>
+      <div class="bv-legend"><span><i class="bv-l-prev"></i>Antes</span><span><i class="bv-l-now"></i>Ahora</span></div>
+    </div>
+    <div class="bv-card bv-explica" id="mejora-explicacion">
+      <span data-draw="mejora-modo" data-source="mejoras"></span>
+      <p class="bv-sentence bv-mejora-anual"><b>Cómo se calcula:</b> el % promedio de cada uno en el año elegido menos su % promedio del año anterior, en puntos. Si alguien promedió 45% el año pasado y 50% este año, mejoró +5 puntos. Solo entran quienes jugaron al menos 15 torneos en ambos años (8 torneos juntos en el caso de las parejas), para que un par de torneos sueltos no cambien el resultado.</p>
+      <p class="bv-sentence bv-mejora-historica" hidden><b>Cómo se calcula:</b> el % promedio de su año más reciente menos el de su primer año, contando solo años en que jugó al menos 15 torneos (8 torneos juntos en el caso de las parejas). Solo aparecen quienes jugaron este año o el anterior. Si alguien promedió 45% en 2023 y 50% en 2026, mejoró +5 puntos.</p>
+      <p class="bv-note">Cada torneo pesa igual en el promedio. No corrige por el nivel de los torneos: pasar de torneos de alumnos a abiertos, o al revés, también mueve el %.</p>
+    </div>
+    <div class="bv-grid">
+      <div class="bv-card" id="mejora-jugadores">
+        <h3>Jugadores</h3>
+        <p class="bv-note">Punto gris: su % antes. Punto verde: su % ahora. Debajo, los años comparados y los torneos jugados en cada uno.</p>
+        <ol class="bv-bars" data-draw="mejoras-jugador" data-source="mejoras"></ol>
+      </div>
+      <div class="bv-card" id="mejora-parejas">
+        <h3>Parejas</h3>
+        <p class="bv-note">Lo mismo para parejas, con los torneos que jugaron juntas.</p>
+        <ol class="bv-bars" data-draw="mejoras-pareja" data-source="mejoras"></ol>
+      </div>
+    </div>
+
+    <div class="bv-grid">
+      <div class="bv-card" id="mas-ganadores">
+        <h3>Más primeros lugares</h3>
+        <p class="bv-note">Torneos ganados. En Mitchell gana una pareja por línea (N-S y E-O).</p>
+        <ol class="bv-bars" data-draw="top-victorias" data-source="jugador_anio"></ol>
+      </div>
+      <div class="bv-card" id="mas-activos">
+        <h3>Los que más juegan</h3>
+        <p class="bv-note">Torneos jugados en el período.</p>
+        <ol class="bv-bars" data-draw="top-activos" data-source="jugador_anio"></ol>
+      </div>
+    </div>
+
+    <div class="bv-card" id="records">
+      <h3>Mejores actuaciones <span class="bv-muted">un solo torneo</span></h3>
+      <p class="bv-note">Los porcentajes más altos en un torneo, en líneas de 6 parejas o más.</p>
+      <div class="bv-records" data-draw="records" data-source="records"></div>
+    </div>
+  </section>
+
+  <!-- ===================== RANKING ===================== -->
+  <section class="bv-page" id="ranking" hidden>
+    <div class="bv-section-head">
+      <div>
+        <p class="bv-eyebrow">Ranking de jugadores</p>
+        <h2 data-draw="anio-titulo" data-source="resumen_anio">—</h2>
+      </div>
+    </div>
+    <div class="bv-card bv-wrapq" id="tabla-ranking">
+      <p class="bv-note">% promedio es el porcentaje final de cada torneo (50% es el promedio). "Cumple" y "vs DD" miden el juego como declarante: contratos cumplidos y bazas sobre el máximo de doble muerto. Haz clic en un jugador para ver su ficha.</p>
+      <div class="bv-controls">
+        <input class="bv-input bv-search" id="buscar-jugador" type="search" placeholder="Buscar jugador" aria-label="Buscar jugador">
+        <label>Mínimo de torneos
+          <select class="bv-select bv-min" id="min-torneos" aria-label="Mínimo de torneos">
+            <option value="auto" selected>Recomendado</option>
+            <option value="1">1</option>
+            <option value="10">10</option>
+            <option value="50">50</option>
+            <option value="200">200</option>
+          </select>
+        </label>
+      </div>
+      <div class="bv-scroll">
+        <table class="bv-table bv-sortable" data-table="jugadores" data-source="jugador_anio" data-row-key="jugador,anio">
+          <thead><tr>
+            <th data-field="jugador" data-sort="jugador"><button>Jugador</button></th>
+            <th data-field="torneos" data-sort="torneos"><button>Torneos</button></th>
+            <th data-field="pct" data-sort="pct"><button>% promedio</button></th>
+            <th data-field="mejor_pct" data-sort="mejor_pct" class="bv-hide-narrow"><button>Mejor %</button></th>
+            <th data-field="victorias" data-sort="victorias"><button>1° lugar</button></th>
+            <th data-field="podios" data-sort="podios" class="bv-hide-narrow"><button>Podios</button></th>
+            <th data-field="cumple_declarando" data-sort="cumple_declarando" class="bv-hide-narrow"><button>Cumple %</button></th>
+            <th data-field="dd_declarando" data-sort="dd_declarando" class="bv-hide-narrow"><button>vs DD</button></th>
+          </tr></thead>
+          <tbody data-draw="tabla-jugadores" data-source="jugador_anio"></tbody>
+        </table>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===================== PAREJAS ===================== -->
+  <section class="bv-page" id="parejas" hidden>
+    <div class="bv-section-head">
+      <div>
+        <p class="bv-eyebrow">Parejas</p>
+        <h2 data-draw="anio-titulo" data-source="resumen_anio">—</h2>
+      </div>
+    </div>
+    <div class="bv-grid">
+      <div class="bv-card" id="parejas-ganadoras">
+        <h3>Parejas más ganadoras</h3>
+        <p class="bv-note">Primeros lugares en el período.</p>
+        <ol class="bv-bars" data-draw="top-parejas-victorias" data-source="pareja_anio"></ol>
+      </div>
+      <div class="bv-card" id="parejas-fieles">
+        <h3>Parejas más estables</h3>
+        <p class="bv-note">Las que más torneos han jugado juntas.</p>
+        <ol class="bv-bars" data-draw="top-parejas-torneos" data-source="pareja_anio"></ol>
+      </div>
+    </div>
+    <div class="bv-card bv-wrapq" id="tabla-parejas">
+      <h3>Todas las parejas</h3>
+      <p class="bv-note">Cada combinación de dos jugadores, sin importar el orden.</p>
+      <div class="bv-controls">
+        <input class="bv-input bv-search-parejas" id="buscar-pareja" type="search" placeholder="Buscar pareja o jugador" aria-label="Buscar pareja">
+        <label>Mínimo de torneos
+          <select class="bv-select bv-min-parejas" id="min-torneos-parejas" aria-label="Mínimo de torneos juntos">
+            <option value="auto" selected>Recomendado</option>
+            <option value="1">1</option>
+            <option value="5">5</option>
+            <option value="50">50</option>
+          </select>
+        </label>
+      </div>
+      <div class="bv-scroll">
+        <table class="bv-table bv-sortable" data-table="parejas" data-source="pareja_anio" data-row-key="pareja,anio">
+          <thead><tr>
+            <th data-field="pareja" data-sort="pareja"><button>Pareja</button></th>
+            <th data-field="torneos" data-sort="torneos"><button>Torneos</button></th>
+            <th data-field="pct" data-sort="pct"><button>% promedio</button></th>
+            <th data-field="mejor_pct" data-sort="mejor_pct" class="bv-hide-narrow"><button>Mejor %</button></th>
+            <th data-field="victorias" data-sort="victorias"><button>1° lugar</button></th>
+            <th data-field="podios" data-sort="podios" class="bv-hide-narrow"><button>Podios</button></th>
+            <th data-field="ultimo_torneo" data-sort="ultimo_torneo" class="bv-hide-narrow"><button>Último</button></th>
+          </tr></thead>
+          <tbody data-draw="tabla-parejas" data-source="pareja_anio"></tbody>
+        </table>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===================== FICHA DE JUGADOR ===================== -->
+  <section class="bv-page" id="jugador" hidden>
+    <div class="bv-hero" id="ficha-cabecera">
+      <p class="bv-eyebrow">Ficha de jugador</p>
+      <select class="bv-select bv-select-player" id="elegir-jugador" data-draw="elegir-jugador" data-source="jugadores" aria-label="Jugador"></select>
+      <p class="bv-sentence">Jugó entre <b data-draw="ficha" data-source="jugadores" data-field="primer_torneo" data-fmt="texto">—</b> y <b data-draw="ficha" data-source="jugadores" data-field="ultimo_torneo" data-fmt="texto">—</b> con <b data-draw="ficha" data-source="jugadores" data-field="companeros" data-fmt="int">—</b> compañeros distintos. El más frecuente es <b data-draw="ficha" data-source="jugadores" data-field="companero_frecuente" data-fmt="texto">—</b> (<b data-draw="ficha" data-source="jugadores" data-field="torneos_con_frecuente" data-fmt="int">—</b> torneos juntos).</p>
+      <div class="bv-kpis">
+        <div class="bv-kpi"><span>Torneos</span><b data-draw="ficha" data-source="jugadores" data-field="torneos" data-fmt="int">—</b></div>
+        <div class="bv-kpi"><span>% promedio</span><b data-draw="ficha" data-source="jugadores" data-field="pct" data-fmt="pct">—</b></div>
+        <div class="bv-kpi"><span>% último año</span><b data-draw="ficha" data-source="jugadores" data-field="pct_365d" data-fmt="pct">—</b></div>
+        <div class="bv-kpi"><span>% últimos 90 días</span><b data-draw="ficha" data-source="jugadores" data-field="pct_90d" data-fmt="pct">—</b></div>
+        <div class="bv-kpi"><span>1° lugar</span><b data-draw="ficha" data-source="jugadores" data-field="victorias" data-fmt="int">—</b></div>
+        <div class="bv-kpi"><span>Lugar histórico</span><b data-draw="ficha" data-source="jugadores" data-field="lugar_historico" data-fmt="lugar">—</b><small>entre quienes tienen 100+ torneos</small></div>
+      </div>
+    </div>
+
+    <div class="bv-grid">
+      <div class="bv-card" id="ficha-anios">
+        <h3>Año por año</h3>
+        <p class="bv-note">% promedio de cada año. Debajo, torneos y primeros lugares.</p>
+        <ol class="bv-bars" data-draw="ficha-anios" data-source="jugador_anio"></ol>
+      </div>
+      <div class="bv-card" id="tendencia">
+        <h3>% promedio por mes</h3>
+        <p class="bv-note">La línea punteada es el 50%. El tamaño del punto indica cuántos torneos jugó ese mes.</p>
+        <div class="bv-chart" data-draw="grafico-mes" data-source="jugador_mes"></div>
+      </div>
+    </div>
+
+    <div class="bv-card" id="juego">
+      <h3>Juego de cartas</h3>
+      <p class="bv-note">Calculado mano a mano. La pareja cuenta como declarante cuando el contrato lo jugó cualquiera de los dos.</p>
+      <dl class="bv-stats">
+        <div><dt>Manos jugadas</dt><dd data-draw="ficha" data-source="jugadores" data-field="manos" data-fmt="int">—</dd></div>
+        <div><dt>% promedio por mano</dt><dd data-draw="ficha" data-source="jugadores" data-field="pct_mano" data-fmt="pct">—</dd></div>
+        <div><dt>Puntos de honor promedio de la línea</dt><dd data-draw="ficha" data-source="jugadores" data-field="hcp_prom" data-fmt="dec">—</dd></div>
+        <div><dt>Manos en que su pareja declaró</dt><dd data-draw="ficha" data-source="jugadores" data-field="pct_declara" data-fmt="pct">—</dd></div>
+        <div><dt>Contratos cumplidos al declarar</dt><dd data-draw="ficha" data-source="jugadores" data-field="cumple_declarando" data-fmt="pct">—</dd></div>
+        <div><dt>Bazas vs doble muerto al declarar</dt><dd data-draw="ficha" data-source="jugadores" data-field="dd_declarando" data-fmt="dd">—</dd></div>
+        <div><dt>% por mano declarando</dt><dd data-draw="ficha" data-source="jugadores" data-field="pct_declarando" data-fmt="pct">—</dd></div>
+        <div><dt>% por mano defendiendo</dt><dd data-draw="ficha" data-source="jugadores" data-field="pct_defendiendo" data-fmt="pct">—</dd></div>
+        <div><dt>Rivales que cumplen en su contra</dt><dd data-draw="ficha" data-source="jugadores" data-field="rival_cumple" data-fmt="pct">—</dd></div>
+        <div><dt>Slams declarados</dt><dd data-draw="ficha" data-source="jugadores" data-field="slams_declarados" data-fmt="int">—</dd></div>
+        <div><dt>Slams cumplidos</dt><dd data-draw="ficha" data-source="jugadores" data-field="slams_cumplidos" data-fmt="int">—</dd></div>
+        <div><dt>Contratos doblados en contra</dt><dd data-draw="ficha" data-source="jugadores" data-field="doblados_en_contra" data-fmt="int">—</dd></div>
+      </dl>
+    </div>
+
+    <div class="bv-grid">
+      <div class="bv-card" id="companeros">
+        <h3>Con quién juega</h3>
+        <p class="bv-note">Sus compañeros más frecuentes (hasta 12) y cómo les fue juntos.</p>
+        <div class="bv-scroll bv-short">
+          <table class="bv-table" data-source="companeros" data-row-key="jugador,companero">
+            <thead><tr>
+              <th data-field="companero">Compañero</th>
+              <th data-field="torneos">Torneos</th>
+              <th data-field="pct">% promedio</th>
+              <th data-field="victorias">1° lugar</th>
+              <th data-field="ultimo">Último</th>
+            </tr></thead>
+            <tbody data-draw="tabla-companeros" data-source="companeros"></tbody>
+          </table>
+        </div>
+      </div>
+      <div class="bv-card bv-wrapq" id="ultimos">
+        <h3>Últimos torneos</h3>
+        <p class="bv-note">Sus 25 torneos más recientes. Puesto dentro de su línea (N-S o E-O).</p>
+        <div class="bv-scroll bv-short">
+          <table class="bv-table" data-source="jugador_torneos" data-row-key="jugador,id_torneo">
+            <thead><tr>
+              <th data-field="fecha">Fecha</th>
+              <th data-field="companero" class="bv-left">Compañero</th>
+              <th data-field="posicion">Puesto</th>
+              <th data-field="parejas_linea">de</th>
+              <th data-field="porcentaje">%</th>
+              <th data-field="torneo" class="bv-left bv-hide-narrow">Torneo</th>
+            </tr></thead>
+            <tbody data-draw="tabla-ultimos" data-source="jugador_torneos"></tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===================== ESTILO DE JUEGO ===================== -->
+  <section class="bv-page" id="estilo" hidden>
+    <div class="bv-section-head">
+      <div>
+        <p class="bv-eyebrow">Estilo de juego de las parejas</p>
+        <h2 data-draw="anio-titulo" data-source="resumen_anio">—</h2>
+      </div>
+    </div>
+
+    <div class="bv-card bv-explica" id="estilo-explicacion">
+      <p class="bv-sentence"><b>Cómo leer esto:</b> en bridge duplicado todas las mesas juegan las mismas cartas, así que se puede ver qué hizo cada pareja comparado con las otras mesas de la misma mano. Una decisión es "solitaria" cuando la tomó menos de una de cada cuatro mesas en la misma línea. Solo aparecen parejas con al menos <span data-draw="umbral" data-tipo="estilo">—</span> manos jugadas juntas en el período.</p>
+    </div>
+
+    <div class="bv-kpis" id="kpis-estilo">
+      <div class="bv-kpi"><span>Contratos en sin triunfo</span><b data-draw="kpi-estilo" data-source="estilo_club" data-field="pct_st" data-fmt="pct">—</b><small>promedio del club</small></div>
+      <div class="bv-kpi"><span>Contratos a palo con fit de 7 o menos</span><b data-draw="kpi-estilo" data-source="estilo_club" data-field="pct_fit_corto" data-fmt="pct">—</b><small>promedio del club</small></div>
+      <div class="bv-kpi"><span>Slams por cada 100 manos</span><b data-draw="kpi-estilo" data-source="estilo_club" data-field="slams_100" data-fmt="dec2">—</b><small>promedio del club</small></div>
+      <div class="bv-kpi"><span>Slams solitarios por cada 100 manos</span><b data-draw="kpi-estilo" data-source="estilo_club" data-field="slams_solos_100" data-fmt="dec2">—</b><small>promedio del club</small></div>
+      <div class="bv-kpi"><span>Contratos más altos que el doble muerto</span><b data-draw="kpi-estilo" data-source="estilo_club" data-field="pct_sobre_dd" data-fmt="pct">—</b><small>promedio del club</small></div>
+      <div class="bv-kpi"><span>Contratos doblados por la defensa que caen</span><b data-draw="kpi-estilo" data-source="estilo_club" data-field="doblan_caen" data-fmt="pct">—</b><small>promedio del club</small></div>
+    </div>
+
+    <div class="bv-grid">
+      <div class="bv-card" id="estilo-st">
+        <h3>Los que más juegan sin triunfo</h3>
+        <p class="bv-note">% de sus contratos jugados en ST. Debajo, cuántas veces jugaron ST cuando casi nadie más lo hizo y qué % sacaron en esas manos.</p>
+        <ol class="bv-bars" data-draw="estilo-st" data-source="estilo_parejas"></ol>
+      </div>
+      <div class="bv-card" id="estilo-fit">
+        <h3>Los que más juegan con fit de 7 o menos</h3>
+        <p class="bv-note">% de sus contratos a palo en que la pareja tenía 7 cartas de triunfo o menos entre las dos manos (lo habitual es buscar 8 o más).</p>
+        <ol class="bv-bars" data-draw="estilo-fit" data-source="estilo_parejas"></ol>
+      </div>
+      <div class="bv-card" id="estilo-slam">
+        <h3>Slams que nadie más remata</h3>
+        <p class="bv-note">Slams solitarios por cada 100 manos. Debajo, cuántos cumplieron y qué % sacaron en esas manos: sobre 50% les rinde.</p>
+        <ol class="bv-bars" data-draw="estilo-slam" data-source="estilo_parejas"></ol>
+      </div>
+      <div class="bv-card" id="estilo-manga">
+        <h3>Mangas que los demás no remataron</h3>
+        <p class="bv-note">Mangas solitarias por cada 100 manos, y qué % sacaron en esas manos.</p>
+        <ol class="bv-bars" data-draw="estilo-manga" data-source="estilo_parejas"></ol>
+      </div>
+      <div class="bv-card" id="estilo-agresivos">
+        <h3>Los más agresivos</h3>
+        <p class="bv-note">% de sus contratos más altos de lo que permite el doble muerto (imposibles con juego perfecto de ambos lados).</p>
+        <ol class="bv-bars" data-draw="estilo-agresivos" data-source="estilo_parejas"></ol>
+      </div>
+      <div class="bv-card" id="estilo-defensa">
+        <h3>La mejor defensa</h3>
+        <p class="bv-note">Bazas que hace el declarante rival contra ellos, comparado con el doble muerto. Más negativo, mejor defensa.</p>
+        <ol class="bv-bars" data-draw="estilo-defensa" data-source="estilo_parejas"></ol>
+      </div>
+    </div>
+
+    <div class="bv-card bv-wrapq" id="tabla-estilo">
+      <h3>Todas las parejas</h3>
+      <p class="bv-note">Busca una pareja y compárala con el promedio del club de arriba. "Mangas perdidas": no remataron manga cuando la mayoría de las otras mesas sí lo hizo.</p>
+      <div class="bv-controls">
+        <input class="bv-input bv-search-estilo" id="buscar-estilo" type="search" placeholder="Buscar pareja o jugador" aria-label="Buscar pareja">
+      </div>
+      <div class="bv-scroll">
+        <table class="bv-table bv-sortable" data-table="estilo" data-source="estilo_parejas" data-row-key="pareja,anio">
+          <thead><tr>
+            <th data-field="pareja" data-sort="pareja"><button>Pareja</button></th>
+            <th data-field="manos" data-sort="manos"><button>Manos</button></th>
+            <th data-field="pct_st" data-sort="pct_st"><button>% ST</button></th>
+            <th data-field="pct_fit_corto" data-sort="pct_fit_corto"><button>% fit ≤7</button></th>
+            <th data-field="slams_100" data-sort="slams_100" class="bv-hide-narrow"><button>Slams /100</button></th>
+            <th data-field="slams_solos" data-sort="slams_solos"><button>Slams solos</button></th>
+            <th data-field="mangas_solas_100" data-sort="mangas_solas_100" class="bv-hide-narrow"><button>Mangas solas /100</button></th>
+            <th data-field="mangas_perdidas_100" data-sort="mangas_perdidas_100" class="bv-hide-narrow"><button>Mangas perdidas /100</button></th>
+            <th data-field="pct_sobre_dd" data-sort="pct_sobre_dd" class="bv-hide-narrow"><button>% sobre DD</button></th>
+            <th data-field="defensa_dd" data-sort="defensa_dd" class="bv-hide-narrow"><button>Defensa vs DD</button></th>
+          </tr></thead>
+          <tbody data-draw="tabla-estilo" data-source="estilo_parejas"></tbody>
+        </table>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===================== JUEGO DE CARTAS ===================== -->
+  <section class="bv-page" id="cartas" hidden>
+    <div class="bv-section-head">
+      <div>
+        <p class="bv-eyebrow">Juego de cartas del club</p>
+        <h2 data-draw="anio-titulo" data-source="resumen_anio">—</h2>
+      </div>
+    </div>
+
+    <div class="bv-kpis" id="kpis-cartas">
+      <div class="bv-kpi"><span>Contratos cumplidos</span><b data-draw="kpi-anio" data-source="resumen_anio" data-field="pct_cumplido" data-fmt="pct">—</b></div>
+      <div class="bv-kpi"><span>Jugados en sin triunfo</span><b data-draw="kpi-anio" data-source="resumen_anio" data-field="pct_sin_triunfo" data-fmt="pct">—</b></div>
+      <div class="bv-kpi"><span>Slams declarados</span><b data-draw="kpi-anio" data-source="resumen_anio" data-field="slams" data-fmt="int">—</b></div>
+      <div class="bv-kpi"><span>Slams cumplidos</span><b data-draw="kpi-anio" data-source="resumen_anio" data-field="pct_slams_cumplidos" data-fmt="pct">—</b></div>
+      <div class="bv-kpi"><span>Contratos doblados</span><b data-draw="kpi-anio" data-source="resumen_anio" data-field="doblados" data-fmt="int">—</b></div>
+      <div class="bv-kpi"><span>Doblados que se cumplen</span><b data-draw="kpi-anio" data-source="resumen_anio" data-field="pct_doblados_cumplidos" data-fmt="pct">—</b></div>
+    </div>
+
+    <div class="bv-grid">
+      <div class="bv-card" id="mapa-contratos">
+        <h3>¿Qué contratos se cumplen?</h3>
+        <p class="bv-note">% de veces que se cumplió cada contrato (nivel × palo). Debajo, cuántas veces se jugó. Más intenso, más cumplido.</p>
+        <div class="bv-heat" data-draw="mapa-contratos" data-source="contratos"></div>
+      </div>
+      <div class="bv-card" id="palos">
+        <h3>¿En qué palo se juega?</h3>
+        <p class="bv-note">Reparto de los contratos por denominación, y el % que se cumplió.</p>
+        <ol class="bv-bars" data-draw="palos" data-source="palos"></ol>
+      </div>
+    </div>
+
+    <div class="bv-card" id="hcp">
+      <h3>Puntos de honor del declarante</h3>
+      <p class="bv-note">Según cuántos puntos de honor tiene la línea que declara (A=4, K=3, Q=2, J=1; el mazo tiene 40, así que 20 es la mitad): qué % de sus contratos se cumple y qué % llega a manga (nivel 4 o más). Pasa el mouse sobre el gráfico para ver el detalle.</p>
+      <div class="bv-legend"><span><i style="background: var(--color-ok)"></i>Contratos cumplidos</span><span><i style="background: var(--color-warn)"></i>Contratos a nivel de manga o más</span></div>
+      <div class="bv-chart" data-draw="grafico-hcp" data-source="hcp_pct"></div>
+    </div>
+
+    <div class="bv-grid">
+      <div class="bv-card" id="declarantes">
+        <h3>Mejores declarantes</h3>
+        <p class="bv-note">Bazas por encima o por debajo del doble muerto al declarar. Mínimo <span data-draw="umbral" data-tipo="declarante">—</span> manos declaradas.</p>
+        <ol class="bv-bars" data-draw="top-declarantes" data-source="jugador_anio"></ol>
+      </div>
+      <div class="bv-card" id="defensores">
+        <h3>Mejores defensores</h3>
+        <p class="bv-note">% promedio por mano cuando declara el rival. Mismo mínimo de manos.</p>
+        <ol class="bv-bars" data-draw="top-defensores" data-source="jugador_anio"></ol>
+      </div>
+    </div>
+  </section>
+</div>
+
+<script src="comun.js?v=202611032335"></script>
+<script src="inicio.js?v=202611032335"></script>
+<script src="resumen.js?v=202611032335"></script>
+<script src="ranking.js?v=202611032335"></script>
+<script src="jugador.js?v=202611032335"></script>
+<script src="estilo.js?v=202611032335"></script>
+<script src="cartas.js?v=202611032335"></script>
+</div>
+<p class="pie">Datos de <a href="https://bridgevitacura.cl/resultado/">bridgevitacura.cl</a> · actualizado el 03-11-2026 23:35</p>
+</body>
+</html>
