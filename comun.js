@@ -16,6 +16,7 @@
     dif: (v) => (v == null ? '—' : d3.format('+.1f')(v)),
     dec2: (v) => (v == null ? '—' : d3.format('.2f')(v)),
     lugar: (v) => (v == null ? '—' : '#' + v),
+    anio: (v) => (v == null ? '—' : String(v).slice(0, 4)),
     texto: (v) => (v == null ? '—' : String(v)),
   };
   const enc = (s) => String(s).replace(/%/g, '%25').replace(/&/g, '%26').replace(/=/g, '%3D');
@@ -50,7 +51,7 @@
     document.querySelectorAll('.bv-tab').forEach((b) => b.setAttribute('aria-selected', String(b.dataset.tab === tab)));
     document.querySelectorAll('.bv-page').forEach((s) => { s.hidden = s.id !== tab; });
     // el selector de año solo tiene sentido en las pestañas que cambian con el año
-    document.querySelectorAll('.bv-chips').forEach((c) => { c.hidden = ['inicio', 'records', 'jugador', 'juveniles', 'dias-semana'].includes(tab) && c.dataset.draw === 'anios'; });
+    document.querySelectorAll('.bv-chips').forEach((c) => { c.hidden = ['inicio', 'records', 'jugador', 'juveniles', 'dias-semana', 'mi-torneo', 'quiz'].includes(tab) && c.dataset.draw === 'anios'; });
     document.querySelectorAll('.bv-hero').forEach((h) => { if (h.id === 'portada') h.classList.toggle('bv-portada', tab === 'inicio'); });
     dash.setLink(tab);
   };
@@ -150,6 +151,36 @@
     }));
   };
 
+  // Buscador: escribes parte de un nombre (sin importar tildes) y eliges de la lista
+  const plano = (t) => String(t).normalize('NFD').replace(/[\u0300-\u036f]/g, '').toUpperCase();
+  const buscador = (dibujo, selector, nombres, elegir) => {
+    const q = {texto: ''};
+    const coincide = () => {
+      const palabras = plano(q.texto).split(/\s+/).filter(Boolean);
+      return palabras.length ? nombres().filter((n) => palabras.every((w) => plano(n).includes(w))).slice(0, 8) : [];
+    };
+    const tomar = (input, n) => { input.value = ''; q.texto = ''; dash.draw(dibujo); elegir(n); };
+    document.querySelectorAll(selector).forEach((input) => {
+      input.addEventListener('input', () => { q.texto = input.value; dash.draw(dibujo); });
+      input.addEventListener('keydown', (e) => {
+        if (e.key === 'Enter' && coincide().length) tomar(input, coincide()[0]);
+        if (e.key === 'Escape') { input.value = ''; q.texto = ''; dash.draw(dibujo); }
+      });
+    });
+    dash.draw(dibujo, (ul) => {
+      const input = document.querySelector(selector);
+      ul.replaceChildren(...coincide().map((n) => {
+        const li = document.createElement('li');
+        const b = document.createElement('button');
+        b.type = 'button';
+        b.textContent = lindo(n);
+        b.addEventListener('click', () => tomar(input, n));
+        li.appendChild(b);
+        return li;
+      }));
+    });
+  };
+
   const orden = {};
   const ordenar = (tabla, rows, porDefecto) => {
     const o = orden[tabla] || porDefecto;
@@ -210,13 +241,13 @@
     .call((s) => s.selectAll('line').attr('stroke', 'var(--cds-chart-axis)'))
     .call((s) => s.selectAll('text').attr('fill', 'var(--color-fg-muted)').attr('font-size', 'var(--cds-font-size-caption)'));
 
-  window.bv = {fmt, enc, lindo, filas, anios, anio, etiqueta, minimo, jugadorActual, irA, verJugador,
+  window.bv = {fmt, enc, lindo, buscador, filas, anios, anio, etiqueta, minimo, jugadorActual, irA, verJugador,
                listaBarras, mancuernas, ordenar, llenar, orden, tooltip, ejeY, anchoTexto, estiloEje};
 
   // ---------- pestañas ----------
   document.querySelectorAll('.bv-tab').forEach((b) => b.addEventListener('click', () => irA(b.dataset.tab)));
   document.querySelectorAll('[data-ir]').forEach((b) => b.addEventListener('click', () => { irA(b.dataset.ir); window.scrollTo({top: 0}); }));
-  if (['inicio', 'records', 'resumen', 'ranking', 'parejas', 'generos', 'juveniles', 'dias-semana', 'jugador', 'estilo', 'cartas'].includes(location.hash.slice(1))) irA(location.hash.slice(1));
+  if (['inicio', 'records', 'mi-torneo', 'quiz', 'resumen', 'ranking', 'parejas', 'generos', 'juveniles', 'dias-semana', 'jugador', 'estilo', 'cartas'].includes(location.hash.slice(1))) irA(location.hash.slice(1));
 
   // ---------- orden de tablas ----------
   document.querySelectorAll('table.bv-sortable').forEach((t) => {

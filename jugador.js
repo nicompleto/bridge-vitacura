@@ -1,14 +1,112 @@
 // Pestaña Ficha de jugador
 (() => {
-  const {fmt, enc, filas, jugadorActual, llenar, listaBarras, tooltip, ejeY, anchoTexto, estiloEje} = window.bv;
+  const {fmt, enc, filas, jugadorActual, llenar, lindo, buscador, listaBarras, tooltip, ejeY, anchoTexto, estiloEje} = window.bv;
 
-  dash.draw('elegir-jugador', (sel) => {
-    const rows = filas('jugadores');
-    if (!rows) { sel.replaceChildren(); return; }
-    const nombres = rows.map((r) => r.jugador).sort((a, b) => a.localeCompare(b, 'es'));
-    sel.replaceChildren(...nombres.map((n) => new Option(n, n)));
-    sel.value = jugadorActual();
-    sel.onchange = () => dash.setParams({jugador: sel.value});
+  // medallas: código -> [lo que se ve en la medalla, nombre, categoría]
+  const MEDALLAS = {
+    T50: ['50', '50 torneos', 'bronce'], T100: ['100', '100 torneos', 'plata'], T250: ['250', '250 torneos', 'oro'], T500: ['500', '500 torneos', 'oro'],
+    V1: ['1°', 'Primera victoria', 'bronce'], V10: ['10', '10 victorias', 'plata'], V50: ['50', '50 victorias', 'oro'], V100: ['100', '100 victorias', 'oro'],
+    P10: ['10', '10 podios', 'bronce'], P100: ['100', '100 podios', 'oro'],
+    R70: ['70%', 'Un torneo de 70%', 'plata'], R75: ['75%', 'Un torneo de 75%', 'oro'],
+    S10: ['10', '10 torneos seguidos sobre 50%', 'plata'], S25: ['25', '25 torneos seguidos sobre 50%', 'oro'],
+    L10: ['10', '10 slams cumplidos', 'bronce'], L50: ['50', '50 slams cumplidos', 'plata'], G1: ['7', 'Gran slam cumplido', 'oro'],
+    A5: ['5', 'Cinco años jugando', 'plata'], D5: ['♣', 'Juega cualquier día', 'bronce'], F100: ['♥', '100 torneos con la misma pareja', 'oro'],
+  };
+  const medallasDe = () => {
+    const r = (filas('jugador_medallas') || []).find((x) => x.jugador === jugadorActual());
+    return r ? new Set(String(r.medallas || '').split(',').filter(Boolean)) : null;
+  };
+  dash.draw('medallas-cuenta', (el) => {
+    const m = medallasDe();
+    el.textContent = m ? `${m.size} de ${Object.keys(MEDALLAS).length}` : '—';
+  });
+  dash.draw('medallas', (el) => {
+    const m = medallasDe();
+    if (!m) { el.replaceChildren(); return; }
+    const codigos = Object.keys(MEDALLAS).sort((a, b) => m.has(b) - m.has(a));
+    el.replaceChildren(...codigos.map((c) => {
+      const [valor, nombre, tipo] = MEDALLAS[c];
+      const d = document.createElement('div');
+      d.className = `bv-medalla bv-${tipo}` + (m.has(c) ? '' : ' bv-bloqueada');
+      const i = document.createElement('i');
+      i.textContent = valor;
+      const s = document.createElement('span');
+      s.textContent = nombre;
+      d.append(i, s);
+      return d;
+    }));
+  });
+
+  buscador('sugerencias-ficha', '#buscar-ficha', () => (filas('jugadores') || []).map((r) => r.jugador).sort(), (n) => { dash.setParams({jugador: n}); });
+
+  const fila = () => (filas('jugadores') || []).find((x) => x.jugador === jugadorActual());
+  dash.draw('perfil-nombre', (el) => { const r = fila(); el.textContent = r ? lindo(r.jugador) : '—'; });
+  dash.draw('perfil-avatar', (el) => {
+    const r = fila();
+    el.textContent = r ? r.jugador.split(/[\s.]+/).filter(Boolean).slice(0, 2).map((p) => p[0]).join('') : '—';
+  });
+  dash.draw('perfil-companero', (el) => { const r = fila(); el.textContent = r && r.companero_frecuente ? lindo(r.companero_frecuente) : '—'; });
+  dash.draw('perfil-dia', (el) => {
+    const r = (filas('jugador_freak') || []).find((x) => x.jugador === jugadorActual());
+    el.textContent = r && r.dia_favorito ? r.dia_favorito.toLowerCase() : '—';
+  });
+
+  // calendario tipo cuadrícula, un cuadro por día del año
+  const cal = {anio: null};
+  const aniosCal = () => (filas('jugador_calendario') || []).filter((r) => r.jugador === jugadorActual()).map((r) => r.anio).sort();
+  const anioCal = () => { const a = aniosCal(); return a.includes(cal.anio) ? cal.anio : a[a.length - 1]; };
+  dash.draw('calendario-anios', (el) => {
+    const actual = anioCal();
+    el.replaceChildren(...aniosCal().map((a) => {
+      const b = document.createElement('button');
+      b.type = 'button';
+      b.className = 'bv-chip';
+      b.textContent = a;
+      b.setAttribute('aria-pressed', String(a === actual));
+      b.addEventListener('click', () => { cal.anio = a; dash.draw('calendario-anios'); dash.draw('calendario'); });
+      return b;
+    }));
+  });
+  dash.draw('calendario', (el) => {
+    const a = anioCal();
+    const r = (filas('jugador_calendario') || []).find((x) => x.jugador === jugadorActual() && x.anio === a);
+    if (!r) { el.replaceChildren(); return; }
+    const dias = new Map(r.dias.split(',').map((d) => d.split(':')));
+    const celdas = [];
+    const inicio = new Date(Date.UTC(Number(a), 0, 1));
+    for (let i = 0; i < (inicio.getUTCDay() + 6) % 7; i++) { const v = document.createElement('div'); v.style.visibility = 'hidden'; celdas.push(v); }
+    for (let d = new Date(inicio); d.getUTCFullYear() === Number(a); d.setUTCDate(d.getUTCDate() + 1)) {
+      const c = document.createElement('div');
+      const clave = d3.utcFormat('%m%d')(d);
+      if (dias.has(clave)) {
+        const p = Number(dias.get(clave));
+        c.className = p >= 60 ? 'bv-c4' : p >= 52 ? 'bv-c3' : p >= 45 ? 'bv-c2' : 'bv-c1';
+        c.title = `${d3.utcFormat('%d-%m-%Y')(d)}: ${p}%`;
+      }
+      celdas.push(c);
+    }
+    el.replaceChildren(...celdas);
+  });
+
+  dash.draw('puntos', (ol) => {
+    const signo = Number(ol.dataset.signo);
+    const sel = (filas('jugador_puntos') || []).filter((r) => r.jugador === jugadorActual() && r.dif * signo >= 0.5).sort((a, b) => (b.dif - a.dif) * signo).slice(0, 3);
+    if (!sel.length) {
+      const li = document.createElement('li');
+      li.textContent = 'Nada que destacar: rinde parejo en todos los tipos de mano.';
+      ol.replaceChildren(li);
+      return;
+    }
+    ol.replaceChildren(...sel.map((r) => {
+      const li = document.createElement('li');
+      const n = document.createElement('span');
+      n.textContent = r.tipo;
+      const b = document.createElement('b');
+      b.textContent = `${d3.format('+.1f')(r.dif)} puntos`;
+      b.style.color = signo > 0 ? 'var(--color-ok)' : 'var(--color-bad)';
+      li.append(n, b);
+      return li;
+    }));
   });
 
   dash.draw('ficha', (el) => {
