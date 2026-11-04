@@ -8,10 +8,10 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Source+Sans+3:wght@400;500;600&family=Source+Serif+4:opsz,wght@8..60,400;8..60,600&display=swap">
-<link rel="stylesheet" href="tema.css?v=202611042003">
+<link rel="stylesheet" href="tema.css?v=202611042012">
 <script src="https://cdn.jsdelivr.net/npm/d3@7.9.0/dist/d3.min.js"></script>
-<script>window.__bvVersion = "202611042003";</script>
-<script src="dash.js?v=202611042003"></script>
+<script>window.__bvVersion = "202611042012";</script>
+<script src="dash.js?v=202611042012"></script>
 </head>
 <body>
 <div id="dash-root">
@@ -519,34 +519,7 @@
       <div class="bv-kpi"><span>Mujeres</span><b data-draw="kpi-genero" data-source="generos_anio" data-field="mujeres" data-fmt="int">—</b></div>
       <div class="bv-kpi"><span>Hombres</span><b data-draw="kpi-genero" data-source="generos_anio" data-field="hombres" data-fmt="int">—</b></div>
       <div class="bv-kpi"><span>Asistencia de mujeres</span><b data-draw="kpi-genero" data-source="generos_anio" data-field="pct_part_mujeres" data-fmt="pct">—</b></div>
-      <div class="bv-kpi"><span>% ajustado mujeres</span><b data-draw="kpi-genero" data-source="generos_anio" data-field="pct_aj_mujeres" data-fmt="pct">—</b></div>
-      <div class="bv-kpi"><span>% ajustado hombres</span><b data-draw="kpi-genero" data-source="generos_anio" data-field="pct_aj_hombres" data-fmt="pct">—</b></div>
       <div class="bv-kpi"><span>Sin clasificar</span><b data-draw="kpi-genero" data-source="generos_anio" data-field="sin_clasificar" data-fmt="int">—</b><small>nombres por confirmar</small></div>
-    </div>
-
-    <div class="bv-grid">
-      <div class="bv-card" id="tipo-resultado">
-        <h3>¿Qué tipo de pareja rinde más?</h3>
-        <p class="bv-note">% ajustado de parejas de mujeres, de hombres y mixtas. Debajo, cuántas son y qué tan seguido ganan. Las parejas de hombres son pocas y entre ellas están las más fuertes del club, así que este promedio dice más de esas parejas que de los hombres en general.</p>
-        <ol class="bv-bars" data-draw="tipo-pareja" data-source="tipo_pareja"></ol>
-      </div>
-      <div class="bv-card" id="tipo-estilo">
-        <h3>¿Juegan distinto?</h3>
-        <p class="bv-note">Estilo de cada tipo de pareja en toda la historia, comparando contra las otras mesas de la misma mano.</p>
-        <div class="bv-scroll bv-short">
-          <table class="bv-table" data-source="estilo_tipo" data-row-key="tipo">
-            <thead><tr>
-              <th data-field="tipo">Tipo</th>
-              <th data-field="pct_st">% ST</th>
-              <th data-field="pct_fit_corto">% fit ≤7</th>
-              <th data-field="slams_100">Slams /100</th>
-              <th data-field="pct_sobre_dd">% sobre DD</th>
-              <th data-field="defensa_dd">Defensa</th>
-            </tr></thead>
-            <tbody data-draw="tabla-estilo-tipo" data-source="estilo_tipo"></tbody>
-          </table>
-        </div>
-      </div>
     </div>
 
     <div class="bv-grid">
@@ -575,7 +548,7 @@
     </div>
 
     <div class="bv-grupo" id="grupo-genero">
-      <div class="bv-grupo-head"><div><h2>Récords</h2><p class="bv-note">El género se dedujo del nombre de pila; los dudosos quedan sin clasificar.</p></div></div>
+      <div class="bv-grupo-head"><div><h2>Cuadro de honor</h2><p class="bv-note">Los mejores de cada grupo, por separado.</p></div></div>
       <div class="bv-hallazgos" data-draw="inicio-grupo" data-grupo="genero" data-source="hallazgos"></div>
     </div>
   </section>
@@ -903,17 +876,17 @@
   </section>
 </div>
 
-<script src="comun.js?v=202611042003"></script>
-<script src="inicio.js?v=202611042003"></script>
-<script src="resumen.js?v=202611042003"></script>
-<script src="ranking.js?v=202611042003"></script>
-<script src="jugador.js?v=202611042003"></script>
-<script src="juveniles.js?v=202611042003"></script>
-<script src="generos.js?v=202611042003"></script>
-<script src="dias.js?v=202611042003"></script>
-<script src="estilo.js?v=202611042003"></script>
-<script src="cartas.js?v=202611042003"></script>
+<script src="comun.js?v=202611042012"></script>
+<script src="inicio.js?v=202611042012"></script>
+<script src="resumen.js?v=202611042012"></script>
+<script src="ranking.js?v=202611042012"></script>
+<script src="jugador.js?v=202611042012"></script>
+<script src="juveniles.js?v=202611042012"></script>
+<script src="generos.js?v=202611042012"></script>
+<script src="dias.js?v=202611042012"></script>
+<script src="estilo.js?v=202611042012"></script>
+<script src="cartas.js?v=202611042012"></script>
 </div>
-<p class="pie">Datos de <a href="https://bridgevitacura.cl/resultado/">bridgevitacura.cl</a> · actualizado el 04-11-2026 20:03</p>
+<p class="pie">Datos de <a href="https://bridgevitacura.cl/resultado/">bridgevitacura.cl</a> · actualizado el 04-11-2026 20:12</p>
 </body>
 </html>

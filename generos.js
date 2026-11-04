@@ -1,6 +1,6 @@
-// Pestaña Mujeres y hombres
+// Pestaña Mujeres y hombres: participación y mejores de cada grupo, sin comparar resultados entre grupos
 (() => {
-  const {fmt, enc, filas, anio, minimo, lindo, llenar, listaBarras, verJugador} = window.bv;
+  const {fmt, enc, filas, anio, minimo, lindo, listaBarras, verJugador} = window.bv;
   const TOP = 8;
   const COLOR = {Mujeres: 4, Mixta: 5, Hombres: 1};
   const generos = () => new Map((filas('generos_jugadores') || []).map((r) => [r.jugador, r.genero]));
@@ -14,25 +14,6 @@
     if (!r) { el.textContent = '—'; return; }
     el.dataset.where = 'anio=' + enc(r.anio);
     el.textContent = (fmt[el.dataset.fmt] || fmt.texto)(r[el.dataset.field]);
-  });
-
-  dash.draw('tipo-pareja', (ol) => {
-    const rows = filas('tipo_pareja');
-    if (!rows || !anio()) { ol.replaceChildren(); return; }
-    const sel = rows.filter((r) => r.anio === anio()).sort((a, b) => b.pct_ajustado - a.pct_ajustado);
-    listaBarras(ol, sel.map((r) => ({
-      nombre: r.tipo === 'Mixta' ? 'Parejas mixtas' : `Parejas de ${r.tipo.toLowerCase()}`, valor: r.pct_ajustado, texto: fmt.pct(r.pct_ajustado),
-      sub: `${fmt.pct(r.pct_del_total)} de las parejas · ganan ${fmt.pct(r.pct_victorias)} de sus torneos · ${fmt.int(r.victorias)} victorias`,
-    })), {dominio: [40, 60], medallas: false, colores: sel.map((r) => dash.colors[COLOR[r.tipo]])});
-  });
-
-  dash.draw('tabla-estilo-tipo', (tbody) => {
-    const rows = filas('estilo_tipo');
-    if (!rows) { tbody.replaceChildren(); return; }
-    llenar(tbody, rows, [
-      {f: 'tipo'}, {f: 'pct_st', fmt: fmt.pct}, {f: 'pct_fit_corto', fmt: fmt.pct}, {f: 'slams_100', fmt: fmt.dec2},
-      {f: 'pct_sobre_dd', fmt: fmt.pct}, {f: 'defensa_dd', fmt: fmt.dd},
-    ]);
   });
 
   dash.draw('top-genero', (ol) => {
