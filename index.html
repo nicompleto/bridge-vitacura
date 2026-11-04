@@ -8,10 +8,10 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Source+Sans+3:wght@400;500;600&family=Source+Serif+4:opsz,wght@8..60,400;8..60,600&display=swap">
-<link rel="stylesheet" href="tema.css?v=202611040822">
+<link rel="stylesheet" href="tema.css?v=202611042003">
 <script src="https://cdn.jsdelivr.net/npm/d3@7.9.0/dist/d3.min.js"></script>
-<script>window.__bvVersion = "202611040822";</script>
-<script src="dash.js?v=202611040822"></script>
+<script>window.__bvVersion = "202611042003";</script>
+<script src="dash.js?v=202611042003"></script>
 </head>
 <body>
 <div id="dash-root">
@@ -197,6 +197,7 @@
     <button class="bv-tab" role="tab" data-tab="resumen" aria-selected="false">Resumen</button>
     <button class="bv-tab" role="tab" data-tab="ranking" aria-selected="false">Ranking</button>
     <button class="bv-tab" role="tab" data-tab="parejas" aria-selected="false">Parejas</button>
+    <button class="bv-tab" role="tab" data-tab="generos" aria-selected="false">Mujeres y hombres</button>
     <button class="bv-tab" role="tab" data-tab="juveniles" aria-selected="false">Juveniles</button>
     <button class="bv-tab" role="tab" data-tab="jugador" aria-selected="false">Ficha de jugador</button>
     <button class="bv-tab" role="tab" data-tab="dias-semana" aria-selected="false">Días</button>
@@ -366,6 +367,13 @@
             <option value="200">200</option>
           </select>
         </label>
+        <label>Mostrar
+          <select class="bv-select bv-genero" id="filtro-genero" aria-label="Mostrar" data-source="generos_jugadores">
+            <option value="">Todos</option>
+            <option value="F">Mujeres</option>
+            <option value="M">Hombres</option>
+          </select>
+        </label>
       </div>
       <div class="bv-scroll">
         <table class="bv-table bv-sortable" data-table="jugadores" data-source="jugador_anio" data-row-key="jugador,anio">
@@ -496,6 +504,79 @@
           <tbody data-draw="tabla-juveniles" data-source="juveniles"></tbody>
         </table>
       </div>
+    </div>
+  </section>
+
+  <!-- ===================== MUJERES Y HOMBRES ===================== -->
+  <section class="bv-page" id="generos" hidden>
+    <div class="bv-section-head">
+      <div>
+        <p class="bv-eyebrow">Mujeres y hombres</p>
+        <h2 data-draw="anio-titulo" data-source="resumen_anio">—</h2>
+      </div>
+    </div>
+    <div class="bv-kpis" id="kpis-genero">
+      <div class="bv-kpi"><span>Mujeres</span><b data-draw="kpi-genero" data-source="generos_anio" data-field="mujeres" data-fmt="int">—</b></div>
+      <div class="bv-kpi"><span>Hombres</span><b data-draw="kpi-genero" data-source="generos_anio" data-field="hombres" data-fmt="int">—</b></div>
+      <div class="bv-kpi"><span>Asistencia de mujeres</span><b data-draw="kpi-genero" data-source="generos_anio" data-field="pct_part_mujeres" data-fmt="pct">—</b></div>
+      <div class="bv-kpi"><span>% ajustado mujeres</span><b data-draw="kpi-genero" data-source="generos_anio" data-field="pct_aj_mujeres" data-fmt="pct">—</b></div>
+      <div class="bv-kpi"><span>% ajustado hombres</span><b data-draw="kpi-genero" data-source="generos_anio" data-field="pct_aj_hombres" data-fmt="pct">—</b></div>
+      <div class="bv-kpi"><span>Sin clasificar</span><b data-draw="kpi-genero" data-source="generos_anio" data-field="sin_clasificar" data-fmt="int">—</b><small>nombres por confirmar</small></div>
+    </div>
+
+    <div class="bv-grid">
+      <div class="bv-card" id="tipo-resultado">
+        <h3>¿Qué tipo de pareja rinde más?</h3>
+        <p class="bv-note">% ajustado de parejas de mujeres, de hombres y mixtas. Debajo, cuántas son y qué tan seguido ganan. Las parejas de hombres son pocas y entre ellas están las más fuertes del club, así que este promedio dice más de esas parejas que de los hombres en general.</p>
+        <ol class="bv-bars" data-draw="tipo-pareja" data-source="tipo_pareja"></ol>
+      </div>
+      <div class="bv-card" id="tipo-estilo">
+        <h3>¿Juegan distinto?</h3>
+        <p class="bv-note">Estilo de cada tipo de pareja en toda la historia, comparando contra las otras mesas de la misma mano.</p>
+        <div class="bv-scroll bv-short">
+          <table class="bv-table" data-source="estilo_tipo" data-row-key="tipo">
+            <thead><tr>
+              <th data-field="tipo">Tipo</th>
+              <th data-field="pct_st">% ST</th>
+              <th data-field="pct_fit_corto">% fit ≤7</th>
+              <th data-field="slams_100">Slams /100</th>
+              <th data-field="pct_sobre_dd">% sobre DD</th>
+              <th data-field="defensa_dd">Defensa</th>
+            </tr></thead>
+            <tbody data-draw="tabla-estilo-tipo" data-source="estilo_tipo"></tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <div class="bv-grid">
+      <div class="bv-card" id="top-mujeres">
+        <h3>Mejores jugadoras <span class="bv-muted">por % ajustado</span></h3>
+        <p class="bv-note">Mínimo <span data-draw="umbral" data-tipo="jugador">—</span> torneos en el período.</p>
+        <ol class="bv-bars" data-draw="top-genero" data-genero="F" data-source="jugador_anio"></ol>
+      </div>
+      <div class="bv-card" id="top-hombres">
+        <h3>Mejores jugadores <span class="bv-muted">por % ajustado</span></h3>
+        <p class="bv-note">Mínimo <span data-draw="umbral" data-tipo="jugador">—</span> torneos en el período.</p>
+        <ol class="bv-bars" data-draw="top-genero" data-genero="M" data-source="jugador_anio"></ol>
+      </div>
+    </div>
+
+    <div class="bv-mini-grid">
+      <div class="bv-card" id="top-pareja-f"><h3>Mejores parejas de mujeres</h3><p class="bv-note">Mínimo <span data-draw="umbral" data-tipo="pareja">—</span> torneos juntas.</p><ol class="bv-bars" data-draw="top-tipo" data-tipo-pareja="Mujeres" data-source="pareja_anio"></ol></div>
+      <div class="bv-card" id="top-pareja-x"><h3>Mejores parejas mixtas</h3><p class="bv-note">Mínimo <span data-draw="umbral" data-tipo="pareja">—</span> torneos juntos.</p><ol class="bv-bars" data-draw="top-tipo" data-tipo-pareja="Mixta" data-source="pareja_anio"></ol></div>
+      <div class="bv-card" id="top-pareja-m"><h3>Mejores parejas de hombres</h3><p class="bv-note">Mínimo <span data-draw="umbral" data-tipo="pareja">—</span> torneos juntos.</p><ol class="bv-bars" data-draw="top-tipo" data-tipo-pareja="Hombres" data-source="pareja_anio"></ol></div>
+    </div>
+
+    <div class="bv-mini-grid">
+      <div class="bv-card"><h3>Mujeres en la asistencia</h3><p class="bv-note">% de las veces en torneos, cada año.</p><div class="bv-mini" data-draw="mini" data-datos="generos_anio" data-source="generos_anio" data-campo="pct_part_mujeres" data-tipo="linea" data-fmt="pct" data-color="4"></div></div>
+      <div class="bv-card"><h3>Mujeres activas</h3><p class="bv-note">Jugadoras distintas cada año.</p><div class="bv-mini" data-draw="mini" data-datos="generos_anio" data-source="generos_anio" data-campo="mujeres" data-tipo="barras" data-fmt="int" data-color="4"></div></div>
+      <div class="bv-card"><h3>Hombres activos</h3><p class="bv-note">Jugadores distintos cada año.</p><div class="bv-mini" data-draw="mini" data-datos="generos_anio" data-source="generos_anio" data-campo="hombres" data-tipo="barras" data-fmt="int" data-color="1"></div></div>
+    </div>
+
+    <div class="bv-grupo" id="grupo-genero">
+      <div class="bv-grupo-head"><div><h2>Récords</h2><p class="bv-note">El género se dedujo del nombre de pila; los dudosos quedan sin clasificar.</p></div></div>
+      <div class="bv-hallazgos" data-draw="inicio-grupo" data-grupo="genero" data-source="hallazgos"></div>
     </div>
   </section>
 
@@ -822,16 +903,17 @@
   </section>
 </div>
 
-<script src="comun.js?v=202611040822"></script>
-<script src="inicio.js?v=202611040822"></script>
-<script src="resumen.js?v=202611040822"></script>
-<script src="ranking.js?v=202611040822"></script>
-<script src="jugador.js?v=202611040822"></script>
-<script src="juveniles.js?v=202611040822"></script>
-<script src="dias.js?v=202611040822"></script>
-<script src="estilo.js?v=202611040822"></script>
-<script src="cartas.js?v=202611040822"></script>
+<script src="comun.js?v=202611042003"></script>
+<script src="inicio.js?v=202611042003"></script>
+<script src="resumen.js?v=202611042003"></script>
+<script src="ranking.js?v=202611042003"></script>
+<script src="jugador.js?v=202611042003"></script>
+<script src="juveniles.js?v=202611042003"></script>
+<script src="generos.js?v=202611042003"></script>
+<script src="dias.js?v=202611042003"></script>
+<script src="estilo.js?v=202611042003"></script>
+<script src="cartas.js?v=202611042003"></script>
 </div>
-<p class="pie">Datos de <a href="https://bridgevitacura.cl/resultado/">bridgevitacura.cl</a> · actualizado el 04-11-2026 08:22</p>
+<p class="pie">Datos de <a href="https://bridgevitacura.cl/resultado/">bridgevitacura.cl</a> · actualizado el 04-11-2026 20:03</p>
 </body>
 </html>

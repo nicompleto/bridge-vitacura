@@ -214,7 +214,7 @@
 
   // ---------- pestañas ----------
   document.querySelectorAll('.bv-tab').forEach((b) => b.addEventListener('click', () => irA(b.dataset.tab)));
-  if (['inicio', 'resumen', 'ranking', 'parejas', 'juveniles', 'dias-semana', 'jugador', 'estilo', 'cartas'].includes(location.hash.slice(1))) irA(location.hash.slice(1));
+  if (['inicio', 'resumen', 'ranking', 'parejas', 'generos', 'juveniles', 'dias-semana', 'jugador', 'estilo', 'cartas'].includes(location.hash.slice(1))) irA(location.hash.slice(1));
 
   // ---------- orden de tablas ----------
   document.querySelectorAll('table.bv-sortable').forEach((t) => {

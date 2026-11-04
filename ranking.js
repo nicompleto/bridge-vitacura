@@ -5,13 +5,15 @@
   const minDe = (valor, tipo) => (valor === 'auto' ? minimo(tipo) : Number(valor));
 
   // ---------- ranking de jugadores ----------
-  const q = {texto: '', min: 'auto'};
+  const q = {texto: '', min: 'auto', genero: ''};
+  document.querySelectorAll('.bv-genero').forEach((el) => el.addEventListener('change', () => { q.genero = el.value; dash.draw('tabla-jugadores'); }));
   document.querySelectorAll('.bv-search').forEach((el) => el.addEventListener('input', () => { q.texto = el.value.trim().toUpperCase(); dash.draw('tabla-jugadores'); }));
   document.querySelectorAll('.bv-min').forEach((el) => el.addEventListener('change', () => { q.min = el.value; dash.draw('tabla-jugadores'); }));
   dash.draw('tabla-jugadores', (tbody) => {
     if (!anio() || !filas('jugador_anio')) { tbody.replaceChildren(); return; }
     const min = minDe(q.min, 'jugador');
-    const vis = deAnio('jugador_anio').filter((r) => r.torneos >= min && (!q.texto || r.jugador.includes(q.texto)));
+    const gen = new Map((filas('generos_jugadores') || []).map((r) => [r.jugador, r.genero]));
+    const vis = deAnio('jugador_anio').filter((r) => r.torneos >= min && (!q.texto || r.jugador.includes(q.texto)) && (!q.genero || gen.get(r.jugador) === q.genero));
     llenar(tbody, ordenar('jugadores', vis, {col: 'pct_ajustado', dir: 'desc'}), [
       {f: 'jugador'}, {f: 'torneos', fmt: fmt.int}, {f: 'pct_ajustado', fmt: fmt.pct}, {f: 'pct', fmt: fmt.pct}, {f: 'mejor_pct', fmt: fmt.pct, cls: 'bv-hide-narrow'},
       {f: 'victorias', fmt: fmt.int}, {f: 'podios', fmt: fmt.int, cls: 'bv-hide-narrow'},
