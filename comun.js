@@ -49,7 +49,7 @@
     document.querySelectorAll('.bv-tab').forEach((b) => b.setAttribute('aria-selected', String(b.dataset.tab === tab)));
     document.querySelectorAll('.bv-page').forEach((s) => { s.hidden = s.id !== tab; });
     // el selector de año solo tiene sentido en las pestañas que cambian con el año
-    document.querySelectorAll('.bv-chips').forEach((c) => { c.hidden = tab === 'inicio' || tab === 'jugador'; });
+    document.querySelectorAll('.bv-chips').forEach((c) => { c.hidden = ['inicio', 'jugador', 'juveniles'].includes(tab); });
     dash.setLink(tab);
   };
   const verJugador = (nombre) => { dash.setParams({jugador: nombre}); irA('jugador'); window.scrollTo({top: 0}); };
@@ -213,7 +213,7 @@
 
   // ---------- pestañas ----------
   document.querySelectorAll('.bv-tab').forEach((b) => b.addEventListener('click', () => irA(b.dataset.tab)));
-  if (['inicio', 'resumen', 'ranking', 'parejas', 'jugador', 'estilo', 'cartas'].includes(location.hash.slice(1))) irA(location.hash.slice(1));
+  if (['inicio', 'resumen', 'ranking', 'parejas', 'juveniles', 'jugador', 'estilo', 'cartas'].includes(location.hash.slice(1))) irA(location.hash.slice(1));
 
   // ---------- orden de tablas ----------
   document.querySelectorAll('table.bv-sortable').forEach((t) => {

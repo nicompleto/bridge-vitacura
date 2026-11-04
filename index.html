@@ -8,10 +8,10 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Source+Sans+3:wght@400;500;600&family=Source+Serif+4:opsz,wght@8..60,400;8..60,600&display=swap">
-<link rel="stylesheet" href="tema.css?v=202611032335">
+<link rel="stylesheet" href="tema.css?v=202611040026">
 <script src="https://cdn.jsdelivr.net/npm/d3@7.9.0/dist/d3.min.js"></script>
-<script>window.__bvVersion = "202611032335";</script>
-<script src="dash.js?v=202611032335"></script>
+<script>window.__bvVersion = "202611040026";</script>
+<script src="dash.js?v=202611040026"></script>
 </head>
 <body>
 <div id="dash-root">
@@ -109,6 +109,7 @@
   .bv-hallazgos { display: grid; gap: var(--cds-gap-md); grid-template-columns: repeat(auto-fill, minmax(min(100%, 16rem), 1fr)); min-height: 10rem; }
   .bv-hallazgos .bv-feature .bv-f-cifra { font-size: var(--cds-font-size-title); }
   .bv-feature .bv-linkbtn { margin-top: var(--cds-gap-xs); }
+  .bv-juv-titulo { margin: 0; font-family: var(--font-anthropic-serif); font-weight: 400; font-size: calc(var(--cds-font-size-title) * 1.4); }
   .bv-explica { background: var(--bv-felt); border-color: var(--bv-felt-line); }
   .bv-legend { display: flex; flex-wrap: wrap; gap: var(--cds-gap-md); font-size: var(--cds-font-size-caption); color: var(--color-fg-muted); }
   .bv-legend i { display: inline-block; width: 10px; height: 10px; border-radius: 50%; margin-right: 4px; vertical-align: -1px; }
@@ -179,6 +180,7 @@
     <button class="bv-tab" role="tab" data-tab="resumen" aria-selected="false">Resumen</button>
     <button class="bv-tab" role="tab" data-tab="ranking" aria-selected="false">Ranking</button>
     <button class="bv-tab" role="tab" data-tab="parejas" aria-selected="false">Parejas</button>
+    <button class="bv-tab" role="tab" data-tab="juveniles" aria-selected="false">Juveniles</button>
     <button class="bv-tab" role="tab" data-tab="jugador" aria-selected="false">Ficha de jugador</button>
     <button class="bv-tab" role="tab" data-tab="estilo" aria-selected="false">Estilo de juego</button>
     <button class="bv-tab" role="tab" data-tab="cartas" aria-selected="false">Juego de cartas</button>
@@ -416,6 +418,67 @@
     </div>
   </section>
 
+  <!-- ===================== JUVENILES ===================== -->
+  <section class="bv-page" id="juveniles" hidden>
+    <div class="bv-hero" id="juveniles-portada">
+      <p class="bv-eyebrow">La nueva generación</p>
+      <h2 class="bv-juv-titulo">Juveniles</h2>
+      <p class="bv-lede">Los jugadores menores de 30 años del club. Compiten casi siempre en los torneos normales, contra adultos, así que sus promedios se comparan directo con los de cualquier otro jugador.</p>
+      <div class="bv-kpis">
+        <div class="bv-kpi"><span>Juveniles</span><b data-draw="kpi-juv" data-source="juveniles_anio" data-field="jugadores" data-fmt="int">—</b></div>
+        <div class="bv-kpi"><span>Veces en torneos</span><b data-draw="kpi-juv" data-source="juveniles_anio" data-field="participaciones" data-fmt="int">—</b></div>
+        <div class="bv-kpi"><span>% promedio</span><b data-draw="kpi-juv" data-source="juveniles_anio" data-field="pct" data-fmt="pct">—</b></div>
+        <div class="bv-kpi"><span>Primeros lugares</span><b data-draw="kpi-juv" data-source="juveniles_anio" data-field="victorias" data-fmt="int">—</b></div>
+        <div class="bv-kpi"><span>Podios</span><b data-draw="kpi-juv" data-source="juveniles_anio" data-field="podios" data-fmt="int">—</b></div>
+      </div>
+    </div>
+
+    <div class="bv-grid">
+      <div class="bv-card" id="juv-ranking">
+        <h3>Mejores juveniles <span class="bv-muted">por % promedio</span></h3>
+        <p class="bv-note">Mínimo <span data-draw="juv-minimo">—</span> torneos. Haz clic en un nombre para ver su ficha.</p>
+        <ol class="bv-bars" data-draw="juv-ranking" data-source="juveniles"></ol>
+      </div>
+      <div class="bv-card" id="juv-parejas">
+        <h3>Parejas de juveniles</h3>
+        <p class="bv-note">Cuando juegan dos juveniles juntos, ordenadas por torneos.</p>
+        <ol class="bv-bars" data-draw="juv-parejas" data-source="juveniles_parejas"></ol>
+      </div>
+    </div>
+
+    <div class="bv-mini-grid">
+      <div class="bv-card"><h3>Juveniles activos</h3><p class="bv-note">Cuántos jugaron cada año.</p><div class="bv-mini" data-draw="mini" data-datos="juveniles_anio" data-source="juveniles_anio" data-campo="jugadores" data-tipo="barras" data-fmt="int" data-color="0"></div></div>
+      <div class="bv-card"><h3>Veces en torneos</h3><p class="bv-note">Suma de los torneos jugados por juveniles.</p><div class="bv-mini" data-draw="mini" data-datos="juveniles_anio" data-source="juveniles_anio" data-campo="participaciones" data-tipo="barras" data-fmt="int" data-color="1"></div></div>
+      <div class="bv-card"><h3>% promedio del grupo</h3><p class="bv-note">Promedio de todos sus torneos de cada año.</p><div class="bv-mini" data-draw="mini" data-datos="juveniles_anio" data-source="juveniles_anio" data-campo="pct" data-tipo="linea" data-fmt="pct" data-color="2"></div></div>
+    </div>
+
+    <div class="bv-card" id="juv-records">
+      <h3>Sus mejores actuaciones</h3>
+      <p class="bv-note">Los porcentajes más altos de un juvenil en un solo torneo.</p>
+      <div class="bv-records" data-draw="juv-records" data-source="juveniles_records"></div>
+    </div>
+
+    <div class="bv-card bv-wrapq" id="tabla-juveniles">
+      <h3>Todos los juveniles</h3>
+      <p class="bv-note">Incluye a quienes recién empiezan. Con pocos torneos el promedio todavía puede moverse mucho.</p>
+      <div class="bv-scroll">
+        <table class="bv-table bv-sortable" data-table="juveniles" data-source="juveniles" data-row-key="jugador">
+          <thead><tr>
+            <th data-field="jugador" data-sort="jugador"><button>Jugador</button></th>
+            <th data-field="torneos" data-sort="torneos"><button>Torneos</button></th>
+            <th data-field="pct" data-sort="pct"><button>% promedio</button></th>
+            <th data-field="pct_365d" data-sort="pct_365d" class="bv-hide-narrow"><button>% último año</button></th>
+            <th data-field="mejor_pct" data-sort="mejor_pct" class="bv-hide-narrow"><button>Mejor %</button></th>
+            <th data-field="victorias" data-sort="victorias"><button>1° lugar</button></th>
+            <th data-field="companero_frecuente" data-sort="companero_frecuente" class="bv-left bv-hide-narrow"><button>Compañero frecuente</button></th>
+            <th data-field="ultimo_torneo" data-sort="ultimo_torneo" class="bv-hide-narrow"><button>Último</button></th>
+          </tr></thead>
+          <tbody data-draw="tabla-juveniles" data-source="juveniles"></tbody>
+        </table>
+      </div>
+    </div>
+  </section>
+
   <!-- ===================== FICHA DE JUGADOR ===================== -->
   <section class="bv-page" id="jugador" hidden>
     <div class="bv-hero" id="ficha-cabecera">
@@ -635,14 +698,15 @@
   </section>
 </div>
 
-<script src="comun.js?v=202611032335"></script>
-<script src="inicio.js?v=202611032335"></script>
-<script src="resumen.js?v=202611032335"></script>
-<script src="ranking.js?v=202611032335"></script>
-<script src="jugador.js?v=202611032335"></script>
-<script src="estilo.js?v=202611032335"></script>
-<script src="cartas.js?v=202611032335"></script>
+<script src="comun.js?v=202611040026"></script>
+<script src="inicio.js?v=202611040026"></script>
+<script src="resumen.js?v=202611040026"></script>
+<script src="ranking.js?v=202611040026"></script>
+<script src="jugador.js?v=202611040026"></script>
+<script src="juveniles.js?v=202611040026"></script>
+<script src="estilo.js?v=202611040026"></script>
+<script src="cartas.js?v=202611040026"></script>
 </div>
-<p class="pie">Datos de <a href="https://bridgevitacura.cl/resultado/">bridgevitacura.cl</a> · actualizado el 03-11-2026 23:35</p>
+<p class="pie">Datos de <a href="https://bridgevitacura.cl/resultado/">bridgevitacura.cl</a> · actualizado el 04-11-2026 00:26</p>
 </body>
 </html>

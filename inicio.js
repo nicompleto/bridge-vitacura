@@ -80,7 +80,7 @@
   // gráfico chico por año: barras desde cero para cantidades, línea para tasas
   dash.draw('mini', (el) => {
     el.replaceChildren();
-    const rows = filas('resumen_anio');
+    const rows = filas(el.dataset.datos || 'resumen_anio');
     if (!rows) return;
     const datos = rows.filter((r) => r.anio !== 'todos').sort((a, b) => a.anio.localeCompare(b.anio));
     const campo = el.dataset.campo, f = fmt[el.dataset.fmt] || fmt.texto, color = dash.colors[Number(el.dataset.color)];
