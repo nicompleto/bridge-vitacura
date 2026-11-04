@@ -31,6 +31,56 @@
     return card;
   };
 
+  const celda = (tag, clase, texto) => { const e = document.createElement(tag); if (clase) e.className = clase; e.textContent = texto; return e; };
+
+  dash.draw('ultimo-titulo', (el) => {
+    const r = (filas('ultimo_torneo') || [])[0];
+    el.textContent = r ? r.torneo : '—';
+  });
+  dash.draw('ultimo-sub', (el) => {
+    const r = (filas('ultimo_torneo') || [])[0];
+    el.textContent = r ? `${r.dia} ${r.fecha} · ${fmt.int(r.parejas)} parejas · ${fmt.int(r.manos)} manos` : '—';
+  });
+  dash.draw('ultimo-podio', (el) => {
+    const rows = filas('ultimo_podio');
+    if (!rows) { el.replaceChildren(); return; }
+    el.replaceChildren(...d3.groups(rows, (r) => r.linea).map(([linea, v]) => {
+      const col = document.createElement('div');
+      col.className = 'bv-podio';
+      col.appendChild(celda('h3', '', linea === 'General' ? 'Clasificación' : `Línea ${linea}`));
+      v.forEach((r) => {
+        const f = document.createElement('div');
+        f.className = 'bv-puesto bv-p' + r.posicion;
+        f.append(celda('span', 'bv-rank bv-m' + r.posicion, String(r.posicion)), celda('span', 'bv-puesto-nombre', r.pareja), celda('span', 'bv-puesto-pct', fmt.pct(r.porcentaje)));
+        col.appendChild(f);
+      });
+      return col;
+    }));
+  });
+  dash.draw('ultimo-datos', (el) => {
+    const rows = filas('ultimo_datos');
+    if (!rows) { el.replaceChildren(); return; }
+    el.replaceChildren(...rows.map((r) => {
+      const c = document.createElement('div');
+      c.className = 'bv-dato';
+      c.append(celda('span', '', r.etiqueta), celda('b', '', r.cifra), celda('small', '', r.detalle));
+      return c;
+    }));
+  });
+  dash.draw('en-forma', (el) => {
+    const rows = filas('en_forma');
+    if (!rows) { el.replaceChildren(); return; }
+    el.replaceChildren(...rows.map((r) => {
+      const b = document.createElement('button');
+      b.type = 'button';
+      b.className = 'bv-en-forma';
+      b.append(celda('b', '', fmt.pct(r.pct)), celda('span', '', lindo(r.jugador)), celda('small', '', `${fmt.int(r.torneos)} torneos · ${fmt.int(r.victorias)} victorias`));
+      if (r.sobre > 0) b.appendChild(celda('em', '', `${d3.format('+.1f')(r.sobre)} sobre su promedio`));
+      b.addEventListener('click', () => verJugador(r.jugador));
+      return b;
+    }));
+  });
+
   dash.draw('inicio-destacados', (el) => {
     const rows = filas('hallazgos');
     el.replaceChildren(...(rows || []).filter((h) => h.destacado).map((h) => tarjeta(h, true)));
