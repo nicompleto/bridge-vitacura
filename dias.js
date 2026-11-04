@@ -49,6 +49,66 @@
     }));
   });
 
+  dash.draw('dias-asistencia', (ol) => {
+    const rows = filas('dias_semana');
+    if (!rows) { ol.replaceChildren(); return; }
+    const sel = rows.slice().sort((a, b) => b.parejas_ultimo - a.parejas_ultimo);
+    listaBarras(ol, sel.map((r) => ({
+      nombre: r.dia, valor: r.parejas_ultimo, texto: fmt.dec(r.parejas_ultimo),
+      sub: `histórico ${fmt.dec(r.parejas_por_torneo)} · máximo ${fmt.int(r.parejas_max)} parejas · ${fmt.pct(r.pct_asistencia)} de la asistencia`,
+    })), {dominio: [0, d3.max(sel, (r) => r.parejas_ultimo)], medallas: false, colores: sel.map((r) => dash.colors[COLOR_DIA[r.dia] ?? 0])});
+  });
+
+  dash.draw('eventos-serie', (ol) => {
+    const rows = filas('eventos_serie');
+    if (!rows) { ol.replaceChildren(); return; }
+    listaBarras(ol, rows.map((r) => ({
+      nombre: r.serie, valor: r.parejas, texto: fmt.dec(r.parejas),
+      sub: `${fmt.int(r.ediciones)} torneos · máximo ${fmt.int(r.maximo)} parejas`,
+    })), {dominio: [0, d3.max(rows, (r) => r.parejas)], medallas: false,
+          colores: rows.map((r) => (r.serie.endsWith('regular') ? 'var(--cds-chart-muted)' : dash.colors[5]))});
+  });
+
+  dash.draw('eventos-top', (el) => {
+    const rows = filas('eventos_top');
+    if (!rows) { el.replaceChildren(); return; }
+    el.replaceChildren(...rows.map((r) => {
+      const card = document.createElement('div');
+      card.className = 'bv-record';
+      const b = document.createElement('b');
+      b.textContent = `${fmt.int(r.parejas)} parejas`;
+      const s = document.createElement('span');
+      s.textContent = r.torneo;
+      const sm = document.createElement('small');
+      sm.textContent = `${r.dia} · ${r.fecha}`;
+      card.append(b, s, sm);
+      return card;
+    }));
+  });
+
+  // barras hacia arriba y abajo del promedio de cada año
+  dash.draw('asistencia-mes', (el) => {
+    el.replaceChildren();
+    const rows = filas('asistencia_mes');
+    if (!rows || !rows.length) return;
+    const datos = rows.slice().sort((a, b) => a.n_mes - b.n_mes);
+    const W = el.clientWidth || 520, H = 240, mt = 18, mb = 22;
+    const svg = d3.select(el).append('svg').attr('width', '100%').attr('viewBox', `0 0 ${W} ${H}`).attr('role', 'img')
+      .attr('aria-label', 'Asistencia por mes comparada con el promedio del año');
+    const lim = d3.max(datos, (r) => Math.abs(r.variacion)) * 1.15;
+    const y = d3.scaleLinear([-lim, lim], [H - mb, mt]);
+    const x = d3.scaleBand(datos.map((r) => r.mes), [4, W - 4]).padding(0.25);
+    svg.append('g').selectAll('rect').data(datos).join('rect').attr('x', (r) => x(r.mes)).attr('width', x.bandwidth())
+      .attr('y', (r) => Math.min(y(0), y(r.variacion))).attr('height', (r) => Math.abs(y(r.variacion) - y(0))).attr('rx', 3)
+      .attr('fill', (r) => (r.variacion >= 0 ? dash.colors[5] : 'var(--cds-chart-muted)'));
+    svg.append('line').attr('x1', 4).attr('x2', W - 4).attr('y1', y(0)).attr('y2', y(0)).attr('stroke', 'var(--cds-chart-axis)');
+    svg.append('g').selectAll('text').data(datos).join('text').attr('text-anchor', 'middle').attr('x', (r) => x(r.mes) + x.bandwidth() / 2)
+      .attr('y', (r) => (r.variacion >= 0 ? y(r.variacion) - 5 : y(r.variacion) + 13)).attr('fill', 'var(--color-fg)')
+      .attr('font-size', 'var(--cds-font-size-caption)').text((r) => d3.format('+.0f')(r.variacion) + '%');
+    svg.append('g').selectAll('text').data(datos).join('text').attr('text-anchor', 'middle').attr('x', (r) => x(r.mes) + x.bandwidth() / 2)
+      .attr('y', H - 4).attr('fill', 'var(--color-fg-muted)').attr('font-size', 'var(--cds-font-size-caption)').text((r) => r.mes);
+  });
+
   dash.draw('dias-dificultad', (ol) => {
     const rows = filas('dias_semana');
     if (!rows) { ol.replaceChildren(); return; }

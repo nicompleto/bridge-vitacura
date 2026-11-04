@@ -8,10 +8,10 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Source+Sans+3:wght@400;500;600&family=Source+Serif+4:opsz,wght@8..60,400;8..60,600&display=swap">
-<link rel="stylesheet" href="tema.css?v=202611040108">
+<link rel="stylesheet" href="tema.css?v=202611040805">
 <script src="https://cdn.jsdelivr.net/npm/d3@7.9.0/dist/d3.min.js"></script>
-<script>window.__bvVersion = "202611040108";</script>
-<script src="dash.js?v=202611040108"></script>
+<script>window.__bvVersion = "202611040805";</script>
+<script src="dash.js?v=202611040805"></script>
 </head>
 <body>
 <div id="dash-root">
@@ -503,7 +503,47 @@
   <section class="bv-page" id="dias-semana" hidden>
     <div class="bv-section-head">
       <div>
-        <p class="bv-eyebrow">Análisis por día</p>
+        <p class="bv-eyebrow">Asistencia</p>
+        <h2>¿Dónde va más gente?</h2>
+      </div>
+    </div>
+    <div class="bv-grid">
+      <div class="bv-card" id="dias-asistencia">
+        <h3>¿Qué día va más gente?</h3>
+        <p class="bv-note">Parejas por torneo este año. Debajo, el promedio histórico, el torneo más grande y qué parte de toda la asistencia del club se juega ese día.</p>
+        <ol class="bv-bars" data-draw="dias-asistencia" data-source="dias_semana"></ol>
+      </div>
+      <div class="bv-card" id="dias-crecimiento">
+        <h3>Parejas por torneo, año a año</h3>
+        <p class="bv-note">El lunes siempre fue el día fuerte, pero todos los días han crecido.</p>
+        <div class="bv-chart" data-draw="dias-linea" data-source="dias_anio" data-campo="parejas" data-fmt="dec"></div>
+      </div>
+    </div>
+    <div class="bv-grid">
+      <div class="bv-card" id="eventos-serie">
+        <h3>¿A qué torneo se va más?</h3>
+        <p class="bv-note">Parejas promedio por tipo de torneo, con al menos 2 ediciones.</p>
+        <ol class="bv-bars" data-draw="eventos-serie" data-source="eventos_serie"></ol>
+      </div>
+      <div class="bv-card" id="asistencia-mes">
+        <h3>¿Qué mes se llena más?</h3>
+        <p class="bv-note">Parejas en torneos regulares, comparando cada mes con el promedio de su año. Sin 2022, cuando los torneos eran mucho más chicos.</p>
+        <div class="bv-chart" data-draw="asistencia-mes" data-source="asistencia_mes"></div>
+      </div>
+    </div>
+    <div class="bv-card" id="eventos-top">
+      <h3>Los torneos más grandes</h3>
+      <p class="bv-note">Los que más parejas han reunido.</p>
+      <div class="bv-records" data-draw="eventos-top" data-source="eventos_top"></div>
+    </div>
+    <div class="bv-grupo" id="grupo-asistencia">
+      <div class="bv-grupo-head"><div><h2>Rarezas de asistencia</h2><p class="bv-note">Quién va siempre, quién nunca, y las costumbres más curiosas.</p></div></div>
+      <div class="bv-hallazgos" data-draw="inicio-grupo" data-grupo="asistencia" data-source="hallazgos"></div>
+    </div>
+
+    <div class="bv-section-head">
+      <div>
+        <p class="bv-eyebrow">Dificultad y carácter</p>
         <h2>Cada día es un torneo distinto</h2>
       </div>
     </div>
@@ -782,16 +822,16 @@
   </section>
 </div>
 
-<script src="comun.js?v=202611040108"></script>
-<script src="inicio.js?v=202611040108"></script>
-<script src="resumen.js?v=202611040108"></script>
-<script src="ranking.js?v=202611040108"></script>
-<script src="jugador.js?v=202611040108"></script>
-<script src="juveniles.js?v=202611040108"></script>
-<script src="dias.js?v=202611040108"></script>
-<script src="estilo.js?v=202611040108"></script>
-<script src="cartas.js?v=202611040108"></script>
+<script src="comun.js?v=202611040805"></script>
+<script src="inicio.js?v=202611040805"></script>
+<script src="resumen.js?v=202611040805"></script>
+<script src="ranking.js?v=202611040805"></script>
+<script src="jugador.js?v=202611040805"></script>
+<script src="juveniles.js?v=202611040805"></script>
+<script src="dias.js?v=202611040805"></script>
+<script src="estilo.js?v=202611040805"></script>
+<script src="cartas.js?v=202611040805"></script>
 </div>
-<p class="pie">Datos de <a href="https://bridgevitacura.cl/resultado/">bridgevitacura.cl</a> · actualizado el 04-11-2026 01:08</p>
+<p class="pie">Datos de <a href="https://bridgevitacura.cl/resultado/">bridgevitacura.cl</a> · actualizado el 04-11-2026 08:05</p>
 </body>
 </html>

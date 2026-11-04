@@ -30,6 +30,8 @@
     ['Peor torneo', 'peor_torneo', fmt.pct, 'peor_torneo_detalle'],
     ['Racha más larga sobre 50%', 'racha50', fmt.int, 'racha50_detalle'],
     ['Contrato que más juega', 'contrato_favorito', fmt.texto, (r) => `${fmt.int(r.contrato_veces)} veces, ${fmt.pct(r.contrato_cumplido)} cumplido`],
+    ['Su día', 'dia_favorito', fmt.texto, (r) => `${fmt.pct(r.dia_favorito_pct)} de sus torneos`],
+    ['Nunca va', 'dias_sin_ir', fmt.texto, () => 'sin contar los jueves, casi solo de eventos'],
     ['Manos con top (100%)', 'manos_100', fmt.int, (r) => `y ${fmt.int(r.manos_0)} manos con 0%`],
     ['Rival favorito', 'rival_favorito_pct', fmt.pct, (r) => `contra ${r.rival_favorito}, en ${fmt.int(r.rival_favorito_manos)} manos`],
     ['Bestia negra', 'bestia_negra_pct', fmt.pct, (r) => `contra ${r.bestia_negra}, en ${fmt.int(r.bestia_negra_manos)} manos`],

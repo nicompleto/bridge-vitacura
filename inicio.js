@@ -8,6 +8,7 @@
     estilos: {palo: '♦', color: () => dash.colors[1]},
     manos: {palo: '♣', color: () => dash.colors[3]},
     club: {palo: 'ST', color: () => dash.colors[2]},
+    asistencia: {palo: '', color: () => dash.colors[5]},
   };
 
   const tarjeta = (h, conPalo) => {
