@@ -86,13 +86,32 @@
     });
     return d;
   };
+  // la mano del compañero queda oculta: solo se sabe lo que habría mostrado en el remate
+  const pista = (cartas) => {
+    const palos = cartas.split('.');
+    const puntos = [...cartas].reduce((s, c) => s + ({A: 4, K: 3, Q: 2, J: 1}[c] || 0), 0);
+    const largos = palos.map((c, i) => [c.length, '♠♥♦♣'[i]]).filter(([n]) => n >= 5).map(([, s]) => s);
+    const parejo = !largos.length && palos.every((c) => c.length >= 2);
+    const d = document.createElement('div');
+    d.className = 'bv-quiz-mano bv-dorso';
+    const h = document.createElement('h3');
+    h.textContent = 'Tu compañero muestra';
+    const b = document.createElement('b');
+    b.textContent = `${Math.max(0, puntos - 1)} a ${puntos + 1} puntos`;
+    const s = document.createElement('span');
+    s.textContent = largos.length ? `5 o más cartas de ${largos.join(' y ')}` : parejo ? 'Mano pareja' : 'Sin palo largo';
+    const n = document.createElement('small');
+    n.textContent = 'Su mano se ve al comparar.';
+    d.append(h, b, s, n);
+    return d;
+  };
   dash.draw('quiz-mano', (el) => {
     const m = actual();
     if (!m) { el.replaceChildren(); return; }
     const info = document.createElement('p');
     info.className = 'bv-quiz-info';
-    info.textContent = `Tu línea tiene ${m.hcp} puntos de honor · ${m.vul ? 'vulnerables' : 'no vulnerables'} · jugada el ${m.fecha}`;
-    el.replaceChildren(mano('Tu mano', m.tu), mano('Tu compañero', m.comp), info);
+    info.textContent = `${m.vul ? 'Vulnerables' : 'No vulnerables'} · jugada el ${m.fecha}`;
+    el.replaceChildren(mano('Tu mano', m.tu), q.visto ? mano('Tu compañero tenía', m.comp) : pista(m.comp), info);
   });
 
   dash.draw('quiz-marcador', (el) => { el.textContent = `Tú ${guardado.tu || 0} · Club ${guardado.club || 0}`; });
