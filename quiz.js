@@ -1,15 +1,29 @@
-// Pestaña ¿Qué rematarías?: tu contrato contra lo que jugó el Club Vitacura en una mano real
+// La mano del día, en Inicio: tu contrato contra lo que jugó el Club Vitacura en una mano real.
+// Es la misma mano para todos durante el día y se juega una sola vez.
 (() => {
-  const {fmt, filas, listaBarras} = window.bv;
+  const {fmt, filas} = window.bv;
   const PALOS = [['T', '♣'], ['D', '♦'], ['C', '♥'], ['P', '♠'], ['S', 'ST']];
-  const q = {i: null, nivel: null, palo: null, visto: false, ganadas: 0, jugadas: 0};
+  const CLAVE = 'bv-mano-del-dia';
+  const q = {id: null, nivel: null, palo: null, visto: false};
 
-  const manos = () => filas('quiz') || [];
+  // lo guardado es solo una comodidad de cada navegador: sin esto la página funciona igual
+  const leer = () => { try { return JSON.parse(localStorage.getItem(CLAVE)) || {}; } catch (e) { return {}; } };
+  let guardado = leer();
+  const guardar = () => { try { localStorage.setItem(CLAVE, JSON.stringify(guardado)); } catch (e) { /* sin almacenamiento */ } };
+
   const actual = () => {
-    const m = manos();
+    const m = filas('quiz') || [];
     if (!m.length) return null;
-    if (q.i === null) q.i = Math.floor(Math.random() * m.length);
-    return m[q.i % m.length];
+    const h = new Date();
+    const mano = m[Math.floor(Date.UTC(h.getFullYear(), h.getMonth(), h.getDate()) / 864e5) % m.length];
+    if (q.id !== mano.id) {
+      q.id = mano.id;
+      const c = guardado.id === mano.id ? guardado.contrato : null;
+      q.visto = Boolean(c);
+      q.nivel = c && c !== 'Paso' ? Number(c[0]) : null;
+      q.palo = c ? (c === 'Paso' ? 'Paso' : c[1]) : null;
+    }
+    return mano;
   };
   const dibujar = () => ['quiz-mano', 'quiz-nivel', 'quiz-palo', 'quiz-resultado', 'quiz-marcador'].forEach((d) => dash.draw(d));
   const elegido = () => (q.palo === 'Paso' ? 'Paso' : q.nivel && q.palo ? `${q.nivel}${q.palo}` : null);
@@ -35,24 +49,24 @@
     return {bazas, p, pct};
   };
 
+  const actualizarBoton = () => {
+    document.querySelectorAll('#quiz-comparar').forEach((b) => { b.disabled = !elegido() || q.visto; });
+  };
   const botones = (el, items, activo, alElegir) => {
     el.replaceChildren(...items.map(([v, t]) => {
       const b = document.createElement('button');
       b.type = 'button';
       b.className = 'bv-chip';
       b.textContent = t;
-      b.disabled = q.visto;
       b.setAttribute('aria-pressed', String(v === activo));
-      b.addEventListener('click', () => { alElegir(v); dibujar(); actualizarBoton(); });
+      b.addEventListener('click', () => { alElegir(v); dibujar(); });
       return b;
     }));
-  };
-  const actualizarBoton = () => {
-    document.querySelectorAll('#quiz-comparar').forEach((b) => { b.disabled = !elegido() || q.visto; });
+    actualizarBoton();
   };
 
-  dash.draw('quiz-nivel', (el) => botones(el, [1, 2, 3, 4, 5, 6, 7].map((n) => [n, String(n)]), q.nivel, (v) => { q.nivel = v; if (q.palo === 'Paso') q.palo = null; }));
-  dash.draw('quiz-palo', (el) => botones(el, [...PALOS, ['Paso', 'Paso']], q.palo, (v) => { q.palo = v; if (v === 'Paso') q.nivel = null; }));
+  dash.draw('quiz-nivel', (el) => { actual(); botones(el, [1, 2, 3, 4, 5, 6, 7].map((n) => [n, String(n)]), q.nivel, (v) => { q.nivel = v; if (q.palo === 'Paso') q.palo = null; }); });
+  dash.draw('quiz-palo', (el) => { actual(); botones(el, [...PALOS, ['Paso', 'Paso']], q.palo, (v) => { q.palo = v; if (v === 'Paso') q.nivel = null; }); });
 
   const mano = (titulo, cartas) => {
     const d = document.createElement('div');
@@ -81,39 +95,37 @@
     el.replaceChildren(mano('Tu mano', m.tu), mano('Tu compañero', m.comp), info);
   });
 
-  dash.draw('quiz-marcador', (el) => {
-    el.textContent = q.jugadas ? `Tú ${q.ganadas} · Club ${q.jugadas - q.ganadas}` : 'Tú 0 · Club 0';
-  });
+  dash.draw('quiz-marcador', (el) => { el.textContent = `Tú ${guardado.tu || 0} · Club ${guardado.club || 0}`; });
 
+  const parrafo = (clase, t) => {
+    const p = document.createElement('p');
+    p.className = clase;
+    p.textContent = t;
+    return p;
+  };
   dash.draw('quiz-resultado', (el) => {
     const m = actual();
     const c = elegido();
+    document.querySelectorAll('#mano-dia').forEach((d) => d.classList.toggle('bv-jugada', q.visto));
     if (!m || !q.visto || !c) { el.replaceChildren(); return; }
     const r = evaluar(m, c);
-    const card = document.createElement('div');
-    card.className = 'bv-card';
-    const v = document.createElement('p');
-    v.className = 'bv-quiz-veredicto';
-    v.textContent = r.pct > 50 ? `¡Le ganaste al club! ${fmt.pct(r.pct)}` : r.pct === 50 ? `Empate con el club: ${fmt.pct(r.pct)}` : `El club ganó esta: ${fmt.pct(r.pct)}`;
-    const d = document.createElement('p');
-    d.className = 'bv-sentence';
-    d.textContent = c === 'Paso' ? 'Pasaste la mano: 0 puntos.'
+    const veredicto = r.pct > 50 ? '¡Le ganaste al club!' : r.pct === 50 ? 'Empate con el club' : 'El club ganó esta';
+    const detalle = c === 'Paso' ? 'Pasaste la mano: 0 puntos.'
       : `${texto(c)}: con juego perfecto se hacen ${r.bazas} bazas, ${r.bazas >= Number(c[0]) + 6 ? 'se cumple' : 'no se cumple'}, ${fmt.int(r.p)} puntos.`;
-    const mejores = [];
-    for (let n = 1; n <= 7; n++) PALOS.forEach(([k]) => mejores.push(`${n}${k}`));
-    const top = mejores.map((x) => ({x, s: evaluar(m, x).p})).sort((a, b) => b.s - a.s)[0];
-    const t = document.createElement('p');
-    t.className = 'bv-note';
-    t.textContent = `El mejor contrato posible era ${texto(top.x)} (${fmt.int(top.s)} puntos).`;
-    const h = document.createElement('h3');
-    h.textContent = 'Qué se jugó en el club';
-    const ol = document.createElement('ol');
-    ol.className = 'bv-bars';
-    const club = m.club.split(',').map((x) => x.split(':')).map(([k, n]) => ({k, n: Number(n)}));
-    card.append(v, d, t, h, ol);
-    el.replaceChildren(card);
-    listaBarras(ol, club.map((x) => ({nombre: texto(x.k), valor: x.n, texto: `${x.n} ${x.n === 1 ? 'mesa' : 'mesas'}`})),
-                {dominio: [0, d3.max(club, (x) => x.n)], medallas: false, colores: club.map((x) => (x.k === c ? 'var(--color-ok)' : 'var(--cds-chart-muted)'))});
+    const todos = [];
+    for (let n = 1; n <= 7; n++) PALOS.forEach(([k]) => todos.push(`${n}${k}`));
+    const top = todos.map((x) => ({x, s: evaluar(m, x).p})).sort((a, b) => b.s - a.s)[0];
+    const mesas = document.createElement('div');
+    mesas.className = 'bv-club-mesas';
+    mesas.append(...m.club.split(',').map((x) => x.split(':')).map(([k, n]) => {
+      const s = document.createElement('span');
+      s.textContent = `${texto(k)} · ${n} ${n === '1' ? 'mesa' : 'mesas'}`;
+      if (k === c) s.className = 'bv-tuyo';
+      return s;
+    }));
+    el.replaceChildren(parrafo('bv-quiz-veredicto', `${veredicto} ${fmt.pct(r.pct)}`), parrafo('bv-sentence', detalle),
+                       parrafo('bv-note', `Lo mejor posible era ${texto(top.x)} (${fmt.int(top.s)} puntos). En el club se jugó:`), mesas,
+                       parrafo('bv-note', 'Mañana hay otra mano.'));
   });
 
   document.querySelectorAll('#quiz-comparar').forEach((b) => b.addEventListener('click', () => {
@@ -121,17 +133,9 @@
     const c = elegido();
     if (!m || !c || q.visto) return;
     q.visto = true;
-    q.jugadas += 1;
-    if (evaluar(m, c).pct > 50) q.ganadas += 1;
+    const gano = evaluar(m, c).pct > 50;
+    guardado = {...guardado, id: m.id, contrato: c, tu: (guardado.tu || 0) + (gano ? 1 : 0), club: (guardado.club || 0) + (gano ? 0 : 1)};
+    guardar();
     dibujar();
-    actualizarBoton();
   }));
-  document.querySelectorAll('#quiz-otra').forEach((b) => b.addEventListener('click', () => {
-    q.i = (q.i ?? 0) + 1 + Math.floor(Math.random() * 5);
-    q.nivel = null; q.palo = null; q.visto = false;
-    dibujar();
-    actualizarBoton();
-    window.scrollTo({top: 0});
-  }));
-  actualizarBoton();
 })();
