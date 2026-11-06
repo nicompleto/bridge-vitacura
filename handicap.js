@@ -114,30 +114,49 @@
     }));
   });
 
-  dash.draw('hc-sobre', (ol) => {
+  // sin números de puesto: en esta pestaña un número solo puede ser un handicap
+  const filaRinde = (x, como) => {
+    const tr = document.createElement('tr');
+    const nombre = document.createElement('td');
+    const boton = document.createElement('button');
+    boton.type = 'button';
+    boton.className = 'bv-hc-nombre';
+    boton.textContent = lindo(x.jugador);
+    boton.addEventListener('click', () => verJugador(x.jugador));
+    nombre.appendChild(boton);
+    const hc = document.createElement('td');
+    hc.textContent = String(x.handicap);
+    const rinde = document.createElement('td');
+    rinde.className = 'bv-hc-rinde';
+    rinde.textContent = como;
+    tr.append(nombre, hc, rinde);
+    return tr;
+  };
+  // handicap que le correspondería por sus resultados, en entero salvo que redondeado no cambie
+  const rindeComo = (x, pendiente) => {
+    const v = x.handicap + x.dif / pendiente;
+    if (v > 9) return '9+';
+    const r = Math.max(0, Math.round(v));
+    return r === x.handicap ? uno(Math.max(0, v)) : String(r);
+  };
+
+  dash.draw('hc-sobre', (tb) => {
     const r = resumen();
-    if (!r) { ol.replaceChildren(); return; }
+    if (!r) { tb.replaceChildren(); return; }
     const sel = analizados().filter((x) => x.torneos >= MIN_LISTA && x.dif > 0).sort((a, b) => b.dif - a.dif).slice(0, 10);
-    listaBarras(ol, sel.map((x) => ({
-      nombre: lindo(x.jugador), valor: x.dif, texto: `+${uno(x.dif)}%`, clic: () => verJugador(x.jugador),
-      sub: `Handicap ${x.handicap}, pero rinde como ${uno(Math.max(0, x.handicap + x.dif / r.pendiente))}`,
-    })), {dominio: [0, d3.max(sel, (x) => x.dif) || 1]});
+    tb.replaceChildren(...sel.map((x) => filaRinde(x, rindeComo(x, r.pendiente))));
   });
 
-  // sin rojo ni puesto: es una lectura de sus resultados recientes, no un juicio
-  dash.draw('hc-exigente', (ol) => {
+  // sin rojo: es una lectura de sus resultados recientes, no un juicio
+  dash.draw('hc-exigente', (tb) => {
     const r = resumen();
-    if (!r) { ol.replaceChildren(); return; }
-    const como = (x) => { const v = x.handicap + x.dif / r.pendiente; return v > 9 ? 'más de 9' : uno(v); };
+    if (!r) { tb.replaceChildren(); return; }
     const sel = analizados().filter((x) => x.torneos >= MIN_LISTA && x.dif < 0).sort((a, b) => a.dif - b.dif).slice(0, 10);
-    listaBarras(ol, sel.map((x) => ({
-      nombre: lindo(x.jugador), valor: -x.dif, texto: `${uno(x.pct)}%`, clic: () => verJugador(x.jugador), etiquetaRank: String(x.handicap),
-      sub: `Handicap ${x.handicap}, pero rinde como ${como(x)}`,
-    })), {dominio: [0, d3.max(sel, (x) => -x.dif) || 1], medallas: false, color: 'var(--cds-chart-muted)'});
+    tb.replaceChildren(...sel.map((x) => filaRinde(x, rindeComo(x, r.pendiente))));
   });
 
   dash.draw('hc-dias', (ol) => {
     const d = (filas('handicap_dias') || []).slice().sort((a, b) => a.handicap - b.handicap);
-    listaBarras(ol, d.map((x) => ({nombre: x.dia, valor: x.handicap, texto: `${d3.format('.2f')(x.handicap)} promedio`})), {dominio: [0, 9], medallas: false});
+    listaBarras(ol, d.map((x) => ({nombre: x.dia, etiquetaRank: x.dia.slice(0, 2), valor: x.handicap, texto: `${d3.format('.2f')(x.handicap)} promedio`})), {dominio: [0, 9], medallas: false});
   });
 })();

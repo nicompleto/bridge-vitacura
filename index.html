@@ -8,10 +8,10 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Source+Sans+3:wght@400;500;600&family=Source+Serif+4:opsz,wght@8..60,400;8..60,600&display=swap">
-<link rel="stylesheet" href="tema.css?v=202611061108">
+<link rel="stylesheet" href="tema.css?v=202611061311">
 <script src="https://cdn.jsdelivr.net/npm/d3@7.9.0/dist/d3.min.js"></script>
-<script>window.__bvVersion = "202611061108";</script>
-<script src="dash.js?v=202611061108"></script>
+<script>window.__bvVersion = "202611061311";</script>
+<script src="dash.js?v=202611061311"></script>
 </head>
 <body>
 <div id="dash-root">
@@ -278,6 +278,20 @@
   .bv-mt-dd { border-collapse: collapse; margin-bottom: var(--cds-gap-md); font-variant-numeric: tabular-nums; }
   .bv-mt-dd th, .bv-mt-dd td { padding: 4px 12px; text-align: center; border-bottom: 1px solid var(--color-border-line); font-weight: 600; }
   .bv-mt-dd th:first-child { text-align: left; }
+  /* handicap */
+  .bv-mt-resumen { display: grid; gap: var(--cds-gap-lg); grid-template-columns: repeat(auto-fit, minmax(min(100%, 15rem), 1fr)); min-height: 5rem; }
+  .bv-mt-cifra { display: grid; gap: var(--cds-gap-xs); align-content: start; min-width: 0; }
+  .bv-mt-cifra b { font-family: var(--font-anthropic-serif); font-weight: 400; font-size: calc(var(--cds-font-size-title) * 1.3); line-height: 1.05; font-variant-numeric: lining-nums; }
+  .bv-mt-cifra span { color: var(--color-fg-muted); }
+  .bv-hc-tabla { width: 100%; border-collapse: collapse; }
+  .bv-hc-tabla th { font-size: var(--cds-font-size-caption); font-weight: 600; color: var(--color-fg-muted); text-align: center; padding: 0 var(--cds-pad-xs) var(--cds-pad-xs); border-bottom: 1px solid var(--color-fg-muted); line-height: 1.2; width: 5.25rem; }
+  .bv-hc-tabla th:first-child { text-align: left; padding-left: 0; width: auto; }
+  .bv-hc-tabla td { padding: var(--cds-pad-xs); border-bottom: 1px solid var(--color-border-line); text-align: center; font-family: var(--font-anthropic-serif); font-size: var(--cds-font-size-heading); font-variant-numeric: lining-nums; }
+  .bv-hc-tabla td:first-child { padding-left: 0; text-align: left; font-family: var(--font-anthropic-sans); }
+  .bv-hc-tabla td.bv-hc-rinde { font-size: calc(var(--cds-font-size-heading) * 1.15); background: var(--bv-felt); }
+  .bv-hc-nombre { appearance: none; background: none; border: 0; padding: 0; min-height: 44px; font: inherit; font-size: var(--cds-font-size-body); line-height: 1.2; color: var(--color-fg); text-align: left; cursor: pointer; overflow-wrap: anywhere; text-decoration: underline; text-decoration-color: var(--color-border-line); text-underline-offset: 3px; }
+  .bv-hc-nombre:hover { text-decoration-color: var(--color-fg); }
+  .bv-hc-nombre:focus-visible { outline: 3px solid var(--color-fg); outline-offset: 2px; }
   /* que rematarias */
   .bv-cruces td, .bv-cruces th { text-align: center; }
   .bv-cruces td:first-child, .bv-cruces th:first-child { text-align: left; white-space: nowrap; }
@@ -609,13 +623,13 @@
     <div class="bv-grid">
       <div class="bv-card" id="hc-mejores">
         <h3>Mejor que su handicap</h3>
-        <p class="bv-note">Quienes más superan lo esperado para su handicap, con al menos 30 torneos.</p>
-        <ol class="bv-bars" data-draw="hc-sobre" data-source="handicap_jugadores"></ol>
+        <p class="bv-note">Quienes más superan lo esperado para su handicap, con al menos 30 torneos. "Rinde como" es el handicap que corresponde a sus resultados.</p>
+        <table class="bv-hc-tabla"><thead><tr><th>Jugador</th><th>Handicap</th><th>Rinde como</th></tr></thead><tbody data-draw="hc-sobre" data-source="handicap_jugadores"></tbody></table>
       </div>
       <div class="bv-card" id="hc-exigente">
         <h3>Un handicap exigente</h3>
-        <p class="bv-note">Sus resultados desde 2025 van bajo lo esperado para su handicap, con al menos 30 torneos. Puede ser por un año difícil, una pareja nueva o torneos más duros. El número al lado es su handicap.</p>
-        <ol class="bv-bars" data-draw="hc-exigente" data-source="handicap_jugadores"></ol>
+        <p class="bv-note">Sus resultados desde 2025 van bajo lo esperado para su handicap, con al menos 30 torneos. Puede ser por un año difícil, una pareja nueva o torneos más duros.</p>
+        <table class="bv-hc-tabla"><thead><tr><th>Jugador</th><th>Handicap</th><th>Rinde como</th></tr></thead><tbody data-draw="hc-exigente" data-source="handicap_jugadores"></tbody></table>
       </div>
     </div>
 
@@ -1296,19 +1310,19 @@
   </section>
 </div>
 
-<script src="comun.js?v=202611061108"></script>
-<script src="inicio.js?v=202611061108"></script>
-<script src="resumen.js?v=202611061108"></script>
-<script src="ranking.js?v=202611061108"></script>
-<script src="jugador.js?v=202611061108"></script>
-<script src="handicap.js?v=202611061108"></script>
-<script src="mi_torneo.js?v=202611061108"></script>
-<script src="juveniles.js?v=202611061108"></script>
-<script src="generos.js?v=202611061108"></script>
-<script src="dias.js?v=202611061108"></script>
-<script src="estilo.js?v=202611061108"></script>
-<script src="cartas.js?v=202611061108"></script>
+<script src="comun.js?v=202611061311"></script>
+<script src="inicio.js?v=202611061311"></script>
+<script src="resumen.js?v=202611061311"></script>
+<script src="ranking.js?v=202611061311"></script>
+<script src="jugador.js?v=202611061311"></script>
+<script src="handicap.js?v=202611061311"></script>
+<script src="mi_torneo.js?v=202611061311"></script>
+<script src="juveniles.js?v=202611061311"></script>
+<script src="generos.js?v=202611061311"></script>
+<script src="dias.js?v=202611061311"></script>
+<script src="estilo.js?v=202611061311"></script>
+<script src="cartas.js?v=202611061311"></script>
 </div>
-<p class="pie">Datos de <a href="https://bridgevitacura.cl/resultado/">bridgevitacura.cl</a> · actualizado el 06-11-2026 11:08</p>
+<p class="pie">Datos de <a href="https://bridgevitacura.cl/resultado/">bridgevitacura.cl</a> · actualizado el 06-11-2026 13:11</p>
 </body>
 </html>
