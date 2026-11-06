@@ -8,10 +8,10 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Source+Sans+3:wght@400;500;600&family=Source+Serif+4:opsz,wght@8..60,400;8..60,600&display=swap">
-<link rel="stylesheet" href="tema.css?v=202611060212">
+<link rel="stylesheet" href="tema.css?v=202611060236">
 <script src="https://cdn.jsdelivr.net/npm/d3@7.9.0/dist/d3.min.js"></script>
-<script>window.__bvVersion = "202611060212";</script>
-<script src="dash.js?v=202611060212"></script>
+<script>window.__bvVersion = "202611060236";</script>
+<script src="dash.js?v=202611060236"></script>
 </head>
 <body>
 <div id="dash-root">
@@ -500,15 +500,28 @@
     </div>
 
     <div class="bv-grid">
+      <div class="bv-card" id="hc-mejores">
+        <h3>Mejor que su handicap</h3>
+        <p class="bv-note">Quienes más superan lo esperado para su handicap, con al menos 30 torneos.</p>
+        <ol class="bv-bars" data-draw="hc-sobre" data-source="handicap_jugadores"></ol>
+      </div>
+      <div class="bv-card" id="hc-exigente">
+        <h3>Un handicap exigente</h3>
+        <p class="bv-note">Sus resultados desde 2025 van bajo lo esperado para su handicap, con al menos 30 torneos. Puede ser por un año difícil, una pareja nueva o torneos más duros. El número al lado es su handicap.</p>
+        <ol class="bv-bars" data-draw="hc-exigente" data-source="handicap_jugadores"></ol>
+      </div>
+    </div>
+
+    <div class="bv-grid">
       <div class="bv-card" id="hc-gana">
         <h3>Quién gana</h3>
         <p class="bv-note">Porcentaje de sus torneos en que salieron primeros en su línea.</p>
         <ol class="bv-bars" data-draw="hc-victorias" data-source="handicap_grupos"></ol>
       </div>
-      <div class="bv-card" id="hc-mejores">
-        <h3>Mejor que su handicap</h3>
-        <p class="bv-note">Quienes más superan lo esperado para su handicap, con al menos 30 torneos.</p>
-        <ol class="bv-bars" data-draw="hc-sobre" data-source="handicap_jugadores"></ol>
+      <div class="bv-card" id="hc-dia">
+        <h3>Handicap promedio de cada día</h3>
+        <p class="bv-note">Mientras más bajo, más fuerte el grupo que va ese día.</p>
+        <ol class="bv-bars" data-draw="hc-dias" data-source="handicap_dias"></ol>
       </div>
     </div>
 
@@ -527,12 +540,6 @@
           <tbody data-draw="hc-tabla" data-source="handicap_grupos"></tbody>
         </table>
       </div>
-    </div>
-
-    <div class="bv-card" id="hc-dia">
-      <h3>Handicap promedio de cada día</h3>
-      <p class="bv-note">Mientras más bajo, más fuerte el grupo que va ese día.</p>
-      <ol class="bv-bars" data-draw="hc-dias" data-source="handicap_dias"></ol>
     </div>
 
     <p class="bv-note">Handicap publicado por la Federación, que se actualiza una vez al año según los resultados del año anterior y solo incluye a quienes pagaron su tarjeta. Por eso faltan jugadores. Se analizan quienes tienen al menos 15 torneos desde 2025.</p>
@@ -1182,19 +1189,19 @@
   </section>
 </div>
 
-<script src="comun.js?v=202611060212"></script>
-<script src="inicio.js?v=202611060212"></script>
-<script src="resumen.js?v=202611060212"></script>
-<script src="ranking.js?v=202611060212"></script>
-<script src="jugador.js?v=202611060212"></script>
-<script src="handicap.js?v=202611060212"></script>
-<script src="mi_torneo.js?v=202611060212"></script>
-<script src="juveniles.js?v=202611060212"></script>
-<script src="generos.js?v=202611060212"></script>
-<script src="dias.js?v=202611060212"></script>
-<script src="estilo.js?v=202611060212"></script>
-<script src="cartas.js?v=202611060212"></script>
+<script src="comun.js?v=202611060236"></script>
+<script src="inicio.js?v=202611060236"></script>
+<script src="resumen.js?v=202611060236"></script>
+<script src="ranking.js?v=202611060236"></script>
+<script src="jugador.js?v=202611060236"></script>
+<script src="handicap.js?v=202611060236"></script>
+<script src="mi_torneo.js?v=202611060236"></script>
+<script src="juveniles.js?v=202611060236"></script>
+<script src="generos.js?v=202611060236"></script>
+<script src="dias.js?v=202611060236"></script>
+<script src="estilo.js?v=202611060236"></script>
+<script src="cartas.js?v=202611060236"></script>
 </div>
-<p class="pie">Datos de <a href="https://bridgevitacura.cl/resultado/">bridgevitacura.cl</a> · actualizado el 06-11-2026 02:12</p>
+<p class="pie">Datos de <a href="https://bridgevitacura.cl/resultado/">bridgevitacura.cl</a> · actualizado el 06-11-2026 02:36</p>
 </body>
 </html>

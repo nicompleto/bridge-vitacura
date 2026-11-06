@@ -124,6 +124,15 @@
     })), {dominio: [0, d3.max(sel, (x) => x.dif) || 1]});
   });
 
+  // sin rojo ni puesto: es una lectura de sus resultados recientes, no un juicio
+  dash.draw('hc-exigente', (ol) => {
+    const sel = analizados().filter((x) => x.torneos >= MIN_LISTA && x.dif < 0).sort((a, b) => a.dif - b.dif).slice(0, 10);
+    listaBarras(ol, sel.map((x) => ({
+      nombre: lindo(x.jugador), valor: -x.dif, texto: `${uno(x.pct)}%`, clic: () => verJugador(x.jugador), etiquetaRank: String(x.handicap),
+      sub: `Para handicap ${x.handicap} se espera cerca de ${uno(x.esperado)}%`,
+    })), {dominio: [0, d3.max(sel, (x) => -x.dif) || 1], medallas: false, color: 'var(--cds-chart-muted)'});
+  });
+
   dash.draw('hc-dias', (ol) => {
     const d = (filas('handicap_dias') || []).slice().sort((a, b) => a.handicap - b.handicap);
     listaBarras(ol, d.map((x) => ({nombre: x.dia, valor: x.handicap, texto: `${d3.format('.2f')(x.handicap)} promedio`})), {dominio: [0, 9], medallas: false});
