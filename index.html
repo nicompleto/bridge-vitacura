@@ -8,52 +8,54 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Source+Sans+3:wght@400;500;600&family=Source+Serif+4:opsz,wght@8..60,400;8..60,600&display=swap">
-<link rel="stylesheet" href="tema.css?v=202611060239">
+<link rel="stylesheet" href="tema.css?v=202611061029">
 <script src="https://cdn.jsdelivr.net/npm/d3@7.9.0/dist/d3.min.js"></script>
-<script>window.__bvVersion = "202611060239";</script>
-<script src="dash.js?v=202611060239"></script>
+<script>window.__bvVersion = "202611061029";</script>
+<script src="dash.js?v=202611061029"></script>
 </head>
 <body>
 <div id="dash-root">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible+Next:wght@400;500;600;700&family=Young+Serif&display=swap">
 <style>
   /* Mesa de bridge: paño verde como tinte del encabezado, palos como detalle, medallas para el podio */
-  .bv { --bv-felt: color-mix(in srgb, var(--color-ok) 14%, var(--color-panel)); --bv-felt-line: color-mix(in srgb, var(--color-ok) 30%, var(--color-border-line));
+  .bv { --font-anthropic-sans: "Atkinson Hyperlegible Next", "Source Sans 3", system-ui, sans-serif; --font-anthropic-serif: "Young Serif", Georgia, serif;
+        --bv-pano: #0d4a3b; --bv-pano-claro: #14614e; --bv-naipe: #ffffff; --bv-tinta: #14161a; --bv-rojo-naipe: #c4122f;
+        --bv-felt: color-mix(in srgb, var(--color-ok) 14%, var(--color-panel)); --bv-felt-line: color-mix(in srgb, var(--color-ok) 30%, var(--color-border-line));
         --bv-gold: #c9a227; --bv-silver: #9aa3ad; --bv-bronze: #b87333;
         display: grid; gap: var(--cds-gap-lg); font-family: var(--font-anthropic-sans); color: var(--color-fg); }
   .bv-hero { background: var(--bv-felt); border: 1px solid var(--bv-felt-line); border-radius: calc(var(--cds-radius) * 2); padding: var(--cds-pad-xl) var(--cds-pad-lg); display: grid; gap: var(--cds-gap-md); }
-  /* portada: paño de mesa y naipes. Es un objeto físico: mismos colores en tema claro y oscuro */
+  /* portada: la mesa de bridge vista desde arriba, con los ganadores del último torneo sentados en su línea.
+     Es un objeto físico: mismos colores en tema claro y oscuro */
   .bv-hero { position: relative; overflow: hidden; }
-  .bv-marca { display: none; }
-  .bv-hero-kpis, .bv-abanico { display: none; }
-  .bv-portada { container-type: inline-size; grid-template-columns: minmax(0, 1fr); color: #f4f7f1; border: 0; border-radius: calc(var(--cds-radius) * 2.5); padding: var(--cds-pad-xl);
-                background: radial-gradient(120% 150% at 12% 0%, #23785a 0%, #145a42 45%, #0b3a2b 100%);
-                box-shadow: inset 0 0 0 1px rgba(214, 178, 76, .55), inset 0 0 0 6px rgba(0, 0, 0, .12); }
-  .bv-portada .bv-marca { display: block; margin: 0; font-size: var(--cds-font-size-caption); letter-spacing: .14em; text-transform: uppercase; color: #e3c56e; }
-  .bv-portada .bv-title { font-size: clamp(32px, 12.5cqw, 64px); color: #fff; }
-  .bv-portada .bv-lede { color: rgba(244, 247, 241, .82); max-width: 34rem; }
-  .bv-portada .bv-lede b { color: #fff; }
-  .bv-hero-texto { display: grid; gap: var(--cds-gap-sm); position: relative; z-index: 1; }
-  .bv-portada .bv-hero-kpis { display: grid; grid-template-columns: repeat(auto-fit, minmax(6.5rem, 1fr)); gap: var(--cds-gap-md); max-width: 38rem; position: relative; z-index: 1; padding-top: var(--cds-pad-md); border-top: 1px solid rgba(214, 178, 76, .35); }
-  .bv-hero-kpis div { display: grid; }
-  .bv-hero-kpis b { font-family: var(--font-anthropic-serif); font-weight: 400; font-size: var(--cds-font-size-title); color: #fff; font-variant-numeric: tabular-nums; line-height: 1.1; }
-  .bv-hero-kpis span { font-size: var(--cds-font-size-caption); color: rgba(244, 247, 241, .75); }
-  .bv-portada .bv-abanico { display: block; position: relative; height: 150px; margin-bottom: var(--cds-gap-sm); }
-  .bv-naipe { position: absolute; left: 50%; top: 8px; width: 92px; height: 130px; margin-left: -46px; border-radius: 9px; background: #fffdf7; color: #1b2320; display: grid; padding: 6px 9px;
-              box-shadow: 0 8px 20px rgba(0, 0, 0, .35); transform: translate(calc(var(--x) * .72), var(--y)) rotate(var(--r)) scale(.72); transform-origin: 50% 120%; transition: transform var(--cds-dur-slow) var(--cds-ease-out); }
-  .bv-naipe.bv-rojo { color: #c0392b; }
-  .bv-naipe b { font-family: var(--font-anthropic-serif); font-weight: 600; font-size: 24px; line-height: 1; }
-  .bv-naipe i { font-style: normal; font-size: 46px; line-height: 1; justify-self: center; align-self: center; }
-  @container (min-width: 46rem) {
-    .bv-portada .bv-abanico { position: absolute; right: 200px; top: 44px; height: 200px; width: 0; margin: 0; }
-    .bv-naipe { transform: translate(var(--x), var(--y)) rotate(var(--r)); }
-    .bv-abanico:hover .bv-naipe { transform: translate(calc(var(--x) * 1.12), calc(var(--y) - 8px)) rotate(calc(var(--r) * 1.15)); }
+  .bv-marca, .bv-hero-kpis, .bv-mesa { display: none; }
+  .bv-portada { grid-template-columns: minmax(0, 1fr); gap: var(--cds-gap-lg); align-content: center; color: #fff; border: 0; border-radius: calc(var(--cds-radius) * 1.5); padding: clamp(20px, 4vw, 48px); background: var(--bv-pano); }
+  .bv-portada .bv-marca { display: block; margin: 0; font-size: var(--cds-font-size-body); font-weight: 600; color: #fff; }
+  .bv-portada .bv-title { font-size: clamp(44px, 7.4vw, 88px); line-height: 1; color: #fff; }
+  .bv-portada .bv-lede { color: #fff; max-width: 32rem; }
+  .bv .bv-portada .bv-lede b { color: #fff; }
+  .bv-hero-texto { display: grid; gap: var(--cds-gap-md); }
+  .bv-portada .bv-hero-kpis { display: block; margin: 0; max-width: 32rem; color: #fff; font-size: var(--cds-font-size-body); }
+  .bv-hero-kpis b { font-weight: 700; font-variant-numeric: tabular-nums; }
+  .bv-portada .bv-mesa { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1.15fr) minmax(0, 1fr); grid-template-areas: ". n ." "o c e" ". s ."; gap: var(--cds-gap-sm); align-items: center; min-height: 19rem; }
+  .bv-asiento { appearance: none; border: 0; font: inherit; text-align: center; color: var(--bv-tinta); background: var(--bv-naipe); border-radius: var(--cds-radius); min-height: 4.5rem; padding: var(--cds-pad-sm); display: grid; align-content: center; gap: 2px; line-height: 1.2; font-weight: 600; font-size: var(--cds-font-size-caption); box-shadow: 0 2px 0 rgba(0, 0, 0, .35), 0 8px 18px rgba(0, 0, 0, .28); overflow-wrap: anywhere; }
+  button.bv-asiento { cursor: pointer; touch-action: manipulation; transition: transform 180ms var(--cds-ease-out); }
+  button.bv-asiento:hover { transform: translateY(-2px); }
+  button.bv-asiento:focus-visible { outline: 3px solid #fff; outline-offset: 2px; }
+  .bv-asiento i { font-style: normal; font-family: var(--font-anthropic-serif); font-weight: 400; color: var(--bv-rojo-naipe); font-size: var(--cds-font-size-heading); line-height: 1; }
+  .bv-a-n { grid-area: n; } .bv-a-s { grid-area: s; } .bv-a-e { grid-area: e; } .bv-a-o { grid-area: o; }
+  .bv-tapete { grid-area: c; aspect-ratio: 1; min-width: 0; display: grid; place-content: center; gap: var(--cds-gap-xs); text-align: center; padding: var(--cds-pad-sm); border-radius: var(--cds-radius); background: var(--bv-pano-claro); box-shadow: inset 0 0 0 2px rgba(255, 255, 255, .35); color: #fff; line-height: 1.2; font-size: var(--cds-font-size-caption); }
+  .bv-tapete b { font-family: var(--font-anthropic-serif); font-weight: 400; font-size: var(--cds-font-size-heading); line-height: 1.1; }
+  .bv-tapete span { font-variant-numeric: tabular-nums; }
+  @media (min-width: 900px) {
+    .bv-portada { grid-template-columns: minmax(0, 1fr) minmax(0, 33rem); column-gap: var(--cds-gap-xl); }
+    .bv-portada .bv-hero-texto { align-self: end; }
+    .bv-portada .bv-hero-kpis { align-self: start; grid-column: 1; }
+    .bv-portada .bv-mesa { grid-column: 2; grid-row: 1 / span 2; }
   }
   @media (prefers-reduced-motion: no-preference) {
-    .bv-naipe { animation: bv-repartir .7s var(--cds-ease-out) backwards; }
-    .bv-naipe:nth-child(2) { animation-delay: .08s; }
-    .bv-naipe:nth-child(3) { animation-delay: .16s; }
-    .bv-naipe:nth-child(4) { animation-delay: .24s; }
-    @keyframes bv-repartir { from { transform: translate(0, 40px) rotate(0deg); opacity: 0; } }
+    .bv-portada .bv-asiento { animation: bv-repartir .55s var(--cds-ease-out) backwards; }
+    .bv-a-n { --dy: 90px; } .bv-a-e { --dx: -130px; animation-delay: .1s !important; } .bv-a-s { --dy: -90px; animation-delay: .2s !important; } .bv-a-o { --dx: 130px; animation-delay: .3s !important; }
+    @keyframes bv-repartir { from { transform: translate(var(--dx, 0), var(--dy, 0)) rotate(-8deg) scale(.7); opacity: 0; } }
   }
   /* ultimo torneo */
   .bv-ultimo { background: var(--color-panel); border: 1px solid var(--color-border-line); border-radius: calc(var(--cds-radius) * 2); padding: var(--cds-pad-xl) var(--cds-pad-lg); display: grid; gap: var(--cds-gap-lg); }
@@ -72,31 +74,22 @@
   .bv-dato span { font-size: var(--cds-font-size-caption); color: var(--color-fg-muted); }
   .bv-dato b { font-family: var(--font-anthropic-serif); font-weight: 400; font-size: var(--cds-font-size-title); line-height: 1.15; }
   .bv-dato small { font-size: var(--cds-font-size-caption); color: var(--color-fg-muted); }
-  /* en forma */
-  .bv-forma { display: grid; gap: var(--cds-gap-md); grid-template-columns: repeat(auto-fit, minmax(min(100%, 11rem), 1fr)); min-height: 7rem; }
-  .bv-en-forma { appearance: none; font: inherit; color: inherit; text-align: left; cursor: pointer; background: var(--color-panel); border: 1px solid var(--color-border-line); border-radius: var(--cds-radius); padding: var(--cds-pad-md); display: grid; gap: 2px; align-content: start; transition: transform var(--cds-dur-slow) var(--cds-ease-out), border-color var(--cds-dur-slow); }
-  .bv-en-forma:hover { transform: translateY(-3px); border-color: var(--color-ok); }
-  .bv-en-forma b { font-family: var(--font-anthropic-serif); font-weight: 400; font-size: var(--cds-font-size-title); line-height: 1.1; font-variant-numeric: tabular-nums; }
-  .bv-en-forma span { font-size: var(--cds-font-size-body); font-weight: 500; overflow-wrap: anywhere; }
-  .bv-en-forma small { font-size: var(--cds-font-size-caption); color: var(--color-fg-muted); }
-  .bv-en-forma em { font-style: normal; font-size: var(--cds-font-size-caption); color: var(--color-ok); font-weight: 600; }
-  /* accesos */
-  .bv-explora { display: grid; gap: var(--cds-gap-md); grid-template-columns: repeat(auto-fit, minmax(min(100%, 16rem), 1fr)); }
-  .bv-acceso { appearance: none; font: inherit; color: var(--color-fg); text-align: left; cursor: pointer; background: var(--color-panel); border: 1px solid var(--color-border-line); border-radius: var(--cds-radius); padding: var(--cds-pad-md) var(--cds-pad-lg); display: grid; grid-template-columns: 2rem minmax(0, 1fr); column-gap: var(--cds-gap-sm); align-items: center; transition: transform var(--cds-dur-slow) var(--cds-ease-out), background var(--cds-dur-slow); }
-  .bv-acceso:hover { transform: translateY(-3px); background: var(--bv-felt); }
-  .bv-acceso:focus-visible, .bv-en-forma:focus-visible { outline: 2px solid var(--color-fg); outline-offset: 2px; }
-  .bv-acceso i { font-style: normal; font-size: var(--cds-font-size-title); grid-row: span 2; }
-  .bv-acceso b { font-weight: 600; }
-  .bv-acceso span { font-size: var(--cds-font-size-caption); color: var(--color-fg-muted); }
   .bv-suits { font-size: var(--cds-font-size-heading); letter-spacing: .35em; color: var(--color-fg); }
   .bv-suits .bv-red, .bv-red { color: var(--color-bad); }
   .bv-title { font-family: var(--font-anthropic-serif); font-weight: 400; font-size: calc(var(--cds-font-size-title) * 1.6); line-height: 1.05; margin: 0; text-wrap: balance; }
   .bv-lede { margin: 0; color: var(--color-fg-muted); font-size: var(--cds-font-size-body); max-width: 65ch; }
   .bv .bv-lede b, .bv-sentence b { font-weight: 600; color: var(--color-fg); }
-  .bv-tabs { display: flex; flex-wrap: wrap; gap: var(--cds-gap-xs); border-bottom: 1px solid var(--color-border-line); }
-  .bv-tab { appearance: none; background: none; border: 0; border-bottom: 2px solid transparent; padding: var(--cds-pad-sm) var(--cds-pad-md); font: inherit; font-size: var(--cds-font-size-body); color: var(--color-fg-muted); cursor: pointer; margin-bottom: -1px; }
-  .bv-tab[aria-selected="true"] { color: var(--color-fg); border-bottom-color: var(--color-ok); font-weight: 500; }
-  .bv-tab:focus-visible, .bv-chip:focus-visible { outline: 2px solid var(--color-fg); outline-offset: 2px; }
+  .bv-tabs { position: relative; display: flex; flex-wrap: wrap; gap: var(--cds-gap-xs); border-bottom: 1px solid var(--color-border-line); }
+  .bv-tab, .bv-mas-btn { appearance: none; background: none; border: 0; border-bottom: 3px solid transparent; min-height: 44px; padding: var(--cds-pad-sm) var(--cds-pad-md); font: inherit; font-size: var(--cds-font-size-body); color: var(--color-fg-muted); cursor: pointer; margin-bottom: -1px; }
+  .bv-tab:hover, .bv-mas-btn:hover { color: var(--color-fg); }
+  .bv-tab[aria-selected="true"], .bv-mas-btn[aria-selected="true"] { color: var(--color-fg); border-bottom-color: var(--bv-rojo); font-weight: 600; }
+  .bv-tab:focus-visible, .bv-mas-btn:focus-visible, .bv-chip:focus-visible { outline: 2px solid var(--color-fg); outline-offset: 2px; }
+  .bv-mas-btn::after { content: " ▾"; }
+  .bv-masmenu { position: relative; }
+  .bv-mas-lista { position: absolute; top: 100%; left: 0; z-index: 10; width: 16rem; box-sizing: border-box; display: grid; gap: 2px; margin-top: var(--cds-gap-xs); padding: var(--cds-pad-xs); background: var(--cds-surface-popover); border: 1px solid var(--cds-border); border-radius: var(--cds-radius); box-shadow: var(--cds-shadow-popover); }
+  .bv-mas-lista .bv-tab { width: 100%; margin: 0; text-align: left; border-bottom: 0; border-radius: calc(var(--cds-radius) * .6); }
+  .bv-mas-lista .bv-tab:hover, .bv-mas-lista .bv-tab[aria-selected="true"] { background: var(--bv-felt); }
+  @media (max-width: 899px) { .bv-masmenu { position: static; } .bv-mas-lista { left: auto; right: 0; width: min(18rem, 100%); } }
   .bv-page { display: grid; gap: var(--cds-gap-lg); }
   .bv-section-head { display: flex; flex-wrap: wrap; justify-content: space-between; align-items: end; gap: var(--cds-gap-sm); }
   .bv-section-head h2 { margin: 0; font-family: var(--font-anthropic-serif); font-weight: 400; font-size: var(--cds-font-size-title); }
@@ -123,7 +116,7 @@
   .bv-rank.bv-m1 { background: var(--bv-gold); border-color: var(--bv-gold); color: #fff; font-weight: 600; }
   .bv-rank.bv-m2 { background: var(--bv-silver); border-color: var(--bv-silver); color: #fff; font-weight: 600; }
   .bv-rank.bv-m3 { background: var(--bv-bronze); border-color: var(--bv-bronze); color: #fff; font-weight: 600; }
-  .bv-bar-body { display: grid; gap: 3px; min-width: 0; }
+  .bv-bar-body { display: grid; grid-template-columns: minmax(0, 1fr); gap: 3px; min-width: 0; }
   .bv-bar-top { display: flex; justify-content: space-between; gap: var(--cds-gap-sm); font-size: var(--cds-font-size-caption); }
   .bv-bar-name { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
   .bv-bar-name.bv-link { cursor: pointer; text-decoration: underline; text-decoration-color: var(--color-border-line); text-underline-offset: 3px; }
@@ -136,9 +129,6 @@
   .bv-db { position: relative; height: 14px; }
   .bv-db-line { position: absolute; top: 6px; height: 2px; background: var(--cds-chart-muted); }
   .bv-db-dot { position: absolute; top: 2px; width: 10px; height: 10px; border-radius: 50%; margin-left: -5px; }
-  /* portada */
-  .bv-bento-wrap { container-type: inline-size; }
-  .bv-bento { display: grid; gap: var(--cds-gap-md); grid-template-columns: repeat(auto-fit, minmax(min(100%, 15rem), 1fr)); min-height: 16rem; }
   .bv-feature { --g: var(--color-ok); border-radius: calc(var(--cds-radius) * 1.5); padding: var(--cds-pad-lg); display: grid; gap: var(--cds-gap-xs); align-content: start; min-width: 0;
                 background: color-mix(in srgb, var(--g) 13%, var(--color-panel)); border: 1px solid color-mix(in srgb, var(--g) 32%, var(--color-border-line)); }
   .bv-feature .bv-f-palo { font-size: var(--cds-font-size-heading); color: color-mix(in srgb, var(--g) 70%, var(--color-fg)); }
@@ -146,27 +136,6 @@
   .bv-feature .bv-f-unidad { font-size: var(--cds-font-size-caption); color: var(--color-fg-muted); }
   .bv-feature .bv-f-titulo { font-size: var(--cds-font-size-heading); font-weight: var(--cds-font-weight-medium); margin-top: var(--cds-gap-xs); }
   .bv-feature .bv-f-detalle { font-size: var(--cds-font-size-body); color: var(--color-fg-muted); }
-  .bv-bento .bv-feature:first-child { grid-column: 1 / -1; padding: var(--cds-pad-xl); }
-  .bv-bento .bv-feature:first-child .bv-f-cifra { font-size: calc(var(--cds-font-size-title) * 3.2); }
-  .bv-bento .bv-feature:first-child .bv-f-titulo { font-size: var(--cds-font-size-title); font-family: var(--font-anthropic-serif); font-weight: 400; }
-  @container (min-width: 40rem) {
-    .bv-bento .bv-feature:first-child { grid-template-columns: auto minmax(0, 1fr); column-gap: var(--cds-gap-xl); align-items: center; }
-    .bv-bento .bv-feature:first-child .bv-f-palo { grid-column: 1; grid-row: 1; }
-    .bv-bento .bv-feature:first-child .bv-f-cifra { grid-column: 1; grid-row: 2 / span 2; font-size: calc(var(--cds-font-size-title) * 4.5); }
-    .bv-bento .bv-feature:first-child .bv-f-unidad { grid-column: 1; grid-row: 4; }
-    .bv-bento .bv-feature:first-child .bv-f-titulo { grid-column: 2; grid-row: 1 / span 2; align-self: end; margin: 0; }
-    .bv-bento .bv-feature:first-child .bv-f-detalle { grid-column: 2; grid-row: 3; font-size: var(--cds-font-size-heading); }
-    .bv-bento .bv-feature:first-child .bv-linkbtn { grid-column: 2; grid-row: 4; margin: 0; }
-  }
-  .bv-temporadas { display: grid; grid-auto-flow: column; grid-auto-columns: minmax(min(85%, 15rem), 1fr); gap: var(--cds-gap-md); overflow-x: auto; padding-bottom: var(--cds-pad-sm); min-height: 16rem; }
-  .bv-temporada { background: var(--color-panel); border: 1px solid var(--color-border-line); border-radius: var(--cds-radius); padding: var(--cds-pad-lg); display: grid; gap: var(--cds-gap-sm); align-content: start; min-width: 0; }
-  .bv-temporada-anio { font-family: var(--font-anthropic-serif); font-size: var(--cds-font-size-title); line-height: 1; display: flex; align-items: baseline; gap: var(--cds-gap-sm); }
-  .bv-temporada-anio small { font-family: var(--font-anthropic-sans); font-size: var(--cds-font-size-caption); color: var(--color-fg-muted); }
-  .bv-premio { display: grid; gap: 1px; }
-  .bv-premio span { font-size: var(--cds-font-size-caption); color: var(--color-fg-muted); }
-  .bv-premio b { font-size: var(--cds-font-size-body); font-weight: 500; overflow-wrap: anywhere; }
-  .bv-premio.bv-oro b { font-weight: 600; }
-  .bv-premio.bv-oro span::before { content: "●"; color: var(--bv-gold); margin-right: 4px; }
   .bv-mini-grid { display: grid; gap: var(--cds-gap-md); grid-template-columns: repeat(auto-fit, minmax(min(100%, 15rem), 1fr)); }
   .bv-mini { min-height: 130px; }
   .bv-grupo { display: grid; gap: var(--cds-gap-md); }
@@ -296,6 +265,105 @@
   .bv-stats dd { margin: 0; font-variant-numeric: tabular-nums; font-weight: 500; }
   .bv-sentence { margin: 0; font-size: var(--cds-font-size-body); color: var(--color-fg-muted); }
   .bv-linkbtn { appearance: none; background: none; border: 0; padding: 0; font: inherit; font-size: var(--cds-font-size-caption); color: var(--color-fg); text-decoration: underline; text-underline-offset: 3px; cursor: pointer; justify-self: start; }
+  /* ---------- Inicio: letra grande, contraste alto y recuadros solo para lo importante ---------- */
+  .bv-tabs, .bv-portada, #inicio {
+    --cds-font-size-caption: 17px; --cds-font-size-body: 19px; --cds-font-size-heading: 22px; --cds-font-size-title: 36px;
+    --color-fg-muted: color-mix(in srgb, var(--color-fg) 82%, var(--color-bg));
+    --bv-rojo: var(--color-bad); }
+  #inicio { gap: clamp(48px, 8vw, 80px); padding-top: var(--cds-gap-md); line-height: 1.45; font-size: var(--cds-font-size-body); }
+  .bv-bloque { display: grid; gap: var(--cds-gap-lg); min-width: 0; }
+  #inicio .bv-eyebrow { color: var(--color-fg-muted); font-weight: 600; font-size: var(--cds-font-size-body); letter-spacing: 0; text-transform: none; }
+  #inicio .bv-podio h3 { font-size: var(--cds-font-size-body); font-weight: 700; letter-spacing: 0; text-transform: none; color: var(--color-fg); }
+  #inicio .bv-section-head h2 { line-height: 1.15; }
+  #inicio .bv-rank { width: 2.1rem; height: 2.1rem; }
+  #inicio .bv-rank { color: var(--color-fg); border-color: var(--color-fg-muted); }
+  #inicio .bv-rank.bv-m1 { background: var(--color-fg); border-color: var(--color-fg); color: var(--color-bg); }
+  #inicio .bv-rank.bv-m2, #inicio .bv-rank.bv-m3 { background: none; border-color: var(--color-fg-muted); color: var(--color-fg); font-weight: 600; }
+  #inicio .bv-linkbtn { min-height: 44px; }
+  #inicio .bv-puesto { grid-template-columns: 2.5rem minmax(0, 1fr) auto; }
+  #inicio .bv-ultimo { background: none; border: 0; padding: 0; border-radius: 0; }
+  #ultimo .bv-ultimo-head h2 { font-size: var(--cds-font-size-title); }
+  #inicio .bv-puesto { padding-inline: 0; border-radius: 0; border-bottom: 1px solid var(--color-border-line); }
+  #inicio .bv-puesto.bv-p1 { background: none; border-width: 0 0 1px; border-color: var(--color-border-line); }
+  #inicio .bv-puesto.bv-p1 .bv-puesto-nombre { font-size: var(--cds-font-size-heading); }
+  #ultimo .bv-ultimo-datos { grid-template-columns: repeat(auto-fit, minmax(min(100%, 11.5rem), 1fr)); gap: var(--cds-gap-lg); }
+  #ultimo .bv-dato b { font-size: calc(var(--cds-font-size-title) * .8); }
+  /* honores del mes: cinco naipes de verdad, siempre blancos, en el orden A K Q J 10 */
+  .bv-mano { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: var(--cds-gap-sm); min-height: 15rem; }
+  .bv-mano li { min-width: 0; }
+  .bv-mano li:first-child { grid-column: 1 / -1; }
+  @media (min-width: 900px) {
+    .bv-mano { grid-template-columns: repeat(6, minmax(0, 1fr)); gap: var(--cds-gap-md); }
+    .bv-mano li:first-child { grid-column: span 2; }
+  }
+  .bv-carta { appearance: none; font: inherit; width: 100%; height: 100%; min-height: 13rem; box-sizing: border-box; cursor: pointer; touch-action: manipulation; position: relative; overflow: hidden; display: grid; grid-template-rows: auto 1fr auto; gap: var(--cds-gap-xs); text-align: left; color: var(--bv-tinta); background: var(--bv-naipe); border: 1px solid rgba(20, 22, 26, .22); border-radius: calc(var(--cds-radius) * 1.25); padding: var(--cds-pad-md); box-shadow: 0 1px 0 rgba(20, 22, 26, .12), 0 6px 14px rgba(20, 22, 26, .1); transition: transform 180ms var(--cds-ease-out); }
+  .bv-carta:hover { transform: translateY(-3px); }
+  .bv-carta:focus-visible { outline: 3px solid var(--color-fg); outline-offset: 2px; }
+  .bv-c-i { font-weight: 700; font-size: var(--cds-font-size-title); line-height: 1; color: var(--bv-rojo-naipe); display: flex; gap: 4px; align-items: baseline; }
+  .bv-c-i i { font-style: normal; font-size: .75em; }
+  .bv-c-nombre { align-self: end; position: relative; font-weight: 600; font-size: var(--cds-font-size-body); line-height: 1.2; overflow-wrap: anywhere; }
+  .bv-c-pct { position: relative; font-variant-numeric: tabular-nums; font-size: var(--cds-font-size-body); }
+  .bv-c-as { position: absolute; right: -.08em; top: -.18em; font-size: 15rem; line-height: 1; color: var(--bv-rojo-naipe); pointer-events: none; }
+  .bv-mano li:first-child .bv-c-nombre { font-family: var(--font-anthropic-serif); font-weight: 400; font-size: var(--cds-font-size-title); line-height: 1.1; max-width: 62%; }
+  .bv-mano li:first-child .bv-c-pct { font-weight: 700; font-size: var(--cds-font-size-heading); }
+  /* historias: como las cartulinas de la caja de subastas, con el palo en su color real */
+  .bv-historias { display: grid; gap: var(--cds-gap-xl) var(--cds-gap-xl); grid-template-columns: repeat(auto-fit, minmax(min(100%, 26rem), 1fr)); min-height: 16rem; }
+  .bv-historia, .bv-historia-top { display: grid; grid-template-columns: auto minmax(0, 1fr); gap: var(--cds-gap-xs) var(--cds-gap-md); align-items: start; min-width: 0; }
+  .bv-historia-top { grid-column: 1 / -1; padding-bottom: var(--cds-gap-xl); border-bottom: 1px solid var(--color-border-line); }
+  .bv-bid { width: 3.5rem; height: 4.25rem; display: grid; place-items: center; grid-row: span 2; color: var(--bv-tinta); background: var(--bv-naipe); border: 1px solid rgba(20, 22, 26, .25); border-radius: calc(var(--cds-radius) * .75); font-size: 2rem; line-height: 1; box-shadow: 0 2px 6px rgba(20, 22, 26, .12); }
+  .bv-bid.bv-rojo-palo { color: var(--bv-rojo-naipe); }
+  .bv-h-num, .bv-h-txt { display: grid; gap: var(--cds-gap-xs); min-width: 0; align-content: start; }
+  .bv-h-cifra { font-family: var(--font-anthropic-serif); font-size: calc(var(--cds-font-size-title) * 1.2); line-height: 1.05; font-variant-numeric: lining-nums; }
+  .bv-h-unidad { color: var(--color-fg-muted); font-size: var(--cds-font-size-caption); line-height: 1.25; }
+  .bv-h-titulo { font-size: var(--cds-font-size-heading); font-weight: 700; line-height: 1.25; }
+  .bv-h-detalle { color: var(--color-fg-muted); max-width: 40rem; }
+  .bv-historia .bv-h-txt { grid-column: 2; margin-top: var(--cds-gap-sm); }
+  .bv-historia-top .bv-bid { width: 5.5rem; height: 6.75rem; font-size: 3.5rem; }
+  .bv-historia-top .bv-h-cifra { font-size: clamp(88px, 15vw, 176px); line-height: .95; }
+  .bv-historia-top .bv-h-titulo { font-family: var(--font-anthropic-serif); font-weight: 400; font-size: var(--cds-font-size-title); line-height: 1.15; }
+  .bv-historia-top .bv-h-detalle { font-size: var(--cds-font-size-heading); }
+  .bv-historia-top .bv-h-txt { grid-column: 1 / -1; margin-top: var(--cds-gap-md); }
+  @media (min-width: 900px) {
+    .bv-historia-top { grid-template-columns: auto auto minmax(0, 1fr); column-gap: var(--cds-gap-lg); align-items: center; }
+    .bv-historia-top .bv-bid { grid-row: auto; }
+    .bv-historia-top .bv-h-txt { grid-column: 3; margin: 0; }
+  }
+  /* palmarés: una fila por año, el detalle se abre al hacer clic */
+  .bv-palmares { border-bottom: 1px solid var(--color-border-line); min-height: 14rem; }
+  .bv-anio { border-top: 1px solid var(--color-border-line); }
+  .bv-anio summary { list-style: none; cursor: pointer; display: grid; grid-template-columns: 7rem minmax(0, 1fr) minmax(0, 1.5fr) auto; gap: var(--cds-gap-sm) var(--cds-gap-lg); align-items: center; padding: var(--cds-pad-lg) var(--cds-pad-sm); }
+  .bv-anio summary::-webkit-details-marker { display: none; }
+  .bv-anio summary:hover { background: var(--bv-felt); }
+  .bv-anio summary:focus-visible { outline: 2px solid var(--color-fg); outline-offset: -2px; }
+  .bv-anio-n { font-family: var(--font-anthropic-serif); font-size: var(--cds-font-size-title); line-height: 1; }
+  .bv-anio-n small { display: block; font-family: var(--font-anthropic-sans); font-size: var(--cds-font-size-caption); color: var(--color-fg-muted); margin-top: 4px; }
+  .bv-anio-p { display: grid; min-width: 0; }
+  .bv-anio-p span { font-size: var(--cds-font-size-caption); color: var(--color-fg-muted); }
+  .bv-anio-p b { font-weight: 600; overflow-wrap: anywhere; }
+  .bv-anio-ver { font-size: var(--cds-font-size-caption); color: var(--color-fg-muted); white-space: nowrap; }
+  .bv-anio-ver::after { content: " ▾"; }
+  .bv-anio[open] .bv-anio-ver::after { content: " ▴"; }
+  .bv-premio { display: grid; gap: 1px; min-width: 0; }
+  .bv-premio span { font-size: var(--cds-font-size-caption); color: var(--color-fg-muted); }
+  .bv-premio b { font-weight: 600; overflow-wrap: anywhere; }
+  .bv-anio-detalle { display: grid; gap: var(--cds-gap-md) var(--cds-gap-lg); grid-template-columns: repeat(auto-fit, minmax(min(100%, 14rem), 1fr)); padding: var(--cds-pad-sm) var(--cds-pad-sm) var(--cds-pad-xl); }
+  @media (max-width: 700px) {
+    .bv-anio summary { grid-template-columns: minmax(0, 1fr) auto; padding-inline: 0; }
+    .bv-anio-p { grid-column: 1 / -1; }
+    .bv-anio-ver { grid-column: 2; grid-row: 1; }
+    .bv-anio-detalle { padding-inline: 0; }
+  }
+  /* accesos: una línea al final */
+  .bv-atajos { display: flex; flex-wrap: wrap; align-items: center; gap: 0 var(--cds-gap-lg); padding-top: var(--cds-pad-lg); border-top: 1px solid var(--color-border-line); color: var(--color-fg-muted); }
+  .bv-atajos .bv-linkbtn { font-size: var(--cds-font-size-body); }
+  .bv-linkbtn:focus-visible { outline: 2px solid var(--color-fg); outline-offset: 2px; }
+  @media (max-width: 480px) {
+    .bv-tabs, .bv-portada, #inicio { --cds-font-size-title: 30px; }
+    .bv-tabs { display: grid; grid-template-columns: repeat(4, auto); gap: 0; }
+    .bv-tabs > .bv-tab, .bv-mas-btn { padding-inline: 6px; }
+    .bv-masmenu { grid-column: span 2; }
+    .bv-mas-btn { width: 100%; text-align: left; }
+  }
   [data-dash-source-state=empty] { color: transparent; }
   [data-dash-source-state=refreshing] { opacity: .5; transition: opacity var(--cds-dur-slow); }
   @media (prefers-reduced-motion: no-preference) {
@@ -305,42 +373,37 @@
 </style>
 
 <div class="bv">
-  <header class="bv-hero bv-portada" id="portada">
-    <div class="bv-abanico" aria-hidden="true">
-      <div class="bv-naipe" style="--r:-24deg;--x:-104px;--y:18px"><b>A</b><i>♠</i></div>
-      <div class="bv-naipe bv-rojo" style="--r:-8deg;--x:-36px;--y:2px"><b>K</b><i>♥</i></div>
-      <div class="bv-naipe bv-rojo" style="--r:8deg;--x:36px;--y:2px"><b>Q</b><i>♦</i></div>
-      <div class="bv-naipe" style="--r:24deg;--x:104px;--y:18px"><b>J</b><i>♣</i></div>
+  <nav class="bv-tabs" role="tablist" aria-label="Secciones">
+    <button class="bv-tab" role="tab" data-tab="inicio" aria-selected="true">Inicio</button>
+    <button class="bv-tab" role="tab" data-tab="mi-torneo" aria-selected="false">Mi torneo</button>
+    <button class="bv-tab" role="tab" data-tab="jugador" aria-selected="false">Jugador</button>
+    <button class="bv-tab" role="tab" data-tab="ranking" aria-selected="false">Ranking</button>
+    <button class="bv-tab" role="tab" data-tab="parejas" aria-selected="false">Parejas</button>
+    <button class="bv-tab" role="tab" data-tab="handicap" aria-selected="false">Handicap</button>
+    <div class="bv-masmenu" role="presentation">
+      <button class="bv-mas-btn" type="button" role="tab" aria-selected="false" aria-haspopup="true" aria-expanded="false" aria-controls="mas-lista">Más</button>
+      <div class="bv-mas-lista" id="mas-lista" role="presentation" hidden>
+        <button class="bv-tab" role="tab" data-tab="records" aria-selected="false">Récords</button>
+        <button class="bv-tab" role="tab" data-tab="resumen" aria-selected="false">Resumen</button>
+        <button class="bv-tab" role="tab" data-tab="dias-semana" aria-selected="false">Días</button>
+        <button class="bv-tab" role="tab" data-tab="estilo" aria-selected="false">Estilo de juego</button>
+        <button class="bv-tab" role="tab" data-tab="juveniles" aria-selected="false">Juveniles</button>
+        <button class="bv-tab" role="tab" data-tab="generos" aria-selected="false">Mujeres y hombres</button>
+        <button class="bv-tab" role="tab" data-tab="cartas" aria-selected="false">Juego de cartas</button>
+      </div>
     </div>
+  </nav>
+
+  <header class="bv-hero bv-portada" id="portada">
     <div class="bv-hero-texto">
       <p class="bv-marca">Estadísticas del club</p>
       <h1 class="bv-title">Bridge Vitacura</h1>
       <p class="bv-lede">Todos los torneos abiertos desde <b data-draw="hist-desde" data-source="resumen_anio">—</b>, actualizados cada noche. No incluye los miércoles ni otros torneos de alumnos.</p>
     </div>
-    <div class="bv-hero-kpis">
-      <div><b data-draw="hist" data-source="resumen_anio" data-field="torneos">—</b><span>torneos</span></div>
-      <div><b data-draw="hist" data-source="resumen_anio" data-field="jugadores">—</b><span>jugadores</span></div>
-      <div><b data-draw="hist" data-source="resumen_anio" data-field="parejas">—</b><span>parejas</span></div>
-      <div><b data-draw="hist" data-source="resumen_anio" data-field="manos_jugadas">—</b><span>manos jugadas</span></div>
-    </div>
+    <p class="bv-hero-kpis"><b data-draw="hist" data-source="resumen_anio" data-field="torneos">—</b> torneos, <b data-draw="hist" data-source="resumen_anio" data-field="jugadores">—</b> jugadores, <b data-draw="hist" data-source="resumen_anio" data-field="parejas">—</b> parejas y <b data-draw="hist" data-source="resumen_anio" data-field="manos_jugadas">—</b> manos jugadas.</p>
+    <div class="bv-mesa" data-draw="mesa" data-source="ultimo_podio" aria-label="Ganadores del último torneo"></div>
     <div class="bv-chips" data-draw="anios" data-source="resumen_anio" role="group" aria-label="Año" hidden></div>
   </header>
-
-  <nav class="bv-tabs" role="tablist" aria-label="Secciones">
-    <button class="bv-tab" role="tab" data-tab="inicio" aria-selected="true">Inicio</button>
-    <button class="bv-tab" role="tab" data-tab="mi-torneo" aria-selected="false">Mi torneo</button>
-    <button class="bv-tab" role="tab" data-tab="jugador" aria-selected="false">Jugador</button>
-    <button class="bv-tab" role="tab" data-tab="resumen" aria-selected="false">Resumen</button>
-    <button class="bv-tab" role="tab" data-tab="ranking" aria-selected="false">Ranking</button>
-    <button class="bv-tab" role="tab" data-tab="handicap" aria-selected="false">Handicap</button>
-    <button class="bv-tab" role="tab" data-tab="parejas" aria-selected="false">Parejas</button>
-    <button class="bv-tab" role="tab" data-tab="generos" aria-selected="false">Mujeres y hombres</button>
-    <button class="bv-tab" role="tab" data-tab="juveniles" aria-selected="false">Juveniles</button>
-    <button class="bv-tab" role="tab" data-tab="dias-semana" aria-selected="false">Días</button>
-    <button class="bv-tab" role="tab" data-tab="estilo" aria-selected="false">Estilo de juego</button>
-    <button class="bv-tab" role="tab" data-tab="records" aria-selected="false">Récords</button>
-    <button class="bv-tab" role="tab" data-tab="cartas" aria-selected="false">Juego de cartas</button>
-  </nav>
 
   <!-- ===================== INICIO ===================== -->
   <section class="bv-page" id="inicio">
@@ -354,48 +417,36 @@
       <div class="bv-ultimo-datos" data-draw="ultimo-datos" data-source="ultimo_datos"></div>
     </div>
 
-    <div class="bv-section-head" id="forma">
-      <div>
-        <p class="bv-eyebrow">Último mes</p>
-        <h2>Quién anda en forma</h2>
+    <div class="bv-bloque" id="forma">
+      <div class="bv-section-head">
+        <h2>Los honores del mes</h2>
+        <p class="bv-note">Los cinco mejores de los últimos 30 días, por % ajustado y con al menos 5 torneos.</p>
       </div>
-      <p class="bv-note">% ajustado de los últimos 30 días, con al menos 5 torneos.</p>
-    </div>
-    <div class="bv-forma" data-draw="en-forma" data-source="en_forma"></div>
-
-    <div class="bv-section-head" id="explora">
-      <div>
-        <p class="bv-eyebrow">Explora</p>
-        <h2>¿Qué quieres ver?</h2>
-      </div>
-    </div>
-    <div class="bv-explora">
-      <button type="button" class="bv-acceso" data-ir="mi-torneo"><i>♠</i><b>Mi torneo</b><span>Mano por mano: qué salió bien y qué se pudo mejorar</span></button>
-      <button type="button" class="bv-acceso" data-ir="handicap"><i class="bv-red">♥</i><b>Handicap</b><span>¿Los handicap 0 de verdad son los mejores?</span></button>
-      <button type="button" class="bv-acceso" data-ir="jugador"><i class="bv-red">♦</i><b>Tu perfil</b><span>Tus medallas, tu calendario y tu bestia negra</span></button>
-      <button type="button" class="bv-acceso" data-ir="parejas"><i class="bv-red">♦</i><b>Parejas</b><span>Las más ganadoras y las más estables</span></button>
-      <button type="button" class="bv-acceso" data-ir="dias-semana"><i>♣</i><b>Días</b><span>Qué día va más gente y cuál es más difícil</span></button>
-      <button type="button" class="bv-acceso" data-ir="ranking"><i>♣</i><b>Ranking</b><span>Los mejores jugadores, por año o de siempre</span></button>
-      <button type="button" class="bv-acceso" data-ir="juveniles"><i class="bv-red">♦</i><b>Juveniles</b><span>La nueva generación</span></button>
-      <button type="button" class="bv-acceso" data-ir="records"><i>♣</i><b>Récords</b><span>Rachas, manos de locos y curiosidades</span></button>
+      <div class="bv-forma" data-draw="en-forma" data-source="en_forma"></div>
     </div>
 
-    <div class="bv-section-head" id="historias">
-      <div>
-        <p class="bv-eyebrow">Lo más increíble de estos años</p>
+    <div class="bv-bloque" id="historias">
+      <div class="bv-section-head">
         <h2>Historias del club</h2>
       </div>
+      <div class="bv-historias" data-draw="inicio-destacados" data-source="hallazgos"></div>
     </div>
-    <div class="bv-bento-wrap"><div class="bv-bento" data-draw="inicio-destacados" data-source="hallazgos"></div></div>
 
-    <div class="bv-section-head" id="temporadas">
-      <div>
-        <p class="bv-eyebrow">Palmarés</p>
+    <div class="bv-bloque" id="temporadas">
+      <div class="bv-section-head">
         <h2>Temporada a temporada</h2>
       </div>
+      <div class="bv-palmares" data-draw="inicio-temporadas" data-source="campeones_anio"></div>
     </div>
-    <div class="bv-temporadas" data-draw="inicio-temporadas" data-source="campeones_anio"></div>
 
+    <nav class="bv-atajos" id="explora" aria-label="Accesos rápidos">
+      <span>También puedes ver:</span>
+      <button type="button" class="bv-linkbtn" data-ir="mi-torneo">Mi torneo</button>
+      <button type="button" class="bv-linkbtn" data-ir="jugador">Tu perfil</button>
+      <button type="button" class="bv-linkbtn" data-ir="records">Récords</button>
+      <button type="button" class="bv-linkbtn" data-ir="dias-semana">Días</button>
+      <button type="button" class="bv-linkbtn" data-ir="juveniles">Juveniles</button>
+    </nav>
   </section>
 
   <!-- ===================== RECORDS ===================== -->
@@ -1189,19 +1240,19 @@
   </section>
 </div>
 
-<script src="comun.js?v=202611060239"></script>
-<script src="inicio.js?v=202611060239"></script>
-<script src="resumen.js?v=202611060239"></script>
-<script src="ranking.js?v=202611060239"></script>
-<script src="jugador.js?v=202611060239"></script>
-<script src="handicap.js?v=202611060239"></script>
-<script src="mi_torneo.js?v=202611060239"></script>
-<script src="juveniles.js?v=202611060239"></script>
-<script src="generos.js?v=202611060239"></script>
-<script src="dias.js?v=202611060239"></script>
-<script src="estilo.js?v=202611060239"></script>
-<script src="cartas.js?v=202611060239"></script>
+<script src="comun.js?v=202611061029"></script>
+<script src="inicio.js?v=202611061029"></script>
+<script src="resumen.js?v=202611061029"></script>
+<script src="ranking.js?v=202611061029"></script>
+<script src="jugador.js?v=202611061029"></script>
+<script src="handicap.js?v=202611061029"></script>
+<script src="mi_torneo.js?v=202611061029"></script>
+<script src="juveniles.js?v=202611061029"></script>
+<script src="generos.js?v=202611061029"></script>
+<script src="dias.js?v=202611061029"></script>
+<script src="estilo.js?v=202611061029"></script>
+<script src="cartas.js?v=202611061029"></script>
 </div>
-<p class="pie">Datos de <a href="https://bridgevitacura.cl/resultado/">bridgevitacura.cl</a> · actualizado el 06-11-2026 02:39</p>
+<p class="pie">Datos de <a href="https://bridgevitacura.cl/resultado/">bridgevitacura.cl</a> · actualizado el 06-11-2026 10:29</p>
 </body>
 </html>

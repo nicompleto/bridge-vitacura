@@ -40,6 +40,19 @@
     .replace(/(^|[\s.\-/])(\p{L})/gu, (m, a, b) => a + b.toUpperCase())
     .replace(/ (De|La|Del|Las|Los)(?= )/g, (m) => m.toLowerCase()));
 
+  // 'MARTES - MATINE' -> 'Matiné del martes'; 'JUEVES - MANO AMIGA' -> 'Mano Amiga del jueves'
+  const DIAS = {LUNES: 'lunes', MARTES: 'martes', MIERCOLES: 'miércoles', JUEVES: 'jueves', VIERNES: 'viernes', SABADO: 'sábado', DOMINGO: 'domingo'};
+  const nombreTorneo = (t) => {
+    if (t == null) return '—';
+    const palabras = String(t).replace(/[-'"]/g, ' ').split(/\s+/).filter(Boolean);
+    const clave = (p) => p.normalize('NFD').replace(/[\u0300-\u036f]/g, '').toUpperCase();
+    const dia = DIAS[palabras.map(clave).find((p) => DIAS[p])];
+    const resto = palabras.filter((p) => !DIAS[clave(p)]);
+    if (resto.filter((p) => clave(p) !== 'PAREJAS').every((p) => /^MATINE+$/.test(clave(p)))) return dia ? `Matiné del ${dia}` : 'Matiné';
+    const nombre = lindo(resto.join(' ')).replace(/\bMatinee?\b/g, 'Matiné');
+    return dia ? `${nombre} del ${dia}` : nombre;
+  };
+
   const jugadorActual = () => {
     const rows = filas('jugadores');
     const p = dash.params().jugador;
@@ -47,8 +60,19 @@
     return rows.some((r) => r.jugador === p) ? p : rows[0].jugador;
   };
 
+  const abrirMas = (abierto) => {
+    const b = document.querySelector('.bv-mas-btn'), lista = document.querySelector('.bv-mas-lista');
+    if (!b || !lista) return;
+    lista.hidden = !abierto;
+    b.setAttribute('aria-expanded', String(abierto));
+  };
+
   const irA = (tab) => {
     document.querySelectorAll('.bv-tab').forEach((b) => b.setAttribute('aria-selected', String(b.dataset.tab === tab)));
+    // si la sección está dentro de "Más", el botón lo muestra
+    const enMas = document.querySelector(`.bv-mas-lista [data-tab="${tab}"]`);
+    const mas = document.querySelector('.bv-mas-btn');
+    if (mas) { mas.setAttribute('aria-selected', String(!!enMas)); mas.textContent = enMas ? 'Más: ' + enMas.textContent : 'Más'; abrirMas(false); }
     document.querySelectorAll('.bv-page').forEach((s) => { s.hidden = s.id !== tab; });
     // el selector de año solo tiene sentido en las pestañas que cambian con el año
     document.querySelectorAll('.bv-chips').forEach((c) => { c.hidden = ['inicio', 'records', 'jugador', 'juveniles', 'dias-semana', 'mi-torneo', 'handicap'].includes(tab) && c.dataset.draw === 'anios'; });
@@ -241,11 +265,18 @@
     .call((s) => s.selectAll('line').attr('stroke', 'var(--cds-chart-axis)'))
     .call((s) => s.selectAll('text').attr('fill', 'var(--color-fg-muted)').attr('font-size', 'var(--cds-font-size-caption)'));
 
-  window.bv = {fmt, enc, lindo, buscador, filas, anios, anio, etiqueta, minimo, jugadorActual, irA, verJugador,
+  window.bv = {fmt, enc, lindo, nombreTorneo, buscador, filas, anios, anio, etiqueta, minimo, jugadorActual, irA, verJugador,
                listaBarras, mancuernas, ordenar, llenar, orden, tooltip, ejeY, anchoTexto, estiloEje};
 
   // ---------- pestañas ----------
   document.querySelectorAll('.bv-tab').forEach((b) => b.addEventListener('click', () => irA(b.dataset.tab)));
+  document.querySelectorAll('.bv-mas-btn').forEach((b) => b.addEventListener('click', () => abrirMas(b.getAttribute('aria-expanded') !== 'true')));
+  document.addEventListener('click', (e) => { if (!e.target.closest('.bv-masmenu')) abrirMas(false); });
+  document.addEventListener('keydown', (e) => {
+    if (e.key !== 'Escape' || !document.querySelector('.bv-mas-btn[aria-expanded="true"]')) return;
+    abrirMas(false);
+    document.querySelector('.bv-mas-btn').focus();
+  });
   document.querySelectorAll('[data-ir]').forEach((b) => b.addEventListener('click', () => { irA(b.dataset.ir); window.scrollTo({top: 0}); }));
   if (['inicio', 'records', 'mi-torneo', 'handicap', 'resumen', 'ranking', 'parejas', 'generos', 'juveniles', 'dias-semana', 'jugador', 'estilo', 'cartas'].includes(location.hash.slice(1))) irA(location.hash.slice(1));
 
