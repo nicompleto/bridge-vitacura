@@ -21,7 +21,7 @@
       n.textContent = r.dia;
       const d = document.createElement('span');
       d.className = 'bv-dia-dif ' + (r.dificultad > 0 ? 'bv-duro' : 'bv-facil');
-      d.textContent = `dificultad ${fmt.dif(r.dificultad)}`;
+      d.textContent = `${r.dificultad > 0 ? 'Más difícil' : 'Más accesible'} ${fmt.dif(r.dificultad)}`;
       top.append(n, d);
       const sello = document.createElement('p');
       sello.className = 'bv-dia-sello';

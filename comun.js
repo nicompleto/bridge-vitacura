@@ -1,6 +1,11 @@
 // Utilidades compartidas por todas las pestañas: window.bv
 (() => {
   try { dash.colors = ['#1f7a5f', '#c4122f', '#9a7b1c', '#5c6b73', '#b5583f', '#2a8f9c', '#8a5a9c', '#6b7a3a']; } catch (e) { /* en Claude los colores son del dashboard */ }
+  // los ejes de fecha de los gráficos, en español
+  d3.timeFormatDefaultLocale({dateTime: '%x %X', date: '%d/%m/%Y', time: '%H:%M', periods: ['', ''],
+    days: ['domingo', 'lunes', 'martes', 'miércoles', 'jueves', 'viernes', 'sábado'], shortDays: ['dom', 'lun', 'mar', 'mié', 'jue', 'vie', 'sáb'],
+    months: ['enero', 'febrero', 'marzo', 'abril', 'mayo', 'junio', 'julio', 'agosto', 'septiembre', 'octubre', 'noviembre', 'diciembre'],
+    shortMonths: ['Ene', 'Feb', 'Mar', 'Abr', 'May', 'Jun', 'Jul', 'Ago', 'Sep', 'Oct', 'Nov', 'Dic']});
   // mínimo de torneos (o manos) para entrar en un ranking, por período
   const MINIMOS = {
     jugador: {anio: 30, todos: 100},
@@ -54,6 +59,9 @@
     return dia ? `${nombre} del ${dia}` : nombre;
   };
 
+  // nombres que vienen en mayúsculas: 'LISI COVARRUBIAS / PAULA RIEDEL'
+  const legible = (t) => (typeof t === 'string' && t.length > 4 && /\p{Lu}{3}/u.test(t) && t === t.toUpperCase() ? lindo(t) : t);
+
   const jugadorActual = () => {
     const rows = filas('jugadores');
     const p = dash.params().jugador;
@@ -99,7 +107,7 @@
       top.className = 'bv-bar-top';
       const name = document.createElement('span');
       name.className = 'bv-bar-name' + (it.clic ? ' bv-link' : '');
-      name.textContent = it.nombre;
+      name.textContent = legible(it.nombre);
       if (it.clic) {
         name.tabIndex = 0;
         name.setAttribute('role', 'button');
@@ -146,7 +154,7 @@
       top.className = 'bv-bar-top';
       const name = document.createElement('span');
       name.className = 'bv-bar-name' + (it.clic ? ' bv-link' : '');
-      name.textContent = it.nombre;
+      name.textContent = legible(it.nombre);
       if (it.clic) { name.tabIndex = 0; name.setAttribute('role', 'button'); name.addEventListener('click', it.clic); }
       const val = document.createElement('span');
       val.className = 'bv-bar-val';
@@ -226,7 +234,7 @@
       const tr = document.createElement('tr');
       cols.forEach((c) => {
         const td = document.createElement('td');
-        td.textContent = c.fmt ? c.fmt(r[c.f]) : (r[c.f] == null ? '—' : String(r[c.f]));
+        td.textContent = c.fmt ? c.fmt(r[c.f]) : (r[c.f] == null ? '—' : legible(String(r[c.f])));
         if (c.cls) td.className = c.cls;
         tr.appendChild(td);
       });

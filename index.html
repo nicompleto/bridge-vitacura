@@ -8,10 +8,10 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Source+Sans+3:wght@400;500;600&family=Source+Serif+4:opsz,wght@8..60,400;8..60,600&display=swap">
-<link rel="stylesheet" href="tema.css?v=202611061052">
+<link rel="stylesheet" href="tema.css?v=202611061108">
 <script src="https://cdn.jsdelivr.net/npm/d3@7.9.0/dist/d3.min.js"></script>
-<script>window.__bvVersion = "202611061052";</script>
-<script src="dash.js?v=202611061052"></script>
+<script>window.__bvVersion = "202611061108";</script>
+<script src="dash.js?v=202611061108"></script>
 </head>
 <body>
 <div id="dash-root">
@@ -122,7 +122,7 @@
   .bv-rank.bv-m3 { background: var(--bv-bronze); border-color: var(--bv-bronze); color: #fff; font-weight: 600; }
   .bv-bar-body { display: grid; grid-template-columns: minmax(0, 1fr); gap: 3px; min-width: 0; }
   .bv-bar-top { display: flex; justify-content: space-between; gap: var(--cds-gap-sm); font-size: var(--cds-font-size-caption); }
-  .bv-bar-name { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .bv-bar-name { min-width: 0; overflow-wrap: anywhere; line-height: 1.25; }
   .bv-bar-name.bv-link { cursor: pointer; text-decoration: underline; text-decoration-color: var(--color-border-line); text-underline-offset: 3px; }
   .bv-bar-name.bv-link:hover { text-decoration-color: var(--color-fg); }
   .bv-bar-val { font-variant-numeric: tabular-nums; font-weight: 600; white-space: nowrap; }
@@ -150,7 +150,17 @@
   .bv-hallazgos .bv-feature .bv-f-cifra { font-size: var(--cds-font-size-title); }
   .bv-feature .bv-linkbtn { margin-top: var(--cds-gap-xs); }
   .bv-juv-titulo { margin: 0; font-family: var(--font-anthropic-serif); font-weight: 400; font-size: calc(var(--cds-font-size-title) * 1.4); }
-  .bv-dias { display: grid; gap: var(--cds-gap-md); grid-template-columns: repeat(auto-fit, minmax(min(100%, 17rem), 1fr)); min-height: 16rem; }
+  .bv-dias { display: grid; gap: var(--cds-gap-md); grid-template-columns: repeat(auto-fit, minmax(min(100%, 21rem), 1fr)); min-height: 16rem; }
+  .bv-dia { display: grid; gap: var(--cds-gap-sm); align-content: start; min-width: 0; background: var(--color-panel); border-radius: calc(var(--cds-radius) * 1.25); padding: var(--cds-pad-lg) clamp(16px, 2.2vw, 24px); box-shadow: 0 1px 2px rgba(20, 22, 26, .1); }
+  .bv-dia-top { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: var(--cds-gap-xs) var(--cds-gap-sm); }
+  .bv-dia-nombre { font-family: var(--font-anthropic-serif); font-size: var(--cds-font-size-title); line-height: 1.1; }
+  .bv-dia-dif { font-size: var(--cds-font-size-caption); font-weight: 600; padding: 2px var(--cds-pad-md); border-radius: 999px; white-space: nowrap; background: color-mix(in srgb, var(--t) 18%, var(--color-panel)); border: 1px solid color-mix(in srgb, var(--t) 55%, var(--color-panel)); }
+  .bv-duro { --t: var(--color-bad); } .bv-facil { --t: var(--color-ok); }
+  .bv-dia-sello { margin: 0 0 var(--cds-gap-xs); font-size: var(--cds-font-size-body); line-height: 1.35; }
+  .bv-dia dl { margin: 0; }
+  .bv-dia dl div { display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: var(--cds-gap-sm); align-items: baseline; padding-block: 6px; border-top: 1px solid var(--color-border-line); }
+  .bv-dia dt { color: var(--color-fg-muted); font-size: var(--cds-font-size-caption); }
+  .bv-dia dd { margin: 0; font-weight: 600; text-align: right; font-variant-numeric: tabular-nums; overflow-wrap: anywhere; }
   .bv-freak { display: grid; gap: var(--cds-gap-sm); grid-template-columns: repeat(auto-fill, minmax(min(100%, 15rem), 1fr)); min-height: 8rem; }
   .bv-freak-item { border: 1px solid var(--color-border-line); border-radius: var(--cds-radius); padding: var(--cds-pad-md); display: grid; gap: 2px; background: var(--color-bg); align-content: start; min-width: 0; }
   .bv-freak-item span { font-size: var(--cds-font-size-caption); color: var(--color-fg-muted); }
@@ -1286,19 +1296,19 @@
   </section>
 </div>
 
-<script src="comun.js?v=202611061052"></script>
-<script src="inicio.js?v=202611061052"></script>
-<script src="resumen.js?v=202611061052"></script>
-<script src="ranking.js?v=202611061052"></script>
-<script src="jugador.js?v=202611061052"></script>
-<script src="handicap.js?v=202611061052"></script>
-<script src="mi_torneo.js?v=202611061052"></script>
-<script src="juveniles.js?v=202611061052"></script>
-<script src="generos.js?v=202611061052"></script>
-<script src="dias.js?v=202611061052"></script>
-<script src="estilo.js?v=202611061052"></script>
-<script src="cartas.js?v=202611061052"></script>
+<script src="comun.js?v=202611061108"></script>
+<script src="inicio.js?v=202611061108"></script>
+<script src="resumen.js?v=202611061108"></script>
+<script src="ranking.js?v=202611061108"></script>
+<script src="jugador.js?v=202611061108"></script>
+<script src="handicap.js?v=202611061108"></script>
+<script src="mi_torneo.js?v=202611061108"></script>
+<script src="juveniles.js?v=202611061108"></script>
+<script src="generos.js?v=202611061108"></script>
+<script src="dias.js?v=202611061108"></script>
+<script src="estilo.js?v=202611061108"></script>
+<script src="cartas.js?v=202611061108"></script>
 </div>
-<p class="pie">Datos de <a href="https://bridgevitacura.cl/resultado/">bridgevitacura.cl</a> · actualizado el 06-11-2026 10:52</p>
+<p class="pie">Datos de <a href="https://bridgevitacura.cl/resultado/">bridgevitacura.cl</a> · actualizado el 06-11-2026 11:08</p>
 </body>
 </html>
