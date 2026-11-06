@@ -126,10 +126,13 @@
 
   // sin rojo ni puesto: es una lectura de sus resultados recientes, no un juicio
   dash.draw('hc-exigente', (ol) => {
+    const r = resumen();
+    if (!r) { ol.replaceChildren(); return; }
+    const como = (x) => { const v = x.handicap + x.dif / r.pendiente; return v > 9 ? 'más de 9' : uno(v); };
     const sel = analizados().filter((x) => x.torneos >= MIN_LISTA && x.dif < 0).sort((a, b) => a.dif - b.dif).slice(0, 10);
     listaBarras(ol, sel.map((x) => ({
       nombre: lindo(x.jugador), valor: -x.dif, texto: `${uno(x.pct)}%`, clic: () => verJugador(x.jugador), etiquetaRank: String(x.handicap),
-      sub: `Para handicap ${x.handicap} se espera cerca de ${uno(x.esperado)}%`,
+      sub: `Handicap ${x.handicap}, pero rinde como ${como(x)}`,
     })), {dominio: [0, d3.max(sel, (x) => -x.dif) || 1], medallas: false, color: 'var(--cds-chart-muted)'});
   });
 
