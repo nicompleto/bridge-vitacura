@@ -51,7 +51,7 @@
     document.querySelectorAll('.bv-tab').forEach((b) => b.setAttribute('aria-selected', String(b.dataset.tab === tab)));
     document.querySelectorAll('.bv-page').forEach((s) => { s.hidden = s.id !== tab; });
     // el selector de año solo tiene sentido en las pestañas que cambian con el año
-    document.querySelectorAll('.bv-chips').forEach((c) => { c.hidden = ['inicio', 'records', 'jugador', 'juveniles', 'dias-semana', 'mi-torneo'].includes(tab) && c.dataset.draw === 'anios'; });
+    document.querySelectorAll('.bv-chips').forEach((c) => { c.hidden = ['inicio', 'records', 'jugador', 'juveniles', 'dias-semana', 'mi-torneo', 'handicap'].includes(tab) && c.dataset.draw === 'anios'; });
     document.querySelectorAll('.bv-hero').forEach((h) => { if (h.id === 'portada') h.classList.toggle('bv-portada', tab === 'inicio'); });
     dash.setLink(tab);
   };
@@ -247,7 +247,7 @@
   // ---------- pestañas ----------
   document.querySelectorAll('.bv-tab').forEach((b) => b.addEventListener('click', () => irA(b.dataset.tab)));
   document.querySelectorAll('[data-ir]').forEach((b) => b.addEventListener('click', () => { irA(b.dataset.ir); window.scrollTo({top: 0}); }));
-  if (['inicio', 'records', 'mi-torneo', 'resumen', 'ranking', 'parejas', 'generos', 'juveniles', 'dias-semana', 'jugador', 'estilo', 'cartas'].includes(location.hash.slice(1))) irA(location.hash.slice(1));
+  if (['inicio', 'records', 'mi-torneo', 'handicap', 'resumen', 'ranking', 'parejas', 'generos', 'juveniles', 'dias-semana', 'jugador', 'estilo', 'cartas'].includes(location.hash.slice(1))) irA(location.hash.slice(1));
 
   // ---------- orden de tablas ----------
   document.querySelectorAll('table.bv-sortable').forEach((t) => {

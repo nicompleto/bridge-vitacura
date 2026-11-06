@@ -1,0 +1,1 @@
+window.__bvDatos=window.__bvDatos||{};window.__bvDatos["handicap_resumen"]=[{"lista":509,"cruzados":342,"analizados":159,"desde":"2025-01-01","min_torneos":15,"correlacion":-0.85,"pendiente":-2.12,"victorias_0a2":33.6,"jugadores_0a2":12.6}];

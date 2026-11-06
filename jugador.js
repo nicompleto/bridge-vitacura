@@ -45,6 +45,12 @@
     const r = fila();
     el.textContent = r ? r.jugador.split(/[\s.]+/).filter(Boolean).slice(0, 2).map((p) => p[0]).join('') : '—';
   });
+  // solo se muestra si el jugador está en la lista de la Federación
+  dash.draw('perfil-handicap', (el) => {
+    const r = (filas('handicap_jugadores') || []).find((h) => h.jugador === jugadorActual());
+    el.textContent = r ? r.handicap : '—';
+    el.parentElement.style.display = r ? '' : 'none';
+  });
   dash.draw('perfil-companero', (el) => { const r = fila(); el.textContent = r && r.companero_frecuente ? lindo(r.companero_frecuente) : '—'; });
   dash.draw('perfil-dia', (el) => {
     const r = (filas('jugador_freak') || []).find((x) => x.jugador === jugadorActual());

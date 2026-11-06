@@ -8,10 +8,10 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Source+Sans+3:wght@400;500;600&family=Source+Serif+4:opsz,wght@8..60,400;8..60,600&display=swap">
-<link rel="stylesheet" href="tema.css?v=202611060156">
+<link rel="stylesheet" href="tema.css?v=202611060212">
 <script src="https://cdn.jsdelivr.net/npm/d3@7.9.0/dist/d3.min.js"></script>
-<script>window.__bvVersion = "202611060156";</script>
-<script src="dash.js?v=202611060156"></script>
+<script>window.__bvVersion = "202611060212";</script>
+<script src="dash.js?v=202611060212"></script>
 </head>
 <body>
 <div id="dash-root">
@@ -240,6 +240,9 @@
   .bv-mt-mano span { font-size: var(--cds-font-size-body); }
   .bv-mt-mano small { font-size: var(--cds-font-size-caption); color: var(--color-fg-muted); }
   /* que rematarias */
+  .bv-cruces td, .bv-cruces th { text-align: center; }
+  .bv-cruces td:first-child, .bv-cruces th:first-child { text-align: left; white-space: nowrap; }
+  .bv-cruces td { padding: var(--cds-pad-sm); }
   .bv-buscar + .bv-controls { margin-top: var(--cds-gap-sm); }
   #mt-elegir > * { min-width: 0; }
   #mt-elegir label { display: grid; gap: 2px; flex: 1 1 14rem; min-width: 0; }
@@ -329,6 +332,7 @@
     <button class="bv-tab" role="tab" data-tab="jugador" aria-selected="false">Jugador</button>
     <button class="bv-tab" role="tab" data-tab="resumen" aria-selected="false">Resumen</button>
     <button class="bv-tab" role="tab" data-tab="ranking" aria-selected="false">Ranking</button>
+    <button class="bv-tab" role="tab" data-tab="handicap" aria-selected="false">Handicap</button>
     <button class="bv-tab" role="tab" data-tab="parejas" aria-selected="false">Parejas</button>
     <button class="bv-tab" role="tab" data-tab="generos" aria-selected="false">Mujeres y hombres</button>
     <button class="bv-tab" role="tab" data-tab="juveniles" aria-selected="false">Juveniles</button>
@@ -367,7 +371,7 @@
     </div>
     <div class="bv-explora">
       <button type="button" class="bv-acceso" data-ir="mi-torneo"><i>♠</i><b>Mi torneo</b><span>Mano por mano: qué salió bien y qué se pudo mejorar</span></button>
-      <button type="button" class="bv-acceso" data-ir="resumen"><i class="bv-red">♥</i><b>Resumen</b><span>El club en cifras, año por año</span></button>
+      <button type="button" class="bv-acceso" data-ir="handicap"><i class="bv-red">♥</i><b>Handicap</b><span>¿Los handicap 0 de verdad son los mejores?</span></button>
       <button type="button" class="bv-acceso" data-ir="jugador"><i class="bv-red">♦</i><b>Tu perfil</b><span>Tus medallas, tu calendario y tu bestia negra</span></button>
       <button type="button" class="bv-acceso" data-ir="parejas"><i class="bv-red">♦</i><b>Parejas</b><span>Las más ganadoras y las más estables</span></button>
       <button type="button" class="bv-acceso" data-ir="dias-semana"><i>♣</i><b>Días</b><span>Qué día va más gente y cuál es más difícil</span></button>
@@ -476,6 +480,62 @@
       <div class="bv-mt-lista bv-mt-cols" data-draw="mt-lista" data-tipo="B" data-source="mi_torneo_manos"></div>
     </div>
     <p class="bv-note">La clasificación usa el doble muerto: compara cada resultado con lo máximo que daban las cartas y con lo que hicieron las otras mesas. Es una guía, no un juicio.</p>
+  </section>
+
+  <!-- ===================== HANDICAP ===================== -->
+  <section class="bv-page" id="handicap" hidden>
+    <div class="bv-section-head">
+      <div>
+        <p class="bv-eyebrow">Federación Chilena de Bridge</p>
+        <h2>¿El handicap dice la verdad?</h2>
+      </div>
+    </div>
+    <p class="bv-sentence">El handicap va de 0, los jugadores más fuertes, hacia arriba. Aquí lo enfrentamos a lo que pasó en las mesas desde 2025.</p>
+    <div class="bv-mt-resumen" data-draw="hc-cifras" data-source="handicap_resumen"></div>
+
+    <div class="bv-card" id="hc-grafico">
+      <h3>Mientras más bajo el handicap, mejor el resultado</h3>
+      <p class="bv-note">Cada punto es un jugador y la raya es el promedio de su handicap. Toca un punto para ver su perfil.</p>
+      <div class="bv-chart" data-draw="hc-puntos" data-source="handicap_jugadores"></div>
+    </div>
+
+    <div class="bv-grid">
+      <div class="bv-card" id="hc-gana">
+        <h3>Quién gana</h3>
+        <p class="bv-note">Porcentaje de sus torneos en que salieron primeros en su línea.</p>
+        <ol class="bv-bars" data-draw="hc-victorias" data-source="handicap_grupos"></ol>
+      </div>
+      <div class="bv-card" id="hc-mejores">
+        <h3>Mejor que su handicap</h3>
+        <p class="bv-note">Quienes más superan lo esperado para su handicap, con al menos 30 torneos.</p>
+        <ol class="bv-bars" data-draw="hc-sobre" data-source="handicap_jugadores"></ol>
+      </div>
+    </div>
+
+    <div class="bv-card" id="hc-duelos">
+      <h3>Cuando se enfrentan</h3>
+      <p class="bv-note">% promedio por mano de una pareja según el handicap de ambas parejas, promediando sus dos jugadores.</p>
+      <div class="bv-cal-scroll" data-draw="hc-cruces" data-source="handicap_cruces"></div>
+    </div>
+
+    <div class="bv-card" id="hc-juego">
+      <h3>Qué hacen distinto</h3>
+      <p class="bv-note">Las bazas comparan con el doble muerto: +0.25 es un cuarto de baza más por mano. Los handicap con pocos jugadores son menos confiables.</p>
+      <div class="bv-cal-scroll">
+        <table class="bv-table">
+          <thead><tr><th>Handicap</th><th>Jugadores</th><th>% ajustado</th><th>Podio</th><th>Cumple jugando</th><th>Bazas jugando</th><th>Bazas defendiendo</th><th>Slams rematados</th><th>Torneos en su historia</th></tr></thead>
+          <tbody data-draw="hc-tabla" data-source="handicap_grupos"></tbody>
+        </table>
+      </div>
+    </div>
+
+    <div class="bv-card" id="hc-dia">
+      <h3>Handicap promedio de cada día</h3>
+      <p class="bv-note">Mientras más bajo, más fuerte el grupo que va ese día.</p>
+      <ol class="bv-bars" data-draw="hc-dias" data-source="handicap_dias"></ol>
+    </div>
+
+    <p class="bv-note">Handicap publicado por la Federación, que se actualiza una vez al año según los resultados del año anterior y solo incluye a quienes pagaron su tarjeta. Por eso faltan jugadores. Se analizan quienes tienen al menos 15 torneos desde 2025.</p>
   </section>
 
   <!-- ===================== RESUMEN ===================== -->
@@ -874,6 +934,7 @@
         <div><b data-draw="ficha" data-source="jugadores" data-field="torneos" data-fmt="int">—</b><span>torneos</span></div>
         <div><b data-draw="ficha" data-source="jugadores" data-field="victorias" data-fmt="int">—</b><span>primeros lugares</span></div>
         <div><b data-draw="ficha" data-source="jugadores" data-field="pct_ajustado" data-fmt="pct">—</b><span>% ajustado</span></div>
+        <div class="bv-kpi-hc"><b data-draw="perfil-handicap" data-source="handicap_jugadores">—</b><span>handicap</span></div>
       </div>
     </div>
 
@@ -1121,18 +1182,19 @@
   </section>
 </div>
 
-<script src="comun.js?v=202611060156"></script>
-<script src="inicio.js?v=202611060156"></script>
-<script src="resumen.js?v=202611060156"></script>
-<script src="ranking.js?v=202611060156"></script>
-<script src="jugador.js?v=202611060156"></script>
-<script src="mi_torneo.js?v=202611060156"></script>
-<script src="juveniles.js?v=202611060156"></script>
-<script src="generos.js?v=202611060156"></script>
-<script src="dias.js?v=202611060156"></script>
-<script src="estilo.js?v=202611060156"></script>
-<script src="cartas.js?v=202611060156"></script>
+<script src="comun.js?v=202611060212"></script>
+<script src="inicio.js?v=202611060212"></script>
+<script src="resumen.js?v=202611060212"></script>
+<script src="ranking.js?v=202611060212"></script>
+<script src="jugador.js?v=202611060212"></script>
+<script src="handicap.js?v=202611060212"></script>
+<script src="mi_torneo.js?v=202611060212"></script>
+<script src="juveniles.js?v=202611060212"></script>
+<script src="generos.js?v=202611060212"></script>
+<script src="dias.js?v=202611060212"></script>
+<script src="estilo.js?v=202611060212"></script>
+<script src="cartas.js?v=202611060212"></script>
 </div>
-<p class="pie">Datos de <a href="https://bridgevitacura.cl/resultado/">bridgevitacura.cl</a> · actualizado el 06-11-2026 01:56</p>
+<p class="pie">Datos de <a href="https://bridgevitacura.cl/resultado/">bridgevitacura.cl</a> · actualizado el 06-11-2026 02:12</p>
 </body>
 </html>
