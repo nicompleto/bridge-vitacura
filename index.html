@@ -8,10 +8,10 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Source+Sans+3:wght@400;500;600&family=Source+Serif+4:opsz,wght@8..60,400;8..60,600&display=swap">
-<link rel="stylesheet" href="tema.css?v=202611060137">
+<link rel="stylesheet" href="tema.css?v=202611060156">
 <script src="https://cdn.jsdelivr.net/npm/d3@7.9.0/dist/d3.min.js"></script>
-<script>window.__bvVersion = "202611060137";</script>
-<script src="dash.js?v=202611060137"></script>
+<script>window.__bvVersion = "202611060156";</script>
+<script src="dash.js?v=202611060156"></script>
 </head>
 <body>
 <div id="dash-root">
@@ -178,17 +178,6 @@
   .bv-feature .bv-linkbtn { margin-top: var(--cds-gap-xs); }
   .bv-juv-titulo { margin: 0; font-family: var(--font-anthropic-serif); font-weight: 400; font-size: calc(var(--cds-font-size-title) * 1.4); }
   .bv-dias { display: grid; gap: var(--cds-gap-md); grid-template-columns: repeat(auto-fit, minmax(min(100%, 17rem), 1fr)); min-height: 16rem; }
-  .bv-dia { background: var(--color-panel); border: 1px solid var(--color-border-line); border-radius: var(--cds-radius); padding: var(--cds-pad-lg); display: grid; gap: var(--cds-gap-sm); align-content: start; min-width: 0; }
-  .bv-dia-top { display: flex; justify-content: space-between; align-items: baseline; gap: var(--cds-gap-sm); }
-  .bv-dia-nombre { font-family: var(--font-anthropic-serif); font-size: var(--cds-font-size-title); line-height: 1.1; }
-  .bv-dia-dif { font-variant-numeric: tabular-nums; font-size: var(--cds-font-size-caption); border-radius: 999px; padding: 2px var(--cds-pad-sm); white-space: nowrap; }
-  .bv-dia-dif.bv-duro { background: color-mix(in srgb, var(--color-bad) 18%, transparent); color: var(--color-bad); }
-  .bv-dia-dif.bv-facil { background: color-mix(in srgb, var(--color-ok) 18%, transparent); color: var(--color-ok); }
-  .bv-dia-sello { font-size: var(--cds-font-size-body); color: var(--color-fg-muted); margin: 0; }
-  .bv-dia dl { margin: 0; display: grid; gap: 2px; }
-  .bv-dia dl div { display: flex; justify-content: space-between; gap: var(--cds-gap-sm); font-size: var(--cds-font-size-caption); }
-  .bv-dia dt { color: var(--color-fg-muted); }
-  .bv-dia dd { margin: 0; font-weight: 500; font-variant-numeric: tabular-nums; text-align: right; overflow-wrap: anywhere; }
   .bv-freak { display: grid; gap: var(--cds-gap-sm); grid-template-columns: repeat(auto-fill, minmax(min(100%, 15rem), 1fr)); min-height: 8rem; }
   .bv-freak-item { border: 1px solid var(--color-border-line); border-radius: var(--cds-radius); padding: var(--cds-pad-md); display: grid; gap: 2px; background: var(--color-bg); align-content: start; min-width: 0; }
   .bv-freak-item span { font-size: var(--cds-font-size-caption); color: var(--color-fg-muted); }
@@ -251,39 +240,6 @@
   .bv-mt-mano span { font-size: var(--cds-font-size-body); }
   .bv-mt-mano small { font-size: var(--cds-font-size-caption); color: var(--color-fg-muted); }
   /* que rematarias */
-  .bv-dia { display: grid; gap: var(--cds-gap-md); padding: var(--cds-pad-lg); border-radius: calc(var(--cds-radius) * 2); color: #f4f7f1; background: radial-gradient(120% 150% at 12% 0%, #23785a 0%, #145a42 45%, #0b3a2b 100%); box-shadow: inset 0 0 0 1px rgba(214, 178, 76, .55); }
-  .bv-dia-head { display: flex; flex-wrap: wrap; justify-content: space-between; align-items: end; gap: var(--cds-gap-sm); }
-  .bv-dia-head h2 { margin: 0; font-family: var(--font-anthropic-serif); font-weight: 400; color: #fff; }
-  .bv-dia .bv-eyebrow { color: #e5c35a; }
-  .bv-dia-cuerpo { display: grid; gap: var(--cds-gap-md); grid-template-columns: minmax(0, 3fr) minmax(0, 2fr); align-items: stretch; }
-  .bv-dia-panel { background: rgba(0, 0, 0, .24); border-radius: var(--cds-radius); padding: var(--cds-pad-md); display: grid; align-content: center; gap: var(--cds-gap-sm); min-width: 0; }
-  .bv-dia-elegir { display: grid; gap: var(--cds-gap-sm); justify-items: start; }
-  .bv-dia.bv-jugada .bv-dia-elegir { display: none; }
-  .bv-dia .bv-chips { min-height: 0; }
-  .bv-dia .bv-chip { background: rgba(255, 255, 255, .1); color: #fff; border-color: rgba(255, 255, 255, .28); min-width: 2.2rem; }
-  .bv-dia .bv-chip[aria-pressed="true"] { background: #fffdf7; color: #145a42; border-color: #fffdf7; font-weight: 600; }
-  .bv-dia .bv-boton { background: #d6b24c; color: #1b2320; }
-  .bv-dia .bv-sentence, .bv-dia .bv-note { color: rgba(244, 247, 241, .85); margin: 0; }
-  .bv-club-mesas { display: flex; flex-wrap: wrap; gap: var(--cds-gap-xs); }
-  .bv-club-mesas span { font-size: var(--cds-font-size-caption); padding: 2px var(--cds-pad-sm); border-radius: 999px; background: rgba(255, 255, 255, .1); }
-  .bv-club-mesas span.bv-tuyo { background: #d6b24c; color: #1b2320; font-weight: 600; }
-  @media (max-width: 760px) { .bv-dia-cuerpo { grid-template-columns: minmax(0, 1fr); } }
-  .bv-marcador { font-family: var(--font-anthropic-serif); font-size: var(--cds-font-size-heading); }
-  .bv-quiz-mesa { display: grid; gap: var(--cds-gap-sm); grid-template-columns: repeat(2, minmax(0, 1fr)); min-height: 10rem; align-content: start; }
-  .bv-quiz-mano { background: #fffdf7; color: #1b2320; border-radius: var(--cds-radius); padding: var(--cds-pad-md) var(--cds-pad-lg); display: grid; gap: 2px; box-shadow: 0 6px 14px rgba(0, 0, 0, .3); }
-  .bv-quiz-mano h3 { margin: 0 0 4px; font-size: var(--cds-font-size-caption); letter-spacing: .08em; text-transform: uppercase; color: #5f6b64; }
-  .bv-quiz-palo { font-family: var(--font-anthropic-serif); font-size: var(--cds-font-size-heading); letter-spacing: .06em; display: grid; grid-template-columns: 1.6rem 1fr; }
-  .bv-quiz-palo.bv-rojo { color: #c0392b; }
-  .bv-quiz-mano.bv-dorso { background: rgba(0, 0, 0, .24); color: #fff; box-shadow: inset 0 0 0 1px rgba(214, 178, 76, .55); align-content: center; gap: 4px; }
-  .bv-dorso h3 { color: #e5c35a; }
-  .bv-dorso b { font-family: var(--font-anthropic-serif); font-weight: 400; font-size: var(--cds-font-size-title); line-height: 1.15; }
-  .bv-dorso small { color: rgba(244, 247, 241, .7); font-size: var(--cds-font-size-caption); }
-  .bv-quiz-info { grid-column: 1 / -1; color: rgba(244, 247, 241, .85); font-size: var(--cds-font-size-caption); }
-  .bv-boton { appearance: none; font: inherit; font-weight: 600; color: #fff; background: #145a42; border: 0; border-radius: 999px; padding: var(--cds-pad-sm) var(--cds-pad-lg); cursor: pointer; }
-  .bv-boton:disabled { opacity: .45; cursor: default; }
-  .bv-quiz-resultado { display: grid; gap: var(--cds-gap-xs); }
-  .bv-quiz-resultado:empty { display: none; }
-  .bv-quiz-veredicto { font-family: var(--font-anthropic-serif); font-size: var(--cds-font-size-heading); margin: 0; color: #fff; }
   .bv-buscar + .bv-controls { margin-top: var(--cds-gap-sm); }
   #mt-elegir > * { min-width: 0; }
   #mt-elegir label { display: grid; gap: 2px; flex: 1 1 14rem; min-width: 0; }
@@ -384,27 +340,6 @@
 
   <!-- ===================== INICIO ===================== -->
   <section class="bv-page" id="inicio">
-    <div class="bv-dia" id="mano-dia">
-      <div class="bv-dia-head">
-        <div>
-          <p class="bv-eyebrow">La mano del día · tú contra el Club Vitacura</p>
-          <h2>¿Qué rematarías?</h2>
-        </div>
-        <div class="bv-marcador" data-draw="quiz-marcador" data-source="quiz"></div>
-      </div>
-      <div class="bv-dia-cuerpo">
-        <div class="bv-quiz-mesa" data-draw="quiz-mano" data-source="quiz"></div>
-        <div class="bv-dia-panel">
-          <div class="bv-dia-elegir" id="quiz-elegir">
-            <div class="bv-chips" data-draw="quiz-nivel" data-source="quiz" role="group" aria-label="Nivel"></div>
-            <div class="bv-chips" data-draw="quiz-palo" data-source="quiz" role="group" aria-label="Palo"></div>
-            <button type="button" class="bv-boton" id="quiz-comparar">Comparar con el club</button>
-          </div>
-          <div class="bv-quiz-resultado" data-draw="quiz-resultado" data-source="quiz"></div>
-        </div>
-      </div>
-    </div>
-
     <div class="bv-ultimo" id="ultimo">
       <div class="bv-ultimo-head">
         <p class="bv-eyebrow">Último torneo</p>
@@ -1186,19 +1121,18 @@
   </section>
 </div>
 
-<script src="comun.js?v=202611060137"></script>
-<script src="inicio.js?v=202611060137"></script>
-<script src="resumen.js?v=202611060137"></script>
-<script src="ranking.js?v=202611060137"></script>
-<script src="jugador.js?v=202611060137"></script>
-<script src="mi_torneo.js?v=202611060137"></script>
-<script src="quiz.js?v=202611060137"></script>
-<script src="juveniles.js?v=202611060137"></script>
-<script src="generos.js?v=202611060137"></script>
-<script src="dias.js?v=202611060137"></script>
-<script src="estilo.js?v=202611060137"></script>
-<script src="cartas.js?v=202611060137"></script>
+<script src="comun.js?v=202611060156"></script>
+<script src="inicio.js?v=202611060156"></script>
+<script src="resumen.js?v=202611060156"></script>
+<script src="ranking.js?v=202611060156"></script>
+<script src="jugador.js?v=202611060156"></script>
+<script src="mi_torneo.js?v=202611060156"></script>
+<script src="juveniles.js?v=202611060156"></script>
+<script src="generos.js?v=202611060156"></script>
+<script src="dias.js?v=202611060156"></script>
+<script src="estilo.js?v=202611060156"></script>
+<script src="cartas.js?v=202611060156"></script>
 </div>
-<p class="pie">Datos de <a href="https://bridgevitacura.cl/resultado/">bridgevitacura.cl</a> · actualizado el 06-11-2026 01:37</p>
+<p class="pie">Datos de <a href="https://bridgevitacura.cl/resultado/">bridgevitacura.cl</a> · actualizado el 06-11-2026 01:56</p>
 </body>
 </html>
