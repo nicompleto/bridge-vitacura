@@ -52,7 +52,7 @@ dash.calc('palos', {
     if (!rows || !anio()) { el.replaceChildren(); return; }
     const sel = rows.filter((r) => r.anio === anio());
     // los colores de serie son variables CSS: se mezclan con color-mix en vez de interpolar en JS
-    const color = (t) => `color-mix(in srgb, ${dash.colors[0]} ${Math.round(12 + t * 88)}%, transparent)`;
+    const color = (t) => `color-mix(in srgb, ${dash.colors[0]} ${Math.round(12 + t * 58)}%, transparent)`;
     const celdas = [document.createElement('div')];
     PALOS.forEach((p) => {
       const h = document.createElement('div');
@@ -72,7 +72,7 @@ dash.calc('palos', {
         if (r && r.veces >= 20) {
           const t = Math.max(0, Math.min(1, (r.pct_cumplido - 20) / 70));
           c.style.background = color(t);
-          c.style.color = t > 0.55 ? 'var(--color-bg)' : 'var(--color-fg)';
+          c.style.color = 'var(--color-fg)';
           const v = document.createElement('span');
           v.textContent = Math.round(r.pct_cumplido) + '%';
           const n = document.createElement('small');

@@ -1,5 +1,6 @@
 // Utilidades compartidas por todas las pestañas: window.bv
 (() => {
+  try { dash.colors = ['#1f7a5f', '#c4122f', '#9a7b1c', '#5c6b73', '#b5583f', '#2a8f9c', '#8a5a9c', '#6b7a3a']; } catch (e) { /* en Claude los colores son del dashboard */ }
   // mínimo de torneos (o manos) para entrar en un ranking, por período
   const MINIMOS = {
     jugador: {anio: 30, todos: 100},
