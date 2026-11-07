@@ -8,10 +8,10 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Source+Sans+3:wght@400;500;600&family=Source+Serif+4:opsz,wght@8..60,400;8..60,600&display=swap">
-<link rel="stylesheet" href="tema.css?v=202611061311">
+<link rel="stylesheet" href="tema.css?v=202611071311">
 <script src="https://cdn.jsdelivr.net/npm/d3@7.9.0/dist/d3.min.js"></script>
-<script>window.__bvVersion = "202611061311";</script>
-<script src="dash.js?v=202611061311"></script>
+<script>window.__bvVersion = "202611071311";</script>
+<script src="dash.js?v=202611071311"></script>
 </head>
 <body>
 <div id="dash-root">
@@ -289,7 +289,18 @@
   .bv-hc-tabla td { padding: var(--cds-pad-xs); border-bottom: 1px solid var(--color-border-line); text-align: center; font-family: var(--font-anthropic-serif); font-size: var(--cds-font-size-heading); font-variant-numeric: lining-nums; }
   .bv-hc-tabla td:first-child { padding-left: 0; text-align: left; font-family: var(--font-anthropic-sans); }
   .bv-hc-tabla td.bv-hc-rinde { font-size: calc(var(--cds-font-size-heading) * 1.15); background: var(--bv-felt); }
-  .bv-hc-nombre { appearance: none; background: none; border: 0; padding: 0; min-height: 44px; font: inherit; font-size: var(--cds-font-size-body); line-height: 1.2; color: var(--color-fg); text-align: left; cursor: pointer; overflow-wrap: anywhere; text-decoration: underline; text-decoration-color: var(--color-border-line); text-underline-offset: 3px; }
+  .bv-hc-barra { display: grid; grid-template-columns: minmax(0, 1fr) auto; align-items: center; gap: var(--cds-gap-sm); }
+  .bv-hc-riel { display: block; height: 12px; border-radius: 999px; background: color-mix(in srgb, var(--color-fg) 10%, transparent); overflow: hidden; }
+  .bv-hc-riel i { display: block; height: 100%; border-radius: 999px; }
+  .bv-hc-barra b { font-weight: 700; font-variant-numeric: tabular-nums; white-space: nowrap; min-width: 3.4em; text-align: right; }
+  .bv-hc-detalle { display: block; margin-top: 3px; padding-bottom: 4px; font-size: var(--cds-font-size-caption); color: var(--color-fg-muted); line-height: 1.3; }
+  @media (max-width: 480px) {
+    .bv-hc-tabla th { width: 4.4rem; padding-inline: 2px; }
+    .bv-hc-tabla th:first-child { padding-left: 0; }
+    .bv-hc-barra { gap: 6px; }
+    .bv-hc-barra b { min-width: 0; }
+  }
+  .bv-hc-nombre { appearance: none; background: none; border: 0; padding: 0; min-height: 36px; font: inherit; font-size: var(--cds-font-size-body); line-height: 1.2; color: var(--color-fg); text-align: left; cursor: pointer; overflow-wrap: anywhere; text-decoration: underline; text-decoration-color: var(--color-border-line); text-underline-offset: 3px; }
   .bv-hc-nombre:hover { text-decoration-color: var(--color-fg); }
   .bv-hc-nombre:focus-visible { outline: 3px solid var(--color-fg); outline-offset: 2px; }
   /* que rematarias */
@@ -623,12 +634,12 @@
     <div class="bv-grid">
       <div class="bv-card" id="hc-mejores">
         <h3>Mejor que su handicap</h3>
-        <p class="bv-note">Quienes más superan lo esperado para su handicap, con al menos 30 torneos. "Rinde como" es el handicap que corresponde a sus resultados.</p>
+        <p class="bv-note">Quienes más superan lo esperado para su handicap, con al menos 30 torneos. La barra muestra cuánto por encima van. "Rinde como" es el handicap que corresponde a sus resultados.</p>
         <table class="bv-hc-tabla"><thead><tr><th>Jugador</th><th>Handicap</th><th>Rinde como</th></tr></thead><tbody data-draw="hc-sobre" data-source="handicap_jugadores"></tbody></table>
       </div>
       <div class="bv-card" id="hc-exigente">
         <h3>Un handicap exigente</h3>
-        <p class="bv-note">Sus resultados desde 2025 van bajo lo esperado para su handicap, con al menos 30 torneos. Puede ser por un año difícil, una pareja nueva o torneos más duros.</p>
+        <p class="bv-note">Sus resultados desde 2025 van bajo lo esperado para su handicap, con al menos 30 torneos. Puede ser por un año difícil, una pareja nueva o torneos más duros. La barra muestra la distancia con lo esperado.</p>
         <table class="bv-hc-tabla"><thead><tr><th>Jugador</th><th>Handicap</th><th>Rinde como</th></tr></thead><tbody data-draw="hc-exigente" data-source="handicap_jugadores"></tbody></table>
       </div>
     </div>
@@ -1310,19 +1321,19 @@
   </section>
 </div>
 
-<script src="comun.js?v=202611061311"></script>
-<script src="inicio.js?v=202611061311"></script>
-<script src="resumen.js?v=202611061311"></script>
-<script src="ranking.js?v=202611061311"></script>
-<script src="jugador.js?v=202611061311"></script>
-<script src="handicap.js?v=202611061311"></script>
-<script src="mi_torneo.js?v=202611061311"></script>
-<script src="juveniles.js?v=202611061311"></script>
-<script src="generos.js?v=202611061311"></script>
-<script src="dias.js?v=202611061311"></script>
-<script src="estilo.js?v=202611061311"></script>
-<script src="cartas.js?v=202611061311"></script>
+<script src="comun.js?v=202611071311"></script>
+<script src="inicio.js?v=202611071311"></script>
+<script src="resumen.js?v=202611071311"></script>
+<script src="ranking.js?v=202611071311"></script>
+<script src="jugador.js?v=202611071311"></script>
+<script src="handicap.js?v=202611071311"></script>
+<script src="mi_torneo.js?v=202611071311"></script>
+<script src="juveniles.js?v=202611071311"></script>
+<script src="generos.js?v=202611071311"></script>
+<script src="dias.js?v=202611071311"></script>
+<script src="estilo.js?v=202611071311"></script>
+<script src="cartas.js?v=202611071311"></script>
 </div>
-<p class="pie">Datos de <a href="https://bridgevitacura.cl/resultado/">bridgevitacura.cl</a> · actualizado el 06-11-2026 13:11</p>
+<p class="pie">Datos de <a href="https://bridgevitacura.cl/resultado/">bridgevitacura.cl</a> · actualizado el 07-11-2026 13:11</p>
 </body>
 </html>

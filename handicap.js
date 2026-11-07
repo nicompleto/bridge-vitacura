@@ -115,7 +115,7 @@
   });
 
   // sin números de puesto: en esta pestaña un número solo puede ser un handicap
-  const filaRinde = (x, como) => {
+  const filaRinde = (x, como, tope) => {
     const tr = document.createElement('tr');
     const nombre = document.createElement('td');
     const boton = document.createElement('button');
@@ -123,7 +123,22 @@
     boton.className = 'bv-hc-nombre';
     boton.textContent = lindo(x.jugador);
     boton.addEventListener('click', () => verJugador(x.jugador));
-    nombre.appendChild(boton);
+    // la barra da el orden: cuánto se aleja de lo esperado para su handicap
+    const barra = document.createElement('div');
+    barra.className = 'bv-hc-barra';
+    const riel = document.createElement('span');
+    riel.className = 'bv-hc-riel';
+    const relleno = document.createElement('i');
+    relleno.style.width = `${Math.max(4, Math.abs(x.dif) / tope * 100)}%`;
+    relleno.style.background = dash.colors[0];
+    riel.appendChild(relleno);
+    const dif = document.createElement('b');
+    dif.textContent = `${fmt.dif(x.dif)}%`;
+    barra.append(riel, dif);
+    const detalle = document.createElement('span');
+    detalle.className = 'bv-hc-detalle';
+    detalle.textContent = `Promedia ${fmt.pct(x.pct)}, se esperaba ${fmt.pct(x.esperado)}`;
+    nombre.append(boton, barra, detalle);
     const hc = document.createElement('td');
     hc.textContent = String(x.handicap);
     const rinde = document.createElement('td');
@@ -140,11 +155,14 @@
     return r === x.handicap ? uno(Math.max(0, v)) : String(r);
   };
 
+  // misma escala en las dos tablas, para que las barras se puedan comparar
+  const topeDif = () => d3.max(analizados().filter((x) => x.torneos >= MIN_LISTA), (x) => Math.abs(x.dif)) || 1;
+
   dash.draw('hc-sobre', (tb) => {
     const r = resumen();
     if (!r) { tb.replaceChildren(); return; }
     const sel = analizados().filter((x) => x.torneos >= MIN_LISTA && x.dif > 0).sort((a, b) => b.dif - a.dif).slice(0, 10);
-    tb.replaceChildren(...sel.map((x) => filaRinde(x, rindeComo(x, r.pendiente))));
+    tb.replaceChildren(...sel.map((x) => filaRinde(x, rindeComo(x, r.pendiente), topeDif())));
   });
 
   // sin rojo: es una lectura de sus resultados recientes, no un juicio
@@ -152,7 +170,7 @@
     const r = resumen();
     if (!r) { tb.replaceChildren(); return; }
     const sel = analizados().filter((x) => x.torneos >= MIN_LISTA && x.dif < 0).sort((a, b) => a.dif - b.dif).slice(0, 10);
-    tb.replaceChildren(...sel.map((x) => filaRinde(x, rindeComo(x, r.pendiente))));
+    tb.replaceChildren(...sel.map((x) => filaRinde(x, rindeComo(x, r.pendiente), topeDif())));
   });
 
   dash.draw('hc-dias', (ol) => {
