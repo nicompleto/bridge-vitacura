@@ -1,1 +1,1 @@
-window.__bvDatos=window.__bvDatos||{};window.__bvDatos["ultimo_torneo"]=[{"id_torneo":"2026-11-06","fecha":"6 de nov de 2026","dia":"Viernes","torneo":"Viernes Matinee","parejas":16,"manos":28,"dificultad":-1.1}];
+window.__bvDatos=window.__bvDatos||{};window.__bvDatos["ultimo_torneo"]=[{"id_torneo":"2026-11-07","fecha":"7 de nov de 2026","dia":"Sábado","torneo":"Sabado Matinee","parejas":13,"manos":28,"dificultad":-3.4}];
