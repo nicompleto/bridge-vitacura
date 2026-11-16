@@ -1,1 +1,1 @@
-window.__bvDatos=window.__bvDatos||{};window.__bvDatos["ultimo_torneo"]=[{"id_torneo":"2026-11-12s","fecha":"12 de nov de 2026","dia":"Jueves","torneo":"Jueves - Copa Handicap- Sin Handicap","parejas":52,"manos":27,"dificultad":-0.2}];
+window.__bvDatos=window.__bvDatos||{};window.__bvDatos["ultimo_torneo"]=[{"id_torneo":"2026-11-15","fecha":"15 de nov de 2026","dia":"Domingo","torneo":"Matinee-Domingo-Parejas","parejas":27,"manos":27,"dificultad":0.4}];
