@@ -6,14 +6,14 @@ dash.calc('palos', {
   fn: (contratos) => {
     const grupos = d3.rollups(contratos, (v) => ({
       veces: d3.sum(v, (r) => r.veces),
-      cumplidos: d3.sum(v, (r) => r.veces * r.pct_cumplido / 100),
+      cumplidos: d3.sum(v, (r) => r.veces * (r.pct_cumplido || 0) / 100),
     }), (r) => r.anio, (r) => r.palo);
     return grupos.flatMap(([anio, palos]) => {
       const total = d3.sum(palos, ([, s]) => s.veces);
       return palos.map(([palo, s]) => ({
         clave: anio + '|' + palo, anio, palo, veces: s.veces,
         pct_contratos: Math.round(1000 * s.veces / total) / 10,
-        pct_cumplido: Math.round(1000 * s.cumplidos / s.veces) / 10,
+        pct_cumplido: palo === 'X' ? null : Math.round(1000 * s.cumplidos / s.veces) / 10,
       }));
     });
   },
@@ -29,15 +29,17 @@ dash.calc('palos', {
     {id: 'P', simbolo: '♠', nombre: 'Picas', rojo: false},
     {id: 'S', simbolo: 'ST', nombre: 'Sin triunfo', rojo: false},
   ];
+  // el paso (los cuatro pasan) aparece en el reparto por palo, no en el mapa de niveles
+  const CON_PASO = [...PALOS, {id: 'X', simbolo: '–', nombre: 'Paso: los cuatro pasan', rojo: false}];
 
   dash.draw('palos', (ol) => {
     const d = dash.data('palos');
     if (d.status !== 'ok' || !anio()) { ol.replaceChildren(); return; }
     const rows = d.data.filter((r) => r.anio === anio());
-    const items = PALOS.map((p) => ({p, r: rows.find((r) => r.palo === p.id)})).filter((x) => x.r);
+    const items = CON_PASO.map((p) => ({p, r: rows.find((r) => r.palo === p.id)})).filter((x) => x.r);
     listaBarras(ol, items.map(({p, r}) => ({
       etiquetaRank: p.simbolo, nombre: p.nombre, valor: r.pct_contratos, texto: fmt.pct(r.pct_contratos),
-      sub: `${fmt.int(r.veces)} contratos · ${fmt.pct(r.pct_cumplido)} cumplidos`,
+      sub: p.id === 'X' ? `${fmt.int(r.veces)} manos` : `${fmt.int(r.veces)} contratos, ${fmt.pct(r.pct_cumplido)} cumplidos`,
     })), {dominio: [0, d3.max(items, (x) => x.r.pct_contratos)], medallas: false,
           colores: items.map(({p}) => (p.rojo ? 'var(--color-bad)' : 'var(--color-fg)'))});
     ol.querySelectorAll('.bv-rank').forEach((el, i) => {

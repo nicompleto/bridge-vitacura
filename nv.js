@@ -62,8 +62,8 @@
   const favorito = () => {
     const c = {};
     (filas('contratos') || []).forEach((r) => { if (r.anio !== 'todos') c[`${r.nivel}${r.palo}`] = (c[`${r.nivel}${r.palo}`] || 0) + r.veces; });
-    const tot = Object.values(c).reduce((a, b) => a + b, 0);
-    const [k, v] = Object.entries(c).sort((a, b) => b[1] - a[1])[0] || [];
+    const tot = Object.values(c).reduce((a, b) => a + b, 0);       // incluye las manos pasadas
+    const [k, v] = Object.entries(c).filter(([key]) => key !== '0X').sort((a, b) => b[1] - a[1])[0] || [];
     return k ? {nivel: k[0], palo: k[1], parte: v / tot * 100} : null;
   };
   dash.draw('nv-favorito', (card) => {
