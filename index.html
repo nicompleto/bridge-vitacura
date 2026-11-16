@@ -7,15 +7,15 @@
 <meta name="description" content="Estadísticas de jugadores y parejas de los torneos de Bridge Vitacura, actualizadas cada día.">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Source+Sans+3:wght@400;500;600&family=Source+Serif+4:opsz,wght@8..60,400;8..60,600&display=swap">
-<link rel="stylesheet" href="tema.css?v=202611160000">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Libre+Caslon+Display&family=Libre+Caslon+Text:ital,wght@0,400;0,700;1,400&family=Public+Sans:ital,wght@0,400;0,500;0,600;0,700;1,400&display=swap">
+<link rel="stylesheet" href="tema.css?v=202611160121">
 <script src="https://cdn.jsdelivr.net/npm/d3@7.9.0/dist/d3.min.js"></script>
-<script>window.__bvVersion = "202611160000";</script>
-<script src="dash.js?v=202611160000"></script>
+<script>window.__bvVersion = "202611160121";</script>
+<script src="dash.js?v=202611160121"></script>
 </head>
 <body>
 <div id="dash-root">
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible+Next:wght@400;500;600;700&family=Young+Serif&display=swap">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Libre+Caslon+Display&family=Libre+Caslon+Text:ital,wght@0,400;0,700;1,400&family=Public+Sans:ital,wght@0,400;0,500;0,600;0,700;1,400&display=swap">
 <style>
   /* Mesa de bridge: paño verde como tinte del encabezado, palos como detalle, medallas para el podio */
   .bv { --font-anthropic-sans: "Atkinson Hyperlegible Next", "Source Sans 3", system-ui, sans-serif; --font-anthropic-serif: "Young Serif", Georgia, serif;
@@ -58,9 +58,53 @@
   }
   @media (prefers-reduced-motion: no-preference) {
     .bv-portada .bv-asiento { animation: bv-repartir .55s var(--cds-ease-out) backwards; }
-    .bv-a-n { --dy: 90px; } .bv-a-e { --dx: -130px; animation-delay: .1s !important; } .bv-a-s { --dy: -90px; animation-delay: .2s !important; } .bv-a-o { --dx: 130px; animation-delay: .3s !important; }
+    .bv-a-n { --dy: 90px; animation-delay: .5s !important; } .bv-a-e { --dx: -130px; animation-delay: .6s !important; } .bv-a-s { --dy: -90px; animation-delay: .7s !important; } .bv-a-o { --dx: 130px; animation-delay: .8s !important; }
     @keyframes bv-repartir { from { transform: translate(var(--dx, 0), var(--dy, 0)) rotate(-8deg) scale(.7); opacity: 0; } }
   }
+  /* portada 3D: una mesa de bridge inclinada con las cuatro manos repartidas.
+     El 3D es solo decorativo: nombres y cifras van planos y grandes encima. */
+  .bv-portada { background: radial-gradient(120% 90% at 72% 38%, #17694f 0%, #0d4a3b 48%, #072a22 100%); }
+  .bv-portada .bv-mesa { position: relative; isolation: isolate; perspective: 1000px; --rx: 0deg; --ry: 0deg; --tx: 0px; --ty: 0px; min-height: 24rem; grid-template-rows: auto minmax(7rem, 1fr) auto; gap: 4.2rem 3.4rem; padding: .5rem 0; }
+  .bv-portada .bv-tapete { aspect-ratio: auto; align-self: center; }
+  .bv-mesa3d { position: absolute; inset: 2% -2%; z-index: -1; display: grid; place-items: center; transform-style: preserve-3d; pointer-events: none; }
+  .bv-tablero { position: relative; width: 92%; height: 84%; border-radius: 34px; transform-style: preserve-3d;
+    transform: rotateX(calc(24deg + var(--rx))) rotateY(var(--ry));
+    background:
+      radial-gradient(70% 60% at calc(50% + var(--ry) * 4) 35%, rgba(255, 255, 255, .16), transparent 70%),
+      repeating-linear-gradient(45deg, rgba(255, 255, 255, .025) 0 2px, transparent 2px 5px),
+      radial-gradient(90% 80% at 50% 45%, #1f8a6a, #11573f 75%);
+    box-shadow: inset 0 0 0 9px #6b4324, inset 0 0 0 11px #8a5a33, inset 0 0 0 13px rgba(0, 0, 0, .25), inset 0 0 40px rgba(0, 0, 0, .35), 0 34px 50px rgba(0, 0, 0, .5); }
+  .bv-tablero::after { content: ""; position: absolute; inset: 22% 30%; border: 2px solid rgba(255, 255, 255, .14); border-radius: 50%; }
+  .bv-portada .bv-asiento, .bv-portada .bv-tapete { position: relative; z-index: 1; translate: var(--tx) var(--ty); transition: translate .35s cubic-bezier(.16, 1, .3, 1), transform 180ms var(--cds-ease-out); }
+  .bv-portada .bv-tapete { translate: calc(var(--tx) * .4) calc(var(--ty) * .4); background: rgba(9, 52, 41, .82); backdrop-filter: blur(2px); }
+  .bv-abanico { --esc: 1; position: relative; z-index: 0; width: 7.5rem; height: 4.6rem; pointer-events: none; justify-self: center; align-self: center;
+    translate: calc(var(--tx) * 1.5) calc(var(--ty) * 1.5); transition: translate .35s cubic-bezier(.16, 1, .3, 1); }
+  .bv-abanico span { position: absolute; left: 50%; bottom: 0; width: 1.75rem; height: 2.5rem; margin-left: -.875rem; border-radius: 4px; border: 2px solid #fff;
+    background: repeating-linear-gradient(45deg, #b3122c 0 3px, #8b0d22 3px 6px); box-shadow: 0 2px 4px rgba(0, 0, 0, .35);
+    transform-origin: 50% 135%; transform: rotate(calc((var(--i) - 6) * 7deg)) scale(var(--esc)); }
+  .bv-ab-e span, .bv-ab-o span { background: repeating-linear-gradient(45deg, #1d3f73 0 3px, #142e57 3px 6px); }
+  .bv-ab-n { grid-area: n; align-self: end; transform: translateY(118%) rotate(180deg); }
+  .bv-ab-s { grid-area: s; align-self: start; transform: translateY(-118%); }
+  .bv-ab-e { grid-area: e; justify-self: start; transform: translateX(-72%) rotate(-90deg); }
+  .bv-ab-o { grid-area: o; justify-self: end; transform: translateX(72%) rotate(90deg); }
+  @media (max-width: 600px) {
+    .bv-portada .bv-mesa { min-height: 20rem; gap: 3.2rem .6rem; grid-template-columns: repeat(3, minmax(0, 1fr)); }
+    .bv-ab-e, .bv-ab-o { display: none; }
+    .bv-portada .bv-asiento span { overflow-wrap: normal; word-break: normal; hyphens: manual; }
+    .bv-abanico { --esc: .72; width: 5.5rem; height: 3.3rem; }
+    .bv-tablero { border-radius: 24px; }
+  }
+  @media (prefers-reduced-motion: no-preference) {
+    .bv-portada .bv-abanico span { animation: bv-dar .7s cubic-bezier(.16, 1, .3, 1) backwards; animation-delay: calc(var(--orden) * 28ms + .25s); }
+    @keyframes bv-dar { from { transform: translateY(-9rem) rotate(calc((var(--i) - 6) * -22deg)) scale(.6); opacity: 0; } }
+    .bv-portada .bv-tablero { animation: bv-mesa-entra 1s cubic-bezier(.16, 1, .3, 1) backwards; transition: transform .5s cubic-bezier(.16, 1, .3, 1); }
+    @keyframes bv-mesa-entra { from { transform: rotateX(62deg) scale(.85); opacity: 0; } }
+  }
+  /* podio, historias y medallas (los mueve movimiento.js) */
+  .bv-mov .bv-medalla:not(.bv-bloqueada) i { position: relative; overflow: hidden; }
+  .bv-mov .bv-medalla:not(.bv-bloqueada) i::after { content: ""; position: absolute; inset: -40%; background: linear-gradient(115deg, transparent 35%, rgba(255, 255, 255, .75) 50%, transparent 65%); transform: translateX(-120%); }
+  .bv-mov .bv-medalla.bv-brilla i::after, .bv-mov .bv-medalla:not(.bv-bloqueada):hover i::after { animation: bv-brillo 1.1s cubic-bezier(.16, 1, .3, 1) var(--d, 0s) both; }
+  @keyframes bv-brillo { to { transform: translateX(120%); } }
   /* ultimo torneo */
   .bv-ultimo { background: var(--color-panel); border: 1px solid var(--color-border-line); border-radius: calc(var(--cds-radius) * 2); padding: var(--cds-pad-xl) var(--cds-pad-lg); display: grid; gap: var(--cds-gap-lg); }
   .bv-ultimo-head { display: grid; gap: 2px; }
@@ -477,9 +521,244 @@
     .bv-mov .bv-card, .bv-mov .bv-ultimo, .bv-mov .bv-dia { background-image: radial-gradient(420px circle at var(--mx, -999px) var(--my, -999px), color-mix(in srgb, var(--bv-pano-claro) 9%, transparent), transparent 65%); }
   }
   @media print { .bv-mov .bv-espera { opacity: 1; } }
+  /* ================= REDISEÑO =================
+     Pizarra verde y liquen (confianza y sostenibilidad), rojo solo para los palos rojos.
+     Libre Caslon Display en titulares grandes, Libre Caslon Text en títulos medianos, Public Sans para leer. */
+  :root {
+    --color-bg: #edf1ed; --color-panel: #f8faf7; --color-fg: #1b2522; --color-fg-muted: #4b5f58; --color-border-line: #c9d6cd;
+    --color-ok: #2e5e50; --color-bad: #b3362f; --cds-text-secondary: #4b5f58; --cds-surface-popover: #f8faf7; --cds-border: #c9d6cd;
+    --cds-chart-grid: #dde6df; --cds-chart-axis: #b5c4ba; --nv-fg: #1b2522; --nv-muted: #4b5f58; --nv-linea: #c9d6cd;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root { --color-bg: #0f1f1b; --color-panel: #16302a; --color-fg: #e8efea; --color-fg-muted: #a9bdb3; --color-border-line: #2b4740;
+            --color-ok: #8fc0a9; --color-bad: #ec8a80; --cds-text-secondary: #a9bdb3; --cds-surface-popover: #16302a; --cds-border: #2b4740;
+            --cds-chart-grid: #22403a; --cds-chart-axis: #3a5a51; --nv-fg: #e8efea; --nv-muted: #a9bdb3; --nv-linea: #2b4740; }
+  }
+  .bv { --font-anthropic-sans: "Public Sans", system-ui, sans-serif; --font-anthropic-serif: "Libre Caslon Text", Georgia, serif; --nv-display: "Libre Caslon Display", "Libre Caslon Text", Georgia, serif;
+        --bv-pano: #15322c; --bv-pano-claro: #2e5e50; --bv-rojo: #b3362f; --bv-rojo-naipe: #b3362f;
+        --nv-pizarra: #15322c; --nv-bosque: #2e5e50; --nv-liquen: #a7c2af; --nv-curva: cubic-bezier(.16, 1, .3, 1);
+        --cds-font-size-caption: 16px; --cds-font-size-body: 18px; --cds-font-size-heading: 21px; --cds-font-size-title: 34px; --cds-radius: 12px;
+        gap: clamp(20px, 3vw, 32px); line-height: 1.55; }
+  @media (prefers-color-scheme: dark) { .bv { --nv-bosque: #8fc0a9; } }
+  #dash-root { max-width: 1240px; }
+  .bv { grid-template-columns: minmax(0, 1fr); }
+  .nv-barra, .nv-fila, .nv-grupos, .nv-sub { min-width: 0; }
+  .bv > nav.bv-tabs { display: none; }
+  .bv .bv-portada { display: none !important; }
+  .bv-page h2, .bv-section-head h2 { font-family: var(--nv-display); font-weight: 400; font-size: clamp(32px, 3.6vw, 46px); line-height: 1.05; letter-spacing: -.01em; text-wrap: balance; }
+  .bv-card { border: 1px solid var(--color-border-line); border-radius: 18px; box-shadow: none; }
+  .bv-card h3 { font-family: var(--font-anthropic-serif); font-weight: 400; }
+  .bv-hero:not(.bv-portada) { background: var(--nv-pizarra); border-radius: 18px; }
+  /* fuera de Inicio, el encabezado solo lleva el selector de año: una franja clara y discreta */
+  #portada:not(.bv-portada) { --color-fg: var(--nv-fg); --color-fg-muted: var(--nv-muted); --color-border-line: var(--nv-linea); color: var(--nv-fg); background: transparent; padding: 0; border-radius: 0; }
+  #portada:not(.bv-portada):has(> .bv-chips[hidden]) { display: none; }
+  #portada:not(.bv-portada) .bv-chip { background: var(--color-panel); color: var(--nv-fg); border: 1px solid var(--nv-linea); }
+  #portada:not(.bv-portada) .bv-chip[aria-pressed="true"] { background: var(--nv-pizarra); color: #fff; border-color: var(--nv-pizarra); }
+  @media (prefers-color-scheme: dark) { #portada:not(.bv-portada) .bv-chip[aria-pressed="true"] { background: var(--nv-liquen); color: #0f1f1b; border-color: var(--nv-liquen); } }
+  #portada:not(.bv-portada) .bv-hero-texto { display: none; }
+  .bv-chip[aria-pressed="true"], .bv-chip[aria-checked="true"] { background: var(--nv-pizarra); color: #fff; }
+
+  /* ---------- barra y menú agrupado ---------- */
+  .nv-barra { position: sticky; top: 0; z-index: 20; display: grid; gap: 6px; padding: 12px 0 0; margin-top: -24px; background: color-mix(in srgb, var(--color-bg) 90%, transparent); backdrop-filter: blur(12px); border-bottom: 1px solid var(--color-border-line); }
+  .nv-fila { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 8px 24px; }
+  .nv-marca { appearance: none; border: 0; background: none; padding: 0; cursor: pointer; display: inline-flex; align-items: center; gap: 10px; font-family: var(--nv-display); font-size: 26px; line-height: 1; color: var(--color-fg); min-height: 44px; }
+  .nv-marca i { font-style: normal; color: var(--nv-bosque); font-size: 22px; }
+  .nv-grupos { display: flex; flex-wrap: wrap; gap: 0 22px; }
+  .nv-grupo { appearance: none; border: 0; background: none; padding: 0; font: inherit; font-weight: 600; color: var(--color-fg-muted); cursor: pointer; min-height: 44px; position: relative; }
+  .nv-grupo::after { content: ""; position: absolute; left: 0; right: 0; bottom: 6px; height: 2px; background: var(--nv-bosque); transform: scaleX(0); transform-origin: left; transition: transform .35s var(--nv-curva); }
+  .nv-grupo:hover { color: var(--color-fg); }
+  .nv-grupo[aria-current="true"] { color: var(--color-fg); }
+  .nv-grupo[aria-current="true"]::after, .nv-grupo:hover::after { transform: scaleX(1); }
+  .nv-sub { display: flex; gap: 6px; overflow-x: auto; padding: 4px 0 10px; scrollbar-width: none; }
+  .nv-sub:empty { display: none; }
+  .nv-sub button { appearance: none; border: 1px solid var(--color-border-line); background: var(--color-panel); color: var(--color-fg); font: inherit; font-size: 16px; white-space: nowrap; padding: 6px 14px; border-radius: 999px; min-height: 40px; cursor: pointer; transition: background-color .2s, color .2s; }
+  .nv-sub button:hover { border-color: var(--nv-bosque); }
+  .nv-sub button[aria-current="true"] { background: var(--nv-pizarra); border-color: var(--nv-pizarra); color: #fff; }
+  @media (prefers-color-scheme: dark) { .nv-sub button[aria-current="true"] { background: var(--nv-liquen); border-color: var(--nv-liquen); color: #0f1f1b; } }
+  .nv-grupo:focus-visible, .nv-sub button:focus-visible, .nv-marca:focus-visible { outline: 3px solid var(--nv-bosque); outline-offset: 3px; border-radius: 6px; }
+  @media (max-width: 640px) {
+    .nv-grupos { flex-wrap: nowrap; overflow-x: auto; width: 100%; scrollbar-width: none; }
+    .nv-grupo { white-space: nowrap; }
+  }
+
+  /* ---------- inicio ---------- */
+  .nv-inicio { display: grid; gap: clamp(56px, 8vw, 112px); }
+  .nv-portada { display: grid; grid-template-columns: minmax(0, 1fr); gap: clamp(32px, 5vw, 56px); align-items: center; padding-top: clamp(16px, 4vw, 40px); }
+  @media (min-width: 960px) { .nv-portada { grid-template-columns: minmax(0, 7fr) minmax(0, 6fr); } }
+  .nv-titular { font-family: var(--nv-display); font-weight: 400; font-size: clamp(52px, 8vw, 112px); line-height: .95; letter-spacing: -.02em; color: var(--color-fg); margin: 0; text-wrap: balance; }
+  .nv-bajada { font-size: 22px; line-height: 1.5; max-width: 30rem; margin: 26px 0 0; }
+  .nv-acciones { display: flex; flex-wrap: wrap; align-items: center; gap: 14px 26px; margin-top: 32px; }
+  .nv-boton { appearance: none; border: 0; cursor: pointer; display: inline-flex; align-items: center; min-height: 52px; padding: 0 26px; border-radius: 999px; background: var(--nv-pizarra); color: #fff; font: inherit; font-weight: 600; transition: background-color .2s, transform .2s var(--nv-curva); }
+  .nv-boton:hover { background: #2e5e50; }
+  .nv-boton:active { transform: scale(.97); }
+  @media (prefers-color-scheme: dark) { .nv-boton { background: var(--nv-liquen); color: #0f1f1b; } .nv-boton:hover { background: #c3d8c9; } }
+  .nv-enlace { appearance: none; border: 0; background: none; padding: 0; cursor: pointer; font: inherit; font-weight: 600; color: var(--nv-bosque); text-decoration: underline; text-decoration-thickness: 2px; text-underline-offset: .3em; min-height: 44px; }
+  .nv-cifras { margin: 44px 0 0; max-width: 32rem; color: var(--color-fg-muted); border-top: 1px solid var(--color-border-line); padding-top: 18px; }
+  .nv-cifras b { color: var(--color-fg); font-weight: 700; font-variant-numeric: tabular-nums; }
+
+  .nv-subasta { position: relative; perspective: 1400px; min-height: 40rem; display: grid; place-items: center; padding: clamp(20px, 4vw, 44px); border-radius: 30px; isolation: isolate; overflow: hidden; background: #15322c; box-shadow: 0 40px 80px -40px rgb(21 50 44 / .55); }
+  .nv-subasta::before { content: ""; position: absolute; inset: 0; z-index: -1; background: url("https://images.unsplash.com/photo-1601162937667-08f083516d57?w=1200&q=60&auto=format") center / cover; opacity: .22; filter: grayscale(1) contrast(1.1); mix-blend-mode: luminosity; }
+  .nv-subasta::after { content: ""; position: absolute; inset: 0; z-index: -1; background: radial-gradient(80% 70% at 70% 30%, rgb(167 194 175 / .28), transparent 70%), linear-gradient(180deg, transparent 55%, rgb(10 26 22 / .7)); }
+  @media (prefers-color-scheme: dark) { .nv-subasta { background: #1a3a32; box-shadow: inset 0 0 0 1px rgb(255 255 255 / .08), 0 40px 80px -40px rgb(0 0 0 / .8); } }
+  .nv-escena { --rx: 10deg; --ry: -16deg; position: relative; width: min(100%, 27rem); height: 33rem; margin-block: -3.5rem 2rem; transform-style: preserve-3d; transform: rotateX(var(--rx)) rotateY(var(--ry)); transition: transform .8s var(--nv-curva); }
+  .nv-cartulina, .nv-contrato { position: absolute; left: 0; right: 0; border-radius: 14px; background: #f8faf7; color: #1b2522; box-shadow: 0 1px 0 rgb(0 0 0 / .12), 0 22px 40px -16px rgb(0 0 0 / .6); border: 1px solid rgb(255 255 255 / .6); }
+  .nv-cartulina { height: 7rem; display: flex; align-items: flex-start; gap: 6px; padding: 9px 18px; font-family: var(--nv-display); font-size: 42px; line-height: 1; color: #15322c; }
+  .nv-cartulina i { font-style: normal; }
+  .nv-cartulina .nv-rojo { color: #b3362f; }
+  .nv-cartulina .nv-st { font-family: var(--font-anthropic-sans); font-weight: 700; font-size: 30px; padding-top: 4px; }
+  .nv-c1 { top: 0; transform: translateZ(-80px); } .nv-c2 { top: 3.6rem; transform: translateZ(-60px); } .nv-c3 { top: 7.2rem; transform: translateZ(-40px); }
+  .nv-c4 { top: 10.8rem; transform: translateZ(-20px); } .nv-c5 { top: 14.4rem; background: #a7c2af; border-color: transparent; }
+  .nv-contrato { top: 18rem; min-height: 12rem; transform: translateZ(30px); padding: 22px 24px 24px; display: grid; gap: 3px; }
+  .nv-contrato-quien { margin: 0; color: #4b5f58; font-size: 16px; font-weight: 600; }
+  .nv-contrato h2 { margin: 0; font-family: var(--nv-display); font-weight: 400; font-size: 36px; line-height: 1.05; color: #15322c; }
+  .nv-contrato-fecha { margin: 0 0 14px; color: #4b5f58; }
+  .nv-ganadores { margin: 0; display: grid; gap: 9px; }
+  .nv-ganadores div { display: grid; grid-template-columns: 3.4rem minmax(0, 1fr) auto; gap: 12px; align-items: baseline; border-top: 1px solid #c9d6cd; padding-top: 9px; }
+  .nv-ganadores dt { font-weight: 700; color: #2e5e50; }
+  .nv-ganadores dd { margin: 0; min-width: 0; }
+  .nv-ganadores .nv-pct { font-weight: 700; font-variant-numeric: tabular-nums; color: #15322c; }
+  .nv-subasta-nota { position: absolute; left: 22px; right: 22px; bottom: 16px; margin: 0; color: rgb(255 255 255 / .82); font-size: 15px; line-height: 1.35; }
+  @media (min-width: 960px) { .nv-subasta { min-height: 44rem; } }
+  @media (max-width: 640px) {
+    .nv-subasta { min-height: 0; padding: 16px 12px 64px; border-radius: 24px; }
+    .nv-escena { --rx: 6deg; --ry: -7deg; height: auto; margin-block: 8px 0; }
+    .nv-cartulina { height: 5.5rem; font-size: 32px; padding-block: 7px; }
+    .nv-cartulina .nv-st { font-size: 24px; }
+    .nv-c2 { top: 2.5rem; } .nv-c3 { top: 5rem; } .nv-c4 { top: 7.5rem; } .nv-c5 { top: 10rem; }
+    .nv-contrato { position: relative; top: auto; margin-top: 12.5rem; padding: 18px 18px 20px; }
+    .nv-contrato h2 { font-size: 30px; }
+    .nv-ganadores div { grid-template-columns: auto minmax(0, 1fr); grid-template-areas: "l p" "n n"; gap: 2px 12px; }
+    .nv-ganadores dt { grid-area: l; } .nv-ganadores .nv-pct { grid-area: p; justify-self: end; } .nv-ganadores .nv-nombres { grid-area: n; }
+  }
+  @media (prefers-reduced-motion: no-preference) {
+    .nv-cartulina, .nv-contrato { animation: nv-subir 1s var(--nv-curva) backwards; }
+    .nv-c1 { animation-delay: .15s; } .nv-c2 { animation-delay: .3s; } .nv-c3 { animation-delay: .45s; } .nv-c4 { animation-delay: .6s; } .nv-c5 { animation-delay: .78s; }
+    .nv-contrato { animation-name: nv-contrato; animation-duration: 1.2s; animation-delay: 1s; }
+    .nv-escena { animation: nv-escena 2.2s var(--nv-curva) backwards; }
+  }
+  @keyframes nv-subir { from { opacity: 0; translate: 0 70px; } }
+  @keyframes nv-contrato { from { opacity: 0; translate: 0 90px; rotate: x 35deg; } }
+  @keyframes nv-escena { from { transform: rotateX(28deg) rotateY(-30deg); } }
+
+  .nv-bloque { display: grid; gap: 8px; }
+  .nv-nota { color: var(--color-fg-muted); margin: 6px 0 0; max-width: 40rem; }
+  .nv-podios { display: grid; gap: clamp(28px, 4vw, 48px); margin-top: clamp(24px, 4vw, 44px); }
+  @media (min-width: 700px) { .nv-podios { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+  .nv-podio h3 { margin: 0 0 14px; font-size: 18px; font-weight: 700; color: var(--nv-bosque); }
+  .nv-podio ol { list-style: none; margin: 0; padding: 0; }
+  .nv-podio li { display: grid; grid-template-columns: 2.25rem minmax(0, 1fr) auto; gap: 8px 16px; align-items: baseline; padding: 16px 0; border-top: 1px solid var(--color-border-line); }
+  .nv-puesto { font-family: var(--nv-display); font-size: 24px; color: var(--color-fg-muted); }
+  .nv-podio .nv-pct { font-weight: 700; font-variant-numeric: tabular-nums; }
+  .nv-podio li:first-child .nv-puesto { color: var(--nv-bosque); font-size: 44px; line-height: .9; }
+  .nv-podio li:first-child .nv-pareja { font-weight: 600; font-size: 22px; line-height: 1.3; }
+  .nv-podio li:first-child .nv-pct { font-size: 22px; color: var(--nv-bosque); }
+  .nv-pareja > * { display: block; width: fit-content; }
+  .nv-nombre-btn { appearance: none; background: none; border: 0; padding: 0; font: inherit; color: inherit; text-align: left; cursor: pointer; text-decoration: underline; text-decoration-color: var(--nv-liquen); text-decoration-thickness: 2px; text-underline-offset: .22em; }
+  .nv-nombre-btn:hover { text-decoration-color: var(--nv-bosque); }
+  .nv-nombre-btn:focus-visible { outline: 3px solid var(--nv-bosque); outline-offset: 2px; border-radius: 4px; }
+  .nv-mas { margin-top: 18px; }
+
+  .nv-forma { list-style: none; margin: 32px 0 0; padding: 0; display: grid; gap: 0 40px; grid-template-columns: repeat(auto-fill, minmax(min(100%, 19rem), 1fr)); }
+  .nv-forma li { display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 4px 16px; padding: 18px 0; border-top: 2px solid var(--color-fg); align-items: baseline; }
+  .nv-forma .nv-n { font-weight: 600; font-size: 22px; line-height: 1.25; }
+  .nv-forma .nv-pct { font-weight: 700; font-size: 22px; font-variant-numeric: tabular-nums; color: var(--nv-bosque); }
+  .nv-forma .nv-det { grid-column: 1 / -1; color: var(--color-fg-muted); font-size: 16px; }
+
+  .nv-historias { display: grid; gap: clamp(36px, 5vw, 64px); margin-top: clamp(32px, 5vw, 56px); }
+  .nv-historia { display: grid; gap: 8px 40px; align-items: end; padding-bottom: clamp(24px, 3vw, 40px); border-bottom: 1px solid var(--color-border-line); }
+  @media (min-width: 760px) {
+    .nv-historia { grid-template-columns: minmax(0, 5fr) minmax(0, 7fr); }
+    .nv-historia:nth-child(even) { grid-template-columns: minmax(0, 7fr) minmax(0, 5fr); }
+    .nv-historia:nth-child(even) .nv-cifra { order: 2; text-align: right; }
+  }
+  .nv-cifra { font-family: var(--nv-display); font-size: clamp(80px, 13vw, 168px); line-height: .85; color: var(--nv-bosque); letter-spacing: -.03em; }
+  .nv-cifra small { display: block; font-family: var(--font-anthropic-sans); font-size: 18px; letter-spacing: 0; color: var(--color-fg-muted); margin-top: 14px; line-height: 1.3; }
+  .nv-historia h3 { margin: 0 0 8px; font-family: var(--font-anthropic-serif); font-weight: 400; font-size: 28px; line-height: 1.2; }
+  .nv-historia p { margin: 0; max-width: 36rem; }
+
+  .nv-temporadas { display: grid; gap: clamp(32px, 5vw, 72px); }
+  .nv-foto { margin: 0; position: relative; overflow: hidden; border-radius: 22px; background: var(--nv-liquen); aspect-ratio: 4 / 3; }
+  .nv-foto img { width: 100%; height: 100%; object-fit: cover; display: block; }
+  .nv-foto figcaption { position: absolute; left: 12px; bottom: 12px; right: 12px; width: fit-content; font-size: 15px; line-height: 1.35; color: #fff; background: rgba(15, 31, 27, .62); backdrop-filter: blur(6px); padding: 6px 11px; border-radius: 10px; }
+  @media (min-width: 960px) { .nv-temporadas { grid-template-columns: minmax(0, 5fr) minmax(0, 7fr); align-items: start; } .nv-temporadas .nv-foto { position: sticky; top: 9rem; aspect-ratio: 4 / 5; } }
+  .nv-linea { list-style: none; margin: 32px 0 0; padding: 0; }
+  .nv-linea li { display: grid; grid-template-columns: 6.5rem minmax(0, 1fr); gap: 4px 24px; padding: 22px 0; border-top: 1px solid var(--color-border-line); }
+  .nv-anio { font-family: var(--nv-display); font-size: 32px; line-height: 1; color: var(--nv-bosque); }
+  .nv-campeon { font-weight: 600; font-size: 22px; line-height: 1.25; }
+  .nv-linea p { margin: 4px 0 0; color: var(--color-fg-muted); font-size: 16px; }
+  @media (max-width: 480px) { .nv-linea li { grid-template-columns: minmax(0, 1fr); } }
+
+  /* índice: todas las secciones, ordenadas por tema */
+  .nv-indice { display: grid; gap: clamp(20px, 3vw, 28px); grid-template-columns: repeat(auto-fit, minmax(min(100%, 17rem), 1fr)); margin-top: clamp(24px, 4vw, 40px); }
+  .nv-tema { border-top: 2px solid var(--color-fg); padding-top: 14px; display: grid; gap: 4px; align-content: start; }
+  .nv-tema h3 { margin: 0 0 6px; font-family: var(--font-anthropic-serif); font-weight: 400; font-size: 26px; line-height: 1.2; }
+  .nv-tema button { appearance: none; border: 0; background: none; padding: 8px 0; font: inherit; color: var(--color-fg); text-align: left; cursor: pointer; display: grid; gap: 1px; border-bottom: 1px solid var(--color-border-line); }
+  .nv-tema button b { font-weight: 600; }
+  .nv-tema button span { color: var(--color-fg-muted); font-size: 16px; line-height: 1.35; }
+  .nv-tema button:hover b { color: var(--nv-bosque); text-decoration: underline; text-underline-offset: .2em; }
+  .nv-tema button:focus-visible { outline: 3px solid var(--nv-bosque); outline-offset: 2px; border-radius: 4px; }
+
+  .nv-hueco { margin: 0; border-radius: 22px; border: 2px dashed var(--nv-liquen); background: repeating-linear-gradient(135deg, transparent 0 14px, color-mix(in srgb, var(--nv-liquen) 22%, transparent) 14px 15px), var(--color-panel);
+    aspect-ratio: 4 / 3; display: grid; place-items: center; padding: 24px; text-align: center; color: var(--color-fg-muted); font-weight: 500; }
+  @media (min-width: 760px) { .nv-hueco { aspect-ratio: 21 / 8; } }
+  .nv-foto-ancha { aspect-ratio: 4 / 3; }
+  @media (min-width: 760px) { .nv-foto-ancha { aspect-ratio: 21 / 8; } }
+  @supports (animation-timeline: view()) {
+    @media (prefers-reduced-motion: no-preference) {
+      .nv-foto img { animation: nv-paralaje linear both; animation-timeline: view(); scale: 1.12; }
+    }
+  }
+  @keyframes nv-paralaje { from { translate: 0 -5%; } to { translate: 0 5%; } }
+
+  /* ---------- capítulos: el detalle se abre a pedido ---------- */
+  .nv-capitulos { border-top: 1px solid var(--color-border-line); }
+  details.nv-cap { border-bottom: 1px solid var(--color-border-line); }
+  details.nv-cap > summary { list-style: none; display: flex; align-items: center; justify-content: space-between; gap: 20px; padding: 22px 2px; cursor: pointer; font-family: var(--font-anthropic-serif); font-size: clamp(22px, 2.4vw, 28px); line-height: 1.2; color: var(--color-fg); }
+  details.nv-cap > summary::-webkit-details-marker { display: none; }
+  details.nv-cap > summary span { transition: translate .35s var(--nv-curva), color .2s; }
+  details.nv-cap > summary:hover span { translate: 6px 0; color: var(--nv-bosque); }
+  details.nv-cap > summary i { flex: none; position: relative; width: 40px; height: 40px; border-radius: 50%; border: 1px solid var(--color-border-line); transition: transform .45s var(--nv-curva), background-color .25s, border-color .25s; }
+  details.nv-cap > summary i::before, details.nv-cap > summary i::after { content: ""; position: absolute; left: 50%; top: 50%; width: 14px; height: 2px; margin: -1px 0 0 -7px; background: currentColor; border-radius: 2px; }
+  details.nv-cap > summary i::after { transform: rotate(90deg); }
+  details.nv-cap[open] > summary i { transform: rotate(45deg); background: var(--nv-pizarra); border-color: var(--nv-pizarra); color: #fff; }
+  details.nv-cap > summary:focus-visible { outline: 3px solid var(--nv-bosque); outline-offset: 2px; border-radius: 8px; }
+  .nv-cap-cuerpo { display: grid; gap: clamp(16px, 2.5vw, 24px); padding: 4px 0 36px; }
+  @media (prefers-reduced-motion: no-preference) { details.nv-cap[open] > .nv-cap-cuerpo { animation: nv-abrir .55s var(--nv-curva); } }
+  @keyframes nv-abrir { from { opacity: 0; translate: 0 -10px; } }
+
+  /* ---------- reparto de cartas por día ---------- */
+  .nv-reparto { display: grid; gap: 10px; padding: clamp(22px, 3vw, 34px); border-radius: 22px; background: var(--nv-pizarra); color: #eef4ef; }
+  .nv-reparto-titulo { margin: 0; font-family: var(--nv-display); font-weight: 400; font-size: clamp(28px, 3vw, 38px); line-height: 1.05; color: #fff; }
+  .nv-reparto-frase { margin: 0 0 10px; max-width: 46rem; font-size: 19px; color: #e1ebe4; }
+  .nv-reparto-filas { display: grid; gap: 4px; }
+  .nv-rep-fila { display: grid; grid-template-columns: 6.5rem minmax(0, 1fr) 4.5rem; gap: 16px; align-items: center; padding: 10px 0 8px; border-top: 1px solid rgb(255 255 255 / .14); }
+  .nv-rep-dia { font-weight: 600; }
+  .nv-rep-pista { position: relative; height: 40px; margin-inline: 16px 6px; }
+  .nv-rep-pista::before { content: ""; position: absolute; left: 0; right: 0; bottom: 8px; height: 2px; background: rgb(255 255 255 / .16); border-radius: 2px; }
+  .nv-rep-azar { position: absolute; bottom: 0; height: 18px; width: 2px; background: #a7c2af; }
+  .nv-rep-punto { position: absolute; bottom: 9px; width: 16px; height: 16px; margin: 0 0 -8px -8px; border-radius: 50%; background: #fff; box-shadow: 0 0 0 4px rgb(255 255 255 / .18); }
+  .nv-rep-punto b { position: absolute; left: 50%; bottom: 18px; translate: -50% 0; font-size: 15px; font-weight: 700; white-space: nowrap; color: #fff; }
+  .nv-rep-pasos { text-align: right; font-variant-numeric: tabular-nums; color: #e1ebe4; font-size: 16px; line-height: 1.2; }
+  .nv-rep-pasos b { color: #fff; font-size: 18px; white-space: nowrap; }
+  .nv-reparto-nota { margin: 8px 0 0; font-size: 15px; color: #c9d8ce; max-width: 46rem; }
+  @media (max-width: 520px) { .nv-rep-fila { grid-template-columns: 4.6rem minmax(0, 1fr) 4.6rem; gap: 10px; } .nv-rep-pasos b { font-size: 16px; } }
 </style>
 
+
 <div class="bv">
+  <header class="nv-barra">
+    <div class="nv-fila">
+      <button class="nv-marca" type="button" data-ir="inicio"><i aria-hidden="true">♠</i>Bridge Vitacura</button>
+      <nav class="nv-grupos" aria-label="Secciones">
+        <button class="nv-grupo" type="button" data-grupo="inicio">Inicio</button>
+        <button class="nv-grupo" type="button" data-grupo="mi-torneo">Mi torneo</button>
+        <button class="nv-grupo" type="button" data-grupo="jugadores">Jugadores</button>
+        <button class="nv-grupo" type="button" data-grupo="torneos">Torneos</button>
+        <button class="nv-grupo" type="button" data-grupo="juego">El juego</button>
+      </nav>
+    </div>
+    <nav class="nv-sub" aria-label="Páginas de la sección"></nav>
+  </header>
   <nav class="bv-tabs" role="tablist" aria-label="Secciones">
     <button class="bv-tab" role="tab" data-tab="inicio" aria-selected="true">Inicio</button>
     <button class="bv-tab" role="tab" data-tab="mi-torneo" aria-selected="false">Mi torneo</button>
@@ -513,47 +792,100 @@
   </header>
 
   <!-- ===================== INICIO ===================== -->
-  <section class="bv-page" id="inicio">
-    <div class="bv-ultimo" id="ultimo">
-      <div class="bv-ultimo-head">
-        <p class="bv-eyebrow">Último torneo</p>
-        <h2 data-draw="ultimo-titulo" data-source="ultimo_torneo">—</h2>
-        <p class="bv-note" data-draw="ultimo-sub" data-source="ultimo_torneo">—</p>
+  <section class="bv-page nv-inicio" id="inicio">
+    <div class="nv-portada">
+      <div>
+        <h1 class="nv-titular">Cada mano del club, contada.</h1>
+        <p class="nv-bajada">Resultados, rankings e historias de los torneos de Bridge Vitacura. Se actualiza todas las noches con lo jugado ese día.</p>
+        <div class="nv-acciones">
+          <button class="nv-boton" type="button" data-ir="mi-torneo">Revisar mi torneo</button>
+          <button class="nv-enlace" type="button" data-ir="jugador">Buscar un jugador</button>
+        </div>
+        <p class="nv-cifras" data-draw="nv-cifras" data-source="resumen_anio">—</p>
       </div>
-      <div class="bv-podios" data-draw="ultimo-podio" data-source="ultimo_podio"></div>
-      <div class="bv-ultimo-datos" data-draw="ultimo-datos" data-source="ultimo_datos"></div>
+      <div class="nv-subasta">
+        <div class="nv-escena">
+          <div class="nv-cartulina nv-c1" aria-hidden="true"><span>1</span><i>♣</i></div>
+          <div class="nv-cartulina nv-c2" aria-hidden="true"><span>1</span><i class="nv-rojo">♦</i></div>
+          <div class="nv-cartulina nv-c3" aria-hidden="true"><span>1</span><i class="nv-rojo">♥</i></div>
+          <div class="nv-cartulina nv-c4" aria-hidden="true"><span>1</span><i>♠</i></div>
+          <div class="nv-cartulina nv-c5" aria-hidden="true" data-draw="nv-favorito" data-source="contratos"><span>3</span><i class="nv-st">ST</i></div>
+          <article class="nv-contrato" data-draw="nv-contrato" data-source="ultimo_torneo ultimo_podio">
+            <p class="nv-contrato-quien">Último torneo</p>
+            <h2>—</h2>
+          </article>
+        </div>
+        <p class="nv-subasta-nota" data-draw="nv-nota-subasta" data-source="contratos"></p>
+      </div>
     </div>
 
-    <div class="bv-bloque" id="forma">
-      <div class="bv-section-head">
-        <h2>Los honores del mes</h2>
-        <p class="bv-note">Los cinco mejores de los últimos 30 días, por % ajustado y con al menos 5 torneos.</p>
-      </div>
-      <div class="bv-forma" data-draw="en-forma" data-source="en_forma"></div>
-    </div>
+    <section class="nv-bloque" aria-labelledby="nv-t-torneo">
+      <h2 id="nv-t-torneo">El último torneo</h2>
+      <p class="nv-nota" data-draw="nv-torneo-sub" data-source="ultimo_torneo">—</p>
+      <div class="nv-podios" data-draw="nv-podios" data-source="ultimo_podio jugadores"></div>
+      <div class="nv-mas"><button class="nv-enlace" type="button" data-ir="mi-torneo">Revisar las manos de ese torneo</button></div>
+    </section>
 
-    <div class="bv-bloque" id="historias">
-      <div class="bv-section-head">
-        <h2>Historias del club</h2>
-      </div>
-      <div class="bv-historias" data-draw="inicio-destacados" data-source="hallazgos"></div>
-    </div>
+    <section class="nv-bloque" aria-labelledby="nv-t-forma">
+      <h2 id="nv-t-forma">Quiénes vienen jugando mejor</h2>
+      <p class="nv-nota">Promedio ajustado de los últimos 30 días, entre quienes jugaron al menos 5 torneos.</p>
+      <ol class="nv-forma" data-draw="nv-forma" data-source="en_forma jugadores"></ol>
+    </section>
 
-    <div class="bv-bloque" id="temporadas">
-      <div class="bv-section-head">
-        <h2>Temporada a temporada</h2>
-      </div>
-      <div class="bv-palmares" data-draw="inicio-temporadas" data-source="campeones_anio"></div>
-    </div>
+    <section class="nv-bloque" aria-labelledby="nv-t-hist">
+      <h2 id="nv-t-hist">Lo que dejaron estos años</h2>
+      <p class="nv-nota">Rachas, récords y curiosidades de los torneos desde 2022.</p>
+      <div class="nv-historias" data-draw="nv-historias" data-source="hallazgos"></div>
+      <div class="nv-mas"><button class="nv-enlace" type="button" data-ir="records">Ver todas las historias y récords</button></div>
+    </section>
 
-    <nav class="bv-atajos" id="explora" aria-label="Accesos rápidos">
-      <span>También puedes ver:</span>
-      <button type="button" class="bv-linkbtn" data-ir="mi-torneo">Mi torneo</button>
-      <button type="button" class="bv-linkbtn" data-ir="jugador">Tu perfil</button>
-      <button type="button" class="bv-linkbtn" data-ir="records">Récords</button>
-      <button type="button" class="bv-linkbtn" data-ir="dias-semana">Días</button>
-      <button type="button" class="bv-linkbtn" data-ir="juveniles">Juveniles</button>
-    </nav>
+    <section class="nv-temporadas" aria-labelledby="nv-t-temp">
+      <figure class="nv-foto">
+        <img src="https://images.unsplash.com/photo-1719937076006-041292dbdfbe?w=1400&q=70&auto=format" alt="Una reina de corazones asoma sobre un mazo de reverso rojo" loading="lazy" width="1400" height="2100">
+        <figcaption>Foto de stock (Fiona Murray-deGraaff, Unsplash).</figcaption>
+      </figure>
+      <div>
+        <h2 id="nv-t-temp">Temporada por temporada</h2>
+        <p class="nv-nota">El jugador con mejor promedio ajustado de cada año, entre quienes jugaron al menos 30 torneos.</p>
+        <ol class="nv-linea" data-draw="nv-temporadas" data-source="campeones_anio jugadores"></ol>
+      </div>
+    </section>
+
+    <section class="nv-bloque" aria-labelledby="nv-t-indice">
+      <h2 id="nv-t-indice">Todo lo que hay en el sitio</h2>
+      <p class="nv-nota">Cada sección, ordenada por tema.</p>
+      <div class="nv-indice">
+        <div class="nv-tema">
+          <h3>Mi torneo</h3>
+          <button type="button" data-ir="mi-torneo"><b>Mis manos</b><span>Revisa una por una las manos de tus últimos torneos.</span></button>
+        </div>
+        <div class="nv-tema">
+          <h3>Jugadores</h3>
+          <button type="button" data-ir="jugador"><b>Perfil</b><span>Historia, medallas y compañeros de cada jugador.</span></button>
+          <button type="button" data-ir="ranking"><b>Ranking</b><span>Los mejores del año o de siempre.</span></button>
+          <button type="button" data-ir="parejas"><b>Parejas</b><span>Cómo les va a las parejas que juegan juntas.</span></button>
+          <button type="button" data-ir="handicap"><b>Handicap</b><span>El handicap de la Federación frente a los resultados.</span></button>
+          <button type="button" data-ir="juveniles"><b>Juveniles</b><span>Los jugadores jóvenes del club.</span></button>
+        </div>
+        <div class="nv-tema">
+          <h3>Torneos</h3>
+          <button type="button" data-ir="records"><b>Historias y récords</b><span>Cómo ha cambiado el club, rachas y manos de locos.</span></button>
+          <button type="button" data-ir="resumen"><b>Resumen del año</b><span>El año en cifras y quién más mejoró.</span></button>
+          <button type="button" data-ir="dias-semana"><b>Días</b><span>Dónde va más gente y cómo es cada día.</span></button>
+        </div>
+        <div class="nv-tema">
+          <h3>El juego</h3>
+          <button type="button" data-ir="estilo"><b>Estilo de juego</b><span>Cómo juega cada pareja frente a las otras mesas.</span></button>
+          <button type="button" data-ir="cartas"><b>Juego de cartas</b><span>Contratos, palos y doble muerto.</span></button>
+          <button type="button" data-ir="generos"><b>Mujeres y hombres</b><span>Participación y cuadro de honor.</span></button>
+        </div>
+      </div>
+    </section>
+
+    <figure class="nv-foto nv-foto-ancha">
+      <img src="https://images.unsplash.com/photo-1503482618211-c70b46ede8b0?w=1800&q=70&auto=format" alt="Jugadores con sus naipes en la mano alrededor de una mesa" loading="lazy" width="1800" height="1200">
+      <figcaption>Foto de stock (Inês Ferreira, Unsplash).</figcaption>
+    </figure>
   </section>
 
   <!-- ===================== RECORDS ===================== -->
@@ -985,6 +1317,12 @@
         <h2>¿Dónde va más gente?</h2>
       </div>
     </div>
+    <div class="nv-reparto" data-draw="nv-reparto" data-source="reparto_dias">
+      <h3 class="nv-reparto-titulo">Cómo se reparten las cartas</h3>
+      <p class="nv-reparto-frase" data-k="frase">—</p>
+      <div class="nv-reparto-filas" data-k="filas"></div>
+      <p class="nv-reparto-nota">El punto es el % de manos en que nadie tiene 12 puntos o más; la raya verde, lo que daría un reparto al azar. A la derecha, el % de mesas en que los cuatro pasan.</p>
+    </div>
     <div class="bv-grid">
       <div class="bv-card" id="dias-asistencia">
         <h3>¿Qué día va más gente?</h3>
@@ -1331,20 +1669,21 @@
   </section>
 </div>
 
-<script src="comun.js?v=202611160000"></script>
-<script src="inicio.js?v=202611160000"></script>
-<script src="resumen.js?v=202611160000"></script>
-<script src="ranking.js?v=202611160000"></script>
-<script src="jugador.js?v=202611160000"></script>
-<script src="handicap.js?v=202611160000"></script>
-<script src="mi_torneo.js?v=202611160000"></script>
-<script src="juveniles.js?v=202611160000"></script>
-<script src="generos.js?v=202611160000"></script>
-<script src="dias.js?v=202611160000"></script>
-<script src="estilo.js?v=202611160000"></script>
-<script src="cartas.js?v=202611160000"></script>
-<script src="movimiento.js?v=202611160000"></script>
+<script src="comun.js?v=202611160121"></script>
+<script src="inicio.js?v=202611160121"></script>
+<script src="resumen.js?v=202611160121"></script>
+<script src="ranking.js?v=202611160121"></script>
+<script src="jugador.js?v=202611160121"></script>
+<script src="handicap.js?v=202611160121"></script>
+<script src="mi_torneo.js?v=202611160121"></script>
+<script src="juveniles.js?v=202611160121"></script>
+<script src="generos.js?v=202611160121"></script>
+<script src="dias.js?v=202611160121"></script>
+<script src="estilo.js?v=202611160121"></script>
+<script src="cartas.js?v=202611160121"></script>
+<script src="movimiento.js?v=202611160121"></script>
+<script src="nv.js?v=202611160121"></script>
 </div>
-<p class="pie">Datos de <a href="https://bridgevitacura.cl/resultado/">bridgevitacura.cl</a> · actualizado el 16-11-2026 00:00</p>
+<p class="pie">Datos de <a href="https://bridgevitacura.cl/resultado/">bridgevitacura.cl</a>, actualizados el 16-11-2026 01:21.</p>
 </body>
 </html>

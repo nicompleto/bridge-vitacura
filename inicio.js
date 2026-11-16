@@ -80,7 +80,31 @@
     centro.append(celda('b', '', nombreTorneo(t.torneo)), celda('span', '', t.fecha));
     if (pa) centro.appendChild(celda('span', '', `${la}: ${fmt.pct(pa.porcentaje)}`));
     if (pb) centro.appendChild(celda('span', '', `${lb}: ${fmt.pct(pb.porcentaje)}`));
-    el.replaceChildren(asiento('N', n), asiento('O', o), centro, asiento('E', e), asiento('S', s));
+    // la mesa en 3D es decoración: los nombres y cifras quedan planos encima
+    const mesa3d = document.createElement('div');
+    mesa3d.className = 'bv-mesa3d';
+    mesa3d.setAttribute('aria-hidden', 'true');
+    const tablero = document.createElement('div');
+    tablero.className = 'bv-tablero';
+    mesa3d.appendChild(tablero);
+    const piezas = [mesa3d];
+    // en equipos livianos (pocos núcleos, ahorro de datos) la mesa va sin naipes repartidos
+    const liviano = (navigator.hardwareConcurrency || 8) <= 2 || (navigator.deviceMemory || 8) <= 2 || navigator.connection?.saveData;
+    if (!liviano) {
+      ['n', 'e', 's', 'o'].forEach((lado, k) => {
+        const ab = document.createElement('div');
+        ab.className = 'bv-abanico bv-ab-' + lado;
+        ab.setAttribute('aria-hidden', 'true');
+        for (let i = 0; i < 13; i++) {
+          const c = document.createElement('span');
+          c.style.setProperty('--i', i);
+          c.style.setProperty('--orden', i * 4 + k);          // se reparte como en la mesa: una carta a cada uno
+          ab.appendChild(c);
+        }
+        piezas.push(ab);
+      });
+    }
+    el.replaceChildren(...piezas, asiento('N', n), asiento('O', o), centro, asiento('E', e), asiento('S', s));
   });
 
   dash.draw('ultimo-titulo', (el) => {

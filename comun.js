@@ -1,6 +1,8 @@
 // Utilidades compartidas por todas las pestañas: window.bv
 (() => {
-  try { dash.colors = ['#1f7a5f', '#c4122f', '#9a7b1c', '#5c6b73', '#b5583f', '#2a8f9c', '#8a5a9c', '#6b7a3a']; } catch (e) { /* en Claude los colores son del dashboard */ }
+  try { dash.colors = ['#2e5e50', '#b3362f', '#9a7b1c', '#4b6a88', '#b5583f', '#5f8f7f', '#8a5a9c', '#6b7a3a']; } catch (e) { /* en Claude los colores son del dashboard */ }
+  // números a la chilena en todo el sitio: 59,8 % y 1.218
+  try { const loc = d3.formatDefaultLocale({decimal: ',', thousands: '.', grouping: [3], currency: ['$', '']}); d3.format = loc.format; d3.formatPrefix = loc.formatPrefix; } catch (e) { /* si no se puede, quedan los números como antes */ }
   // los ejes de fecha de los gráficos, en español
   d3.timeFormatDefaultLocale({dateTime: '%x %X', date: '%d/%m/%Y', time: '%H:%M', periods: ['', ''],
     days: ['domingo', 'lunes', 'martes', 'miércoles', 'jueves', 'viernes', 'sábado'], shortDays: ['dom', 'lun', 'mar', 'mié', 'jue', 'vie', 'sáb'],

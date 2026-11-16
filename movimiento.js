@@ -91,6 +91,28 @@
     });
   };
 
+  // ---------- detalles dentro de lo que aparece ----------
+  const extras = (el, retraso) => {
+    const q = (sel) => [...(el.matches(sel) ? [el] : []), ...el.querySelectorAll(sel)];
+    // podio: cada puesto sube a su lugar y la medalla aparece con un salto
+    q('.bv-puesto').forEach((p, i) => {
+      p.animate([{opacity: 0, transform: 'translateY(26px)'}, {opacity: 1, transform: 'none'}], {duration: 650, delay: retraso + 150 + i * 110, easing: SUAVE, fill: 'backwards'});
+      p.querySelector('.bv-rank')?.animate([{transform: 'scale(.3)'}, {transform: 'scale(1.18)', offset: .7}, {transform: 'scale(1)'}], {duration: 600, delay: retraso + 300 + i * 110, easing: 'ease-out', fill: 'backwards'});
+    });
+    // historias: la carta de la subasta se da vuelta
+    q('.bv-bid').forEach((c, i) => {
+      c.animate([{transform: 'perspective(700px) rotateY(-180deg)', opacity: 0}, {opacity: 1, offset: .35}, {transform: 'perspective(700px) rotateY(0)', opacity: 1}],
+        {duration: 900, delay: retraso + 120 + i * 90, easing: SUAVE, fill: 'backwards'});
+    });
+    // medallas ganadas: un brillo metálico las recorre, una tras otra
+    q('.bv-medalla:not(.bv-bloqueada)').forEach((m, i) => {
+      m.style.setProperty('--d', `${(retraso + 300 + i * 120) / 1000}s`);
+      m.classList.remove('bv-brilla');
+      m.getBoundingClientRect();
+      m.classList.add('bv-brilla');
+    });
+  };
+
   // ---------- aparecer al entrar en pantalla ----------
   const vistos = new WeakSet();
   let cola = [];
@@ -104,6 +126,7 @@
         {duration: 620, delay: retraso, easing: SUAVE, fill: 'backwards'});
       (el.matches(CIFRA) ? [el] : el.querySelectorAll(CIFRA)).forEach((c) => contar(c, retraso + 80));
       dibujar(el, retraso);
+      extras(el, retraso);
     });
   };
   const io = new IntersectionObserver((entradas) => {
@@ -127,6 +150,7 @@
   addEventListener('scroll', revisarLuego, {passive: true});
   addEventListener('resize', revisarLuego);
   setInterval(revisar, 1000);
+  document.addEventListener('toggle', () => requestAnimationFrame(revisar), true);   // al abrir un capítulo, lo de adentro aparece de inmediato
   const mirar = (el) => {
     if (vistos.has(el) || el.parentElement?.closest(REVELA)) return;     // lo de adentro se mueve con su tarjeta
     vistos.add(el);
@@ -146,6 +170,8 @@
           if (n.matches(REVELA)) mirar(n);
           n.querySelectorAll?.(REVELA).forEach(mirar);
           enLote = true;
+          // contenido nuevo dentro de algo que ya está a la vista (otro jugador, datos que llegan tarde)
+          if (!n.closest('.bv-espera') && visible(n)) extras(n, 0);
           if (n.tagName === 'svg' || n.querySelector?.('svg')) {
             const tarjeta = n.closest(REVELA);
             if (tarjeta && !tarjeta.classList.contains('bv-espera') && visible(n)) dibujar(n.tagName === 'svg' ? n.parentElement : n);
@@ -190,6 +216,30 @@
     addEventListener('resize', () => requestAnimationFrame(ubicar));
     document.fonts?.ready.then(ubicar);
     ubicar();
+  }
+
+  // ---------- la mesa de la portada se inclina con el mouse ----------
+  const portada = raiz.querySelector('#portada');
+  if (portada && matchMedia('(hover: hover) and (pointer: fine)').matches) {
+    let pendienteMesa = null;
+    portada.addEventListener('pointermove', (ev) => {
+      const mesa = portada.querySelector('.bv-mesa');
+      if (!mesa || pendienteMesa) return;
+      pendienteMesa = requestAnimationFrame(() => {
+        pendienteMesa = null;
+        const r = mesa.getBoundingClientRect();
+        const x = Math.max(-1, Math.min(1, (ev.clientX - r.left - r.width / 2) / (r.width / 2)));
+        const y = Math.max(-1, Math.min(1, (ev.clientY - r.top - r.height / 2) / (r.height / 2)));
+        mesa.style.setProperty('--ry', `${(x * 7).toFixed(2)}deg`);
+        mesa.style.setProperty('--rx', `${(-y * 5).toFixed(2)}deg`);
+        mesa.style.setProperty('--tx', `${(x * 5).toFixed(1)}px`);
+        mesa.style.setProperty('--ty', `${(y * 4).toFixed(1)}px`);
+      });
+    }, {passive: true});
+    portada.addEventListener('pointerleave', () => {
+      const mesa = portada.querySelector('.bv-mesa');
+      if (mesa) ['--rx', '--ry', '--tx', '--ty'].forEach((v) => mesa.style.removeProperty(v));
+    });
   }
 
   // ---------- el paño sigue al mouse dentro de cada tarjeta ----------
