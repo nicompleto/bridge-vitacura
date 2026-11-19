@@ -11,7 +11,7 @@
 
   const SUAVE = 'cubic-bezier(.16, 1, .3, 1)';          // llega rápido y frena despacio
   const REVELA = '.bv-card, .bv-ultimo, .bv-kpi, .bv-mt-cifra, .bv-dia, .bv-historia, .bv-historia-top, details.bv-anio, .bv-atajos > *';
-  const CIFRA = '.bv-kpi b, .bv-mt-cifra b';
+  const CIFRA = '.bv-kpi b, .bv-mt-cifra b, .nv-hero-cifra b';
   const visible = (el) => {
     if (!el.isConnected || !el.getClientRects().length) return false;
     const r = el.getBoundingClientRect();

@@ -21,6 +21,9 @@
   const actual = () => document.querySelector('.bv-page:not([hidden])')?.id || 'inicio';
   const pintarMenu = () => {
     const tab = actual(), g = grupoDe(tab);
+    // el selector de año va bajo la portada de la sección, no encima
+    const pag = document.getElementById(tab), heroPag = pag?.querySelector(':scope > .nv-hero'), portada = document.getElementById('portada');
+    if (heroPag && portada && heroPag.nextElementSibling !== portada) heroPag.after(portada);
     document.querySelectorAll('.nv-grupo').forEach((b) => b.setAttribute('aria-current', String(b.dataset.grupo === g)));
     const paginas = GRUPOS[g];
     if (paginas.length < 2) { sub.replaceChildren(); return; }
@@ -30,7 +33,12 @@
     }
     sub.querySelectorAll('button').forEach((b) => b.setAttribute('aria-current', String(b.dataset.ir === tab)));
   };
-  const ir = (tab) => { irA(tab); window.scrollTo({top: 0, behavior: 'auto'}); };
+  const ir = (tab) => {
+    const hacer = () => { irA(tab); window.scrollTo({top: 0, behavior: 'auto'}); };
+    if (!document.startViewTransition || quieto || document.visibilityState !== 'visible') { hacer(); return; }
+    const vt = document.startViewTransition(hacer);
+    [vt.ready, vt.finished, vt.updateCallbackDone].forEach((p) => p.catch(() => {}));   // si se interrumpe, la página igual cambia
+  };
   document.addEventListener('click', (ev) => {
     const g = ev.target.closest('.nv-grupo');
     if (g) { ir(GRUPOS[g.dataset.grupo][0][0]); return; }
@@ -174,10 +182,88 @@
   }
 })();
 
+// ---------- portada de cada sección: foto, título y la cifra que la resume ----------
+(() => {
+  const {filas, lindo} = window.bv;
+  const num = new Intl.NumberFormat('es-CL');
+  const dec = new Intl.NumberFormat('es-CL', {minimumFractionDigits: 1, maximumFractionDigits: 1});
+  const foto = (id, w = 1800) => `https://images.unsplash.com/${id}?w=${w}&q=70&auto=format`;
+  const anios = () => (filas('resumen_anio') || []).filter((r) => /^\d{4}$/.test(r.anio));
+  const ultimoAnio = () => anios().slice(-1)[0];
+  const PORTADAS = {
+    'mi-torneo': {titulo: 'Mi torneo', frase: 'Tus manos, una por una, comparadas con las otras mesas.', foto: 'photo-1531415505195-40f140d44392', autor: 'Alessandro Bogliari',
+      cifra: () => { const t = (filas('ultimo_torneo') || [])[0]; return t && [num.format(t.parejas), `parejas jugaron el último torneo, el ${t.fecha}`]; }},
+    jugador: {titulo: 'Perfil', frase: 'La historia de cada jugador en el club.', foto: 'photo-1604345250885-11f528eec3ff', autor: 'Marin Tulard',
+      cifra: () => { const j = filas('jugadores') || []; return j.length && [num.format(j.length), 'jugadores con su historia desde 2022']; }},
+    ranking: {titulo: 'Ranking', frase: 'Los mejores del año y de siempre.', foto: 'photo-1630918295249-116eac5624b1', autor: 'Klim Musalimov',
+      cifra: () => { const c = (filas('campeones_anio') || []).filter((r) => r.campeon).slice(-1)[0]; return c && [`${dec.format(c.campeon_pct)} %`, `el mejor promedio de ${c.anio}: ${lindo(c.campeon)}`]; }},
+    parejas: {titulo: 'Parejas', frase: 'Quiénes juegan juntos y cómo les va.', foto: 'photo-1601162937667-08f083516d57', autor: 'Andrik Langfield',
+      cifra: () => { const a = ultimoAnio(); return a && [num.format(a.parejas), `parejas distintas jugaron en ${a.anio}`]; }},
+    handicap: {titulo: 'Handicap', frase: 'El handicap de la Federación frente a los resultados del club.', foto: 'photo-1529480384838-c1681c84aca5', autor: 'Aditya Chinchure',
+      cifra: () => { const r = (filas('handicap_resumen') || [])[0]; return r && [num.format(r.analizados), 'jugadores con handicap y suficientes torneos para compararlos']; }},
+    juveniles: {titulo: 'Juveniles', frase: 'Los jugadores menores de 30 del club, compitiendo contra todos.', foto: 'photo-1607637508975-bf0090d7a0b4', autor: 'Erik Mclean',
+      cifra: () => { const j = filas('juveniles') || []; return j.length && [num.format(j.length), 'juveniles han jugado desde 2022']; }},
+    records: {titulo: 'Historias y récords', frase: 'Rachas, rivalidades y manos de locos.', foto: 'photo-1541278107931-e006523892df', autor: 'Amanda Jones',
+      cifra: () => { const h = (filas('hallazgos') || []).find((x) => x.destacado); return h && [h.cifra, `${h.unidad}: ${h.titulo.toLowerCase()}`]; }},
+    resumen: {titulo: 'Resumen del año', frase: 'El año del club en cifras.', foto: 'photo-1501003878151-d3cb87799705', autor: 'Jack Hamilton',
+      cifra: () => { const a = ultimoAnio(); return a && [num.format(a.torneos), `torneos en ${a.anio}`]; }},
+    'dias-semana': {titulo: 'Días', frase: 'Cada día de la semana es un torneo distinto.', foto: 'photo-1503482618211-c70b46ede8b0', autor: 'Inês Ferreira',
+      cifra: () => { const d = (filas('dias_semana') || []).filter((x) => x.dia !== 'Jueves').sort((a, b) => b.parejas_por_torneo - a.parejas_por_torneo)[0]; return d && [dec.format(d.parejas_por_torneo), `parejas por torneo los ${d.dia.toLowerCase()}, el día más lleno`]; }},
+    estilo: {titulo: 'Estilo de juego', frase: 'Cómo juega cada pareja frente a las otras mesas.', foto: 'photo-1632718427831-5cbfeb7b5657', autor: 'Klim Musalimov',
+      cifra: () => { const a = ultimoAnio(); return a && [`${dec.format(a.pct_sin_triunfo)} %`, `de los contratos de ${a.anio} se jugaron sin triunfo`]; }},
+    cartas: {titulo: 'Juego de cartas', frase: 'Contratos, palos y doble muerto.', foto: 'photo-1719937076006-041292dbdfbe', autor: 'Fiona Murray-deGraaff',
+      cifra: () => { const a = anios(); return a.length && [num.format(a.reduce((t, r) => t + (r.manos_jugadas || 0), 0)), 'manos jugadas y analizadas desde 2022']; }},
+    generos: {titulo: 'Mujeres y hombres', frase: 'Participación y cuadro de honor.', foto: 'photo-1503482618211-c70b46ede8b0', autor: 'Inês Ferreira', cifra: null},
+  };
+  const el = (tag, clase, texto) => { const e = document.createElement(tag); if (clase) e.className = clase; if (texto != null) e.textContent = texto; return e; };
+  Object.entries(PORTADAS).forEach(([id, p]) => {
+    const pag = document.getElementById(id);
+    if (!pag) return;
+    const h = el('header', 'nv-hero');
+    const fondo = el('div', 'nv-hero-fondo');
+    fondo.setAttribute('aria-hidden', 'true');
+    const img = el('img');
+    img.src = foto(p.foto);
+    img.alt = '';
+    img.loading = 'lazy';
+    img.decoding = 'async';
+    fondo.appendChild(img);
+    const texto = el('div', 'nv-hero-texto');
+    texto.append(el('h2', 'nv-hero-titulo', p.titulo), el('p', 'nv-hero-frase', p.frase));
+    h.append(fondo, texto);
+    if (p.cifra) {
+      const c = el('div', 'nv-hero-cifra');
+      c.dataset.draw = 'nv-hero-cifra';
+      c.dataset.pag = id;
+      c.append(el('b', '', '—'), el('span', '', ''));
+      h.appendChild(c);
+    }
+    h.appendChild(el('small', 'nv-hero-credito', `Foto de stock: ${p.autor}, Unsplash`));
+    pag.prepend(h);
+    // si el primer título de la sección repite el nombre, no se muestra dos veces
+    const cab = pag.querySelector(':scope > .bv-section-head');
+    if (cab) {
+      cab.querySelector('.bv-eyebrow')?.setAttribute('hidden', '');
+      const t = cab.querySelector('h2');
+      if (t && t.textContent.trim() === p.titulo) t.hidden = true;
+    }
+  });
+  dash.draw('nv-hero-cifra', (c) => {
+    const p = PORTADAS[c.dataset.pag];
+    let v = null;
+    try { v = p.cifra(); } catch (e) { v = null; }
+    if (!v) return;
+    const [valor, etiqueta] = v;
+    const b = c.querySelector('b'), s = c.querySelector('span');
+    if (b.textContent !== valor) b.textContent = valor;
+    if (s.textContent !== etiqueta) s.textContent = etiqueta;
+  });
+})();
+
 // ---------- secciones compactas: un resumen arriba y el detalle en capítulos que se abren ----------
 (() => {
   const COMPACTAR = ['records', 'handicap', 'resumen', 'juveniles', 'generos', 'dias-semana', 'jugador', 'estilo', 'cartas'];
-  const RESUMEN = '.bv-section-head, .bv-kpis, .bv-mini-grid, .bv-mt-resumen, .bv-sentence, .bv-hero, .bv-buscar, .bv-perfil, .nv-reparto';
+  const RESUMEN = '.nv-hero, .bv-section-head, .bv-kpis, .bv-mini-grid, .bv-mt-resumen, .bv-sentence, .bv-hero, .bv-buscar, .bv-perfil, .nv-reparto';
   // títulos cortos para los capítulos (si falta alguno, se usa el título del bloque)
   const TITULOS = {
     cartas: ['Contratos y palos', 'Puntos del declarante', 'Mejores declarantes y defensores'],
@@ -221,7 +307,8 @@
     });
     const hijos = [...pag.children];
     let k = 0;
-    while (k < hijos.length && k < 4 && hijos[k].matches(RESUMEN) && !(k > 0 && hijos[k].matches('.bv-section-head'))) k++;
+    let cabezas = 0;           // solo el primer título de la sección queda arriba; los siguientes abren capítulos
+    while (k < hijos.length && k < 5 && hijos[k].matches(RESUMEN) && !(hijos[k].matches('.bv-section-head') && cabezas++ > 0)) k++;
     const resto = hijos.slice(k).filter((b) => !b.matches('p.bv-note:last-child'));
     if (!resto.length) return;
     const caja = document.createElement('div');
