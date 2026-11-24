@@ -1,1 +1,1 @@
-window.__bvDatos=window.__bvDatos||{};window.__bvDatos["ultimo_torneo"]=[{"id_torneo":"2026-11-22","fecha":"22 de nov de 2026","dia":"Domingo","torneo":"Matinee-Domingo-Parejas","parejas":24,"manos":27,"dificultad":-1.0}];
+window.__bvDatos=window.__bvDatos||{};window.__bvDatos["ultimo_torneo"]=[{"id_torneo":"2026-11-23","fecha":"23 de nov de 2026","dia":"Lunes","torneo":"Lunes Club De Bridge Vitacura","parejas":40,"manos":27,"dificultad":0.9}];
